@@ -1,7 +1,46 @@
 import { Button } from '@mui/material';
 import Container from '@mui/material/Container';
+import { useAtom } from 'jotai';
+import { 
+  plantUmlCodeAtom, 
+  selectedLanguageAtom, 
+  generatedCodeAtom,
+  loadingOperationAtom 
+} from '../atoms';
 
-export default function GenerateCode({ onClick }) {
+export default function GenerateCode() {
+  const [plantUMLCode] = useAtom(plantUmlCodeAtom);
+  const [language] = useAtom(selectedLanguageAtom);
+  const [, setGeneratedCode] = useAtom(generatedCodeAtom);
+  const [isLoading, setIsLoading] = useAtom(loadingOperationAtom);
+
+  const handleGenerateClick = async () => {
+    if (!plantUMLCode) {
+      console.warn("No PlantUML code to convert");
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      const response = await fetch("http://localhost:5000/convert", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plantUML: plantUMLCode, language }),
+      });
+
+      const data = await response.json();
+      if (data.code) {
+        setGeneratedCode(`\`\`\`${language}\n${data.code}\n\`\`\``); // Wrap in a code block
+      } else {
+        console.error("Conversion failed:", data.error);
+      }
+    } catch (error) {
+      console.error("Error converting PlantUML to code:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Container
       maxWidth="sx"
@@ -29,8 +68,10 @@ export default function GenerateCode({ onClick }) {
           width: "100%",
           maxWidth: "11000px",
         }}
-        onClick={onClick} 
+        onClick={handleGenerateClick}
+        // disabled={isLoading || !plantUMLCode}
       >
+        {/* {isLoading ? 'GENERATING...' : 'GENERATE'} */}
         GENERATE
       </Button>
     </Container>

@@ -1,4 +1,13 @@
 import { useState } from "react";
+import { useAtom } from "jotai";
+import { 
+  plantUmlCodeAtom, 
+  selectedModelAtom, 
+  uploadedImageAtom,
+  processingErrorAtom,
+  loadingOperationAtom,
+  readableModelNameAtom
+} from "../atoms";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
@@ -6,14 +15,18 @@ import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import "@fontsource/jetbrains-mono";
 
-
-export default function UploadImageSection({ setPlantUMLCode }) {
-  const [image, setImage] = useState(null);
+export default function UploadImageSection() {
+  const [image, setImage] = useAtom(uploadedImageAtom);
   const [scale, setScale] = useState(1);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isProcessing, setIsProcessing] = useAtom(loadingOperationAtom);
+  const [processingError, setProcessingError] = useAtom(processingErrorAtom);
+  const [selectedModel] = useAtom(selectedModelAtom);
+  const [readableModelName] = useAtom(readableModelNameAtom);
+  const [, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
 
   const grayish = "#303134";
   const greencolor = "#B6D9D7";
+  const errorColor = "#ff6b6b";
 
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
@@ -21,9 +34,15 @@ export default function UploadImageSection({ setPlantUMLCode }) {
       setImage(URL.createObjectURL(file));
       setScale(1);
       setIsProcessing(true);
+      setProcessingError("");
 
       const formData = new FormData();
       formData.append("image", file);
+      
+      // Include the selected model in the request
+      if (selectedModel) {
+        formData.append("model", selectedModel);
+      }
 
       try {
         const response = await fetch("http://localhost:5000/upload", {
@@ -33,12 +52,14 @@ export default function UploadImageSection({ setPlantUMLCode }) {
 
         const data = await response.json();
         if (data.plantUML) {
-          setPlantUMLCode(data.plantUML); // Update UML Code in Homepage state
+          setPlantUMLCode(data.plantUML); // Update UML Code atom
         } else {
           console.error("Failed to generate PlantUML:", data.error);
+          setProcessingError(data.error || "Failed to process image");
         }
       } catch (error) {
         console.error("Error uploading image:", error);
+        setProcessingError("Error uploading image. Please try again.");
       } finally {
         setIsProcessing(false);
       }
@@ -52,8 +73,6 @@ export default function UploadImageSection({ setPlantUMLCode }) {
       return Math.min(Math.max(newScale, 1), 3); // Limit zoom between 1x and 3x
     });
   };
-
-  
 
   return (
     <Container
@@ -103,7 +122,7 @@ export default function UploadImageSection({ setPlantUMLCode }) {
             variant="contained"
             sx={{
               position: "absolute",
-              bottom: 0,
+              bottom: 16,
               right: 16,
               bgcolor: "rgba(77, 75, 75, 0.99)",
               color: "white",
@@ -125,13 +144,29 @@ export default function UploadImageSection({ setPlantUMLCode }) {
             <Typography
               sx={{
                 position: "absolute",
-                bottom: 70,
+                bottom: 90,
                 right: 16,
                 color: greencolor,
                 fontSize: "14px",
+                fontFamily: "JetBrains Mono",
               }}
             >
-              Processing...
+              Processing with {readableModelName}...
+            </Typography>
+          )}
+
+          {processingError && (
+            <Typography
+              sx={{
+                position: "absolute",
+                bottom: 90,
+                right: 16,
+                color: errorColor,
+                fontSize: "14px",
+                fontFamily: "JetBrains Mono",
+              }}
+            >
+              Error: {processingError}
             </Typography>
           )}
         </Box>
@@ -169,6 +204,20 @@ export default function UploadImageSection({ setPlantUMLCode }) {
           >
             Upload a Class Diagram
           </Typography>
+          
+          {selectedModel && (
+            <Typography
+              sx={{
+                color: "rgba(255, 255, 255, 0.7)",
+                marginTop: 1,
+                fontSize: "14px",
+                textAlign: "center",
+                fontFamily: "JetBrains Mono",
+              }}
+            >
+              Using {readableModelName}
+            </Typography>
+          )}
         </Box>
       )}
     </Container>

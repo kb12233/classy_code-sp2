@@ -1,6 +1,9 @@
 import { Container, FormControl, MenuItem, Select } from "@mui/material";
+import { useAtom } from "jotai";
+import { selectedLanguageAtom } from "../atoms";
 
-export default function SelectLanguage({ language, setLanguage }) {
+export default function SelectLanguage() {
+  const [language, setLanguage] = useAtom(selectedLanguageAtom);
   const greencolor = "#B6D9D7";
   const grayish = "#303134";
   const blackish = "#121212";
