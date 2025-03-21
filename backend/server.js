@@ -67,7 +67,7 @@ app.post("/convert", (req, res) => {
     fs.writeFileSync(tempFilePath, plantUML);
 
     // Run PlantCode CLI command with the correct output file extension
-    exec(`npx plantcode -l ${language} -o ${outputFilePath} ${tempFilePath}`, (error, stdout, stderr) => {
+    exec(`npx plantcode -l ${language} -o "${outputFilePath}" "${tempFilePath}"`, (error, stdout, stderr) => {
         if (error) {
             console.error("Error:", stderr);
             return res.status(500).json({ error: stderr || "Conversion failed" });
