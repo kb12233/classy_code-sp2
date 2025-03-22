@@ -3,17 +3,24 @@ import Homepage from './components/HomePage';
 import RegistrationPage from './components/RegistrationPage';
 import LoginPage from './components/LoginPage';
 import ModelsInitializer from './components/ModelsInitializer';
+import PrivateRoutes from './utils/PrivateRoutes';
+import { AuthProvider } from './utils/AuthContext';
 
 const App = () => {
   return (
     <>
       <ModelsInitializer />
       <Router>
-        <Routes>
-          <Route path="/" element={<Homepage />} />
-          <Route path="/register" element={<RegistrationPage />} />
-          <Route path="/login" element={<LoginPage />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/register" element={<RegistrationPage />} />
+            <Route path="/login" element={<LoginPage />} />
+
+            <Route element={<PrivateRoutes />}>
+              <Route path="/" element={<Homepage />} />
+            </Route>
+          </Routes>
+        </AuthProvider>
       </Router>
     </>
   );

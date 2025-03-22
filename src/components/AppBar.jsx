@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 import { useAtom } from 'jotai';
 import { 
@@ -20,15 +20,20 @@ import Toolbar from '@mui/material/Toolbar';
 import { useMediaQuery, Typography, CircularProgress } from '@mui/material';
 import Sidebar from './sidebar';
 import logoDark from '../assets/images/logo_dark.png';
+import { useAuth } from '../utils/AuthContext';
+import LoadingOverlay from './LoadingOverlay';
+
 
 export default function MenuAppBar() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [isDrawerOpen, setDrawerOpen] = React.useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useAtom(selectedModelAtom);
   const [models] = useAtom(modelsAtom);
   const [loading] = useAtom(modelsLoadingAtom);
   const [groupedModels] = useAtom(groupedModelsAtom);
+  const [signOutLoading, setSignOutLoading] = useState(false);
   const navigate = useNavigate(); 
+  const { user, logoutUser } = useAuth();
 
   const greencolor = '#B6D9D7';
   const isMobile = useMediaQuery('(max-width: 600px)');
@@ -36,9 +41,15 @@ export default function MenuAppBar() {
   const handleMenu = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
-  const handleSignOut = () => {
-    setAnchorEl(null);
-    navigate('/login'); 
+  const handleSignOut = async () => {
+    setSignOutLoading(true);
+    try {
+      await logoutUser();
+      navigate('/login');
+    } catch(error) {
+      console.error("Logout failed:", error.message);
+    }
+    setSignOutLoading(false);
   };
 
   const handleModelChange = (event) => {
@@ -52,6 +63,7 @@ export default function MenuAppBar() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
+      {signOutLoading && <LoadingOverlay message="Signing out..." />}
       <AppBar position="static" sx={{ backgroundColor: '#121212', maxHeight: '10vh', width: '100vw' }}>
         <Toolbar sx={{ justifyContent: 'space-between', px: isMobile ? 1 : 3 }}>
           {/* Left Side: Menu Icon + Model Select */}
