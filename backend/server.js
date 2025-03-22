@@ -6,12 +6,19 @@ const path = require("path");
 const fs = require("fs");
 const multer = require('multer');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { Groq } = require('groq-sdk');
+const OpenAI = require("openai");
 
 const app = express();
 const PORT = 5000;
 
-// Initialize the Gemini API client
+// Initialize the API clients
 const gemini = new GoogleGenerativeAI(process.env.VITE_GEMINI_API_KEY);
+const groq = new Groq({ apiKey: process.env.VITE_GROQ_API_KEY });
+const openai = new OpenAI({ 
+  baseURL: "https://models.inference.ai.azure.com", 
+  apiKey: process.env.VITE_GITHUB_TOKEN 
+});
 
 app.use(cors());
 app.use(express.json());
@@ -60,7 +67,7 @@ app.post("/convert", (req, res) => {
     fs.writeFileSync(tempFilePath, plantUML);
 
     // Run PlantCode CLI command with the correct output file extension
-    exec(`npx plantcode -l ${language} -o ${outputFilePath} ${tempFilePath}`, (error, stdout, stderr) => {
+    exec(`npx plantcode -l ${language} -o "${outputFilePath}" "${tempFilePath}"`, (error, stdout, stderr) => {
         if (error) {
             console.error("Error:", stderr);
             return res.status(500).json({ error: stderr || "Conversion failed" });
@@ -77,27 +84,37 @@ app.post("/convert", (req, res) => {
     });
 });
 
+/**
+ * Convert an image file to base64 data URL
+ * @param {string} imagePath - Path to the image file
+ * @param {string} mimeType - MIME type of the image
+ * @returns {string} Data URL of the image
+ */
+function getImageDataUrl(imagePath, mimeType) {
+  try {
+    const imageBuffer = fs.readFileSync(imagePath);
+    const imageBase64 = imageBuffer.toString('base64');
+    return `data:${mimeType};base64,${imageBase64}`;
+  } catch (error) {
+    console.error(`Could not read '${imagePath}'.`, error);
+    throw new Error(`Failed to read image: ${error.message}`);
+  }
+}
+
 // Endpoint to handle image upload and processing
 app.post('/upload', upload.single('image'), async (req, res) => {
-  const model = gemini.getGenerativeModel({ model: "gemini-1.5-pro" });
+  const modelName = req.body.model || "gemini-1.5-pro"; // Default to gemini-1.5-pro if not specified
   const imagePath = req.file.path;
-  console.log('Processing image:', imagePath);
+  console.log('Processing image with model:', modelName, 'at path:', imagePath);
+  
   try {
     // Read the image file
     const imageBuffer = fs.readFileSync(imagePath);
-
+    
     // Convert image to base64
     const imageBase64 = imageBuffer.toString('base64');
-
-    // Prepare the image object for the Gemini API
-    const image = {
-      inlineData: {
-        data: imageBase64,
-        mimeType: req.file.mimetype,
-      },
-    };
-
-    // Send the image to the Gemini API with a prompt
+    
+    // The prompt for the model
     const prompt = 
     `Given the image of a UML class diagram provided, can you faithfully translate it into PlantUML notation, 
     preserving all class relationships, including associations, aggregations, and generalizations? 
@@ -132,10 +149,82 @@ app.post('/upload', upload.single('image'), async (req, res) => {
       - lastLog : DateTime
       - books : Book[]
     }`;
-    const response = await model.generateContent([prompt, image]);
 
-    // Assuming the API returns the PlantUML syntax in the response
-    const plantUML = response.response.text();
+    let plantUML;
+
+    // Process based on the selected model
+    if (modelName.startsWith('gemini')) {
+      // Handle Gemini models
+      const model = gemini.getGenerativeModel({ model: modelName });
+      
+      // Prepare the image object for the Gemini API
+      const image = {
+        inlineData: {
+          data: imageBase64,
+          mimeType: req.file.mimetype,
+        },
+      };
+      
+      const response = await model.generateContent([prompt, image]);
+      plantUML = response.response.text();
+    } 
+    else if (modelName.startsWith('llama')) {
+      // Handle Llama models via Groq
+      const response = await groq.chat.completions.create({
+        model: modelName,
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: prompt },
+              {
+                type: "image_url",
+                image_url: {
+                  url: `data:${req.file.mimetype};base64,${imageBase64}`,
+                },
+              },
+            ],
+          },
+        ],
+        max_tokens: 1024,
+      });
+      
+      plantUML = response.choices[0].message.content;
+    }
+    else if (modelName === 'gpt-4o') {
+      // Handle GitHub's GPT-4o model
+      const dataUrl = getImageDataUrl(imagePath, req.file.mimetype);
+      
+      const response = await openai.chat.completions.create({
+        model: modelName,
+        messages: [
+          { 
+            role: "system", 
+            content: "You are a helpful assistant that specializes in converting UML diagrams to PlantUML notation." 
+          },
+          { 
+            role: "user", 
+            content: [
+              { type: "text", text: prompt },
+              { 
+                type: "image_url", 
+                image_url: {
+                  url: dataUrl, 
+                  detail: "high"
+                }
+              }
+            ]
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 1500,
+      });
+      
+      plantUML = response.choices[0].message.content;
+    }
+    else {
+      throw new Error(`Unsupported model: ${modelName}`);
+    }
 
     // Delete the uploaded image after processing
     fs.unlinkSync(imagePath);
@@ -143,8 +232,22 @@ app.post('/upload', upload.single('image'), async (req, res) => {
     res.json({ plantUML });
   } catch (error) {
     console.error('Error processing image:', error);
-    res.status(500).json({ error: 'Failed to process image' });
+    res.status(500).json({ error: `Failed to process image: ${error.message}` });
   }
+});
+
+// Endpoint to list available models
+app.get('/models', (req, res) => {
+  const models = [
+    { id: "gemini-1.5-pro", name: "Gemini 1.5 Pro", provider: "Google" },
+    { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash", provider: "Google" },
+    { id: "gemini-2.0-flash", name: "Gemini 2.0 Flash", provider: "Google" },
+    { id: "llama-3.2-11b-vision-preview", name: "Llama 3.2 11B Vision", provider: "Groq" },
+    { id: "llama-3.2-90b-vision-preview", name: "Llama 3.2 90B Vision", provider: "Groq" },
+    { id: "gpt-4o", name: "GPT-4o", provider: "GitHub" }
+  ];
+  
+  res.json({ models });
 });
 
 app.listen(PORT, () => {

@@ -1,5 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'; 
+import { useAtom } from 'jotai';
+import { 
+  selectedModelAtom, 
+  modelsAtom, 
+  modelsLoadingAtom, 
+  groupedModelsAtom 
+} from '../atoms';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuIcon from '@mui/icons-material/Menu';
 import AppBar from '@mui/material/AppBar';
@@ -10,14 +17,17 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Toolbar from '@mui/material/Toolbar';
-import { useMediaQuery } from '@mui/material';
+import { useMediaQuery, Typography, CircularProgress } from '@mui/material';
 import Sidebar from './sidebar';
 import logoDark from '../assets/images/logo_dark.png';
 
 export default function MenuAppBar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [category, setCategory] = React.useState('');
   const [isDrawerOpen, setDrawerOpen] = React.useState(false);
+  const [selectedModel, setSelectedModel] = useAtom(selectedModelAtom);
+  const [models] = useAtom(modelsAtom);
+  const [loading] = useAtom(modelsLoadingAtom);
+  const [groupedModels] = useAtom(groupedModelsAtom);
   const navigate = useNavigate(); 
 
   const greencolor = '#B6D9D7';
@@ -31,7 +41,10 @@ export default function MenuAppBar() {
     navigate('/login'); 
   };
 
-  const handleCategoryChange = (event) => setCategory(event.target.value);
+  const handleModelChange = (event) => {
+    setSelectedModel(event.target.value);
+  };
+  
   const toggleDrawer = (open) => (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) return;
     setDrawerOpen(open);
@@ -48,26 +61,74 @@ export default function MenuAppBar() {
             </IconButton>
 
             {!isMobile && (
-              <FormControl sx={{ minWidth: 150 }} size="small">
-                <Select
-                  value={category}
-                  onChange={handleCategoryChange}
-                  displayEmpty
-                  renderValue={category !== "" ? undefined : () => "Select Model"}
-                  MenuProps={{ PaperProps: { sx: { bgcolor: '#121212', color: greencolor } } }}
-                  sx={{
-                    '.MuiOutlinedInput-notchedOutline': { borderColor: '#303134' },
-                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: greencolor },
-                    '.MuiSvgIcon-root': { color: greencolor, fontSize: 20 },
-                    color: 'white',
-                    fontFamily: 'JetBrains Mono',
-                    fontSize: 16,
-                  }}
-                >
-                  <MenuItem value="ChatGPT 4o" sx={{ fontFamily: 'JetBrains Mono' }}>ChatGPT 4o</MenuItem>
-                  <MenuItem value="Gemini" sx={{ fontFamily: 'JetBrains Mono' }}>Gemini</MenuItem>
-                  <MenuItem value="Deepseek" sx={{ fontFamily: 'JetBrains Mono' }}>Deepseek</MenuItem>
-                </Select>
+              <FormControl sx={{ minWidth: 220 }} size="small">
+                {loading ? (
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <CircularProgress size={20} sx={{ color: greencolor, marginRight: 1 }} />
+                    <Typography sx={{ color: 'white', fontFamily: 'JetBrains Mono' }}>
+                      Loading models...
+                    </Typography>
+                  </Box>
+                ) : (
+                  <Select
+                    value={selectedModel || ''}
+                    onChange={handleModelChange}
+                    displayEmpty
+                    renderValue={(selected) => {
+                      if (!selected) return "Select Model";
+                      const model = models.find(m => m.id === selected);
+                      return model ? model.name : selected;
+                    }}
+                    MenuProps={{ 
+                      PaperProps: { 
+                        sx: { 
+                          bgcolor: '#121212', 
+                          color: greencolor,
+                          maxHeight: 300
+                        } 
+                      } 
+                    }}
+                    sx={{
+                      '.MuiOutlinedInput-notchedOutline': { borderColor: '#303134' },
+                      '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: greencolor },
+                      '.MuiSvgIcon-root': { color: greencolor, fontSize: 20 },
+                      color: 'white',
+                      fontFamily: 'JetBrains Mono',
+                      fontSize: 16,
+                    }}
+                  >
+                    {Object.entries(groupedModels).length > 0 ? (
+                      Object.entries(groupedModels).map(([provider, providerModels]) => [
+                        <MenuItem 
+                          key={provider} 
+                          disabled 
+                          sx={{ 
+                            fontFamily: 'JetBrains Mono',
+                            opacity: 0.7,
+                            fontSize: '0.9rem',
+                            pointerEvents: 'none'
+                          }}
+                        >
+                          {provider}
+                        </MenuItem>,
+                        ...providerModels.map(model => (
+                          <MenuItem 
+                            key={model.id} 
+                            value={model.id} 
+                            sx={{ 
+                              fontFamily: 'JetBrains Mono',
+                              paddingLeft: 3
+                            }}
+                          >
+                            {model.name}
+                          </MenuItem>
+                        ))
+                      ]).flat()
+                    ) : (
+                      <MenuItem disabled>No models available</MenuItem>
+                    )}
+                  </Select>
+                )}
               </FormControl>
             )}
           </Box>

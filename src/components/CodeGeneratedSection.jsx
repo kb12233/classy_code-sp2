@@ -1,8 +1,12 @@
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import MDEditor from "@uiw/react-md-editor";
+import MDEditor, { commands } from "@uiw/react-md-editor";
+import { useAtom } from 'jotai';
+import { generatedCodeAtom } from '../atoms';
 
-export default function CodeGeneratedSection({ generatedCode }) {
+export default function CodeGeneratedSection() {
+  const [generatedCode] = useAtom(generatedCodeAtom);
+
   return (
     <Container
       maxWidth="sx"
@@ -23,12 +27,16 @@ export default function CodeGeneratedSection({ generatedCode }) {
     
       {generatedCode ? (
         <Box sx={{ height: '100%', overflowY: 'auto' }}>
-          <MDEditor value={generatedCode} preview="preview"
-           style={{
-            minHeight: "100%", 
-            height: "100%", 
-            width: "100%",
-            backgroundColor: "#303134", 
+          <MDEditor 
+            value={generatedCode} 
+            preview="preview"
+            commands={[]}
+            extraCommands={[commands.fullscreen]}
+            style={{
+              minHeight: "100%", 
+              height: "100%", 
+              width: "100%",
+              backgroundColor: "#303134", 
           }}  />
         </Box>
       ) : (

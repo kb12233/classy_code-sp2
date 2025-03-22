@@ -5,22 +5,13 @@ import { CiChat2 } from "react-icons/ci";
 import MDEditor, { commands } from "@uiw/react-md-editor";
 import plantumlEncoder from "plantuml-encoder";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { useAtom } from "jotai";
+import { plantUmlCodeAtom } from "../atoms";
 
-const customStyles = `
-  .w-md-editor, .w-md-editor-text, .w-md-editor-preview, .w-md-editor-content, .w-md-editor-text-pre, .w-md-editor-text-pre code, .w-md-editor-text-input {
-    font-family: monospace !important;
-  }
-  .w-md-editor-text-input {
-    line-height: 1.5 !important; /* Improve readability */
-  }
-  .w-md-editor-preview {
-    line-height: 1.5 !important; /* Improve readability in preview */
-  }
-`;
 
-const UMLPopup = ({ plantUMLCode }) => {
+const UMLPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [markdown, setMarkdown] = useState(plantUMLCode || "");
+  const [plantUMLCode, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
   const [umlImage, setUmlImage] = useState("");
 
   // Generate UML Diagram
@@ -36,15 +27,13 @@ const UMLPopup = ({ plantUMLCode }) => {
 
   useEffect(() => {
     if (plantUMLCode) {
-      setMarkdown(plantUMLCode);
+      setPlantUMLCode(plantUMLCode);
       generatePlantUML(plantUMLCode);
     }
   }, [plantUMLCode]);
 
   return (
     <div>
-       {/* Inject custom styles */}
-       <style>{customStyles}</style>
 
       {/* Open modal button */}
       <button className="p-2 bg-gray-200 rounded-full hover:bg-gray-300 mb-4" onClick={() => setIsOpen(true)}>
@@ -71,12 +60,12 @@ const UMLPopup = ({ plantUMLCode }) => {
               {/* Markdown Editor */}
               <div className="flex-1 min-w-[0%] max-w-[50%] border rounded-md overflow-auto">
                 <MDEditor
-                  value={markdown}
+                  value={plantUMLCode}
                   preview="edit"
                   commands={[]}
                   extraCommands={[commands.fullscreen]}
                   onChange={(value) => {
-                    setMarkdown(value || "");
+                    setPlantUMLCode(value || "");
                     generatePlantUML(value);
                   }}
                   height="100%" // Ensure editor takes full height

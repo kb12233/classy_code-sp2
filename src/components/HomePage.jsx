@@ -1,6 +1,8 @@
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import * as React from "react";
+import { useAtom } from 'jotai';
+import { plantUmlCodeAtom } from '../atoms';
 import UploadImageSection from "./UploadImageSection";
 import CodeGeneratedSection from "./CodeGeneratedSection";
 import GenerateCode from "./GenerateButton";
@@ -10,29 +12,8 @@ import SelectLanguage from "./SelectLanguage";
 import UMLPopup from "./UmlPreview";
 
 export default function Homepage() {
-  const [plantUMLCode, setPlantUMLCode] = React.useState(""); // Store UML Code
-  const [language, setLanguage] = React.useState("java"); // Default language
-  const [generatedCode, setGeneratedCode] = React.useState(""); // Store generated code
-
-  // Function to send the PlantUML text and selected language to the backend
-  const handleGenerateCode = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/convert", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plantUML: plantUMLCode, language }),
-      });
-
-      const data = await response.json();
-      if (data.code) {
-        setGeneratedCode(`\`\`\`${language}\n${data.code}\n\`\`\``); // Wrap in a code block
-      } else {
-        console.error("Conversion failed:", data.error);
-      }
-    } catch (error) {
-      console.error("Error converting PlantUML to code:", error);
-    }
-  };
+  // We only need plantUMLCode for the visibility of UMLPopup
+  const [plantUMLCode] = useAtom(plantUmlCodeAtom);
 
   return (
     <React.Fragment>
@@ -75,7 +56,7 @@ export default function Homepage() {
             </Typography>
           </Box>
 
-          <UploadImageSection setPlantUMLCode={setPlantUMLCode} />
+          <UploadImageSection />
 
           <Box
             sx={{
@@ -87,9 +68,9 @@ export default function Homepage() {
               width: "100%",
             }}
           >
-            <GenerateCode onClick={handleGenerateCode} />
-            <SelectLanguage language={language} setLanguage={setLanguage} />
-            {plantUMLCode && <UMLPopup plantUMLCode={plantUMLCode} />}
+            <GenerateCode />
+            <SelectLanguage />
+            {plantUMLCode && <UMLPopup />}
           </Box>
         </Box>
 
@@ -118,7 +99,7 @@ export default function Homepage() {
             </Typography>
           </Box>
 
-          <CodeGeneratedSection language={language} generatedCode={generatedCode} />
+          <CodeGeneratedSection />
         </Box>
       </Box>
     </React.Fragment>
