@@ -2,18 +2,32 @@ import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import * as React from "react";
 import { useAtom } from 'jotai';
-import { plantUmlCodeAtom } from '../atoms';
+import { plantUmlCodeAtom, generatedCodeAtom } from '../atoms';
 import UploadImageSection from "./UploadImageSection";
+import UMLPreview from "./UmlPreview";
 import CodeGeneratedSection from "./CodeGeneratedSection";
-import GenerateCode from "./GenerateButton";
 import { Typography } from "@mui/material";
 import MenuAppBar from "./AppBar";
-import SelectLanguage from "./SelectLanguage";
-import UMLPopup from "./UmlPreview";
 
 export default function Homepage() {
-  // We only need plantUMLCode for the visibility of UMLPopup
   const [plantUMLCode] = useAtom(plantUmlCodeAtom);
+  const [generatedCode] = useAtom(generatedCodeAtom);
+  const umlSectionRef = React.useRef(null);
+  const codeSectionRef = React.useRef(null);
+
+  // Scroll to UML Preview when plantUMLCode is available
+  React.useEffect(() => {
+    if (plantUMLCode && umlSectionRef.current) {
+      umlSectionRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [plantUMLCode]);
+
+  // Scroll to CodeGeneratedSection when generatedCode is available
+    React.useEffect(() => {
+    if (generatedCode && codeSectionRef.current) {
+      codeSectionRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [generatedCode]);
 
   return (
     <React.Fragment>
@@ -22,84 +36,92 @@ export default function Homepage() {
       <Box
         sx={{
           display: "flex",
-          flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "flex-start",
+          flexDirection: "column",
           height: "calc(100vh - 64px)",
-          gap: 4,
-          paddingTop: "1%",
-          width: "100vw",
-          overflow: "hidden",
-          backgroundColor: "#121212",
+          overflowY: "auto",
+          scrollSnapType: "y proximity",
+          '&::-webkit-scrollbar': {
+            width: '10px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: '#121212', // Dark background
+          },
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: '#333', // Black scrollbar
+            borderRadius: '5px',
+          }
         }}
       >
-        {/* Left Section: Upload Image + Button */}
+
+        {/* Section 1: Upload Image */}
         <Box
           sx={{
+            height: "calc(100vh - 64px)",
+            scrollSnapAlign: "start",
             display: "flex",
-            flexDirection: "column",
-            width: "50%",
-            gap: 2,
-            height: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#121212",
+            flexShrink: 0,
           }}
         >
-          <Box>
+          <Box sx={{ width: "85%" }}>
             <Typography
               sx={{
                 color: "white",
                 fontFamily: "JetBrains Mono",
                 fontSize: 20,
-                marginLeft: "3%",
+                marginBottom: "1rem",
               }}
             >
               Class Diagram
             </Typography>
-          </Box>
-
-          <UploadImageSection />
-
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              gap: 2,
-              width: "100%",
-            }}
-          >
-            <GenerateCode />
-            <SelectLanguage />
-            {plantUMLCode && <UMLPopup />}
+            <UploadImageSection />
           </Box>
         </Box>
 
-        {/* Right Section: Code Output */}
+        {/* Section 2: UML Preview */}
         <Box
+          ref={umlSectionRef}
           sx={{
+            height: "calc(100vh - 64px)",
+            scrollSnapAlign: "start",
             display: "flex",
-            flexDirection: "column",
-            width: "50%",
-            gap: 2,
-            height: "99%",
-            paddingRight: "1%",
-            paddingBottom: "0.8%",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#121212",
+            flexShrink: 0,
           }}
         >
-          <Box>
+          <UMLPreview />
+        </Box>
+
+        {/* Section 3: Code Generated Section */}
+        <Box
+          ref={codeSectionRef}
+          sx={{
+            height: "calc(100vh - 64px)",
+            scrollSnapAlign: "start",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#121212",
+            flexShrink: 0,
+          }}
+        >
+          <Box sx={{ width: "85%" }}>
             <Typography
               sx={{
                 color: "white",
                 fontFamily: "JetBrains Mono",
                 fontSize: 20,
-                marginLeft: "0.3%",
+                marginBottom: "1rem",
               }}
             >
-              Code Generation
+              Generated Code
             </Typography>
+            <CodeGeneratedSection />
           </Box>
-
-          <CodeGeneratedSection />
         </Box>
       </Box>
     </React.Fragment>

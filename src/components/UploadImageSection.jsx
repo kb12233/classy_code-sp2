@@ -39,7 +39,6 @@ export default function UploadImageSection() {
       const formData = new FormData();
       formData.append("image", file);
       
-      // Include the selected model in the request
       if (selectedModel) {
         formData.append("model", selectedModel);
       }
@@ -52,7 +51,7 @@ export default function UploadImageSection() {
 
         const data = await response.json();
         if (data.plantUML) {
-          setPlantUMLCode(data.plantUML); // Update UML Code atom
+          setPlantUMLCode(data.plantUML);
         } else {
           console.error("Failed to generate PlantUML:", data.error);
           setProcessingError(data.error || "Failed to process image");
@@ -69,8 +68,9 @@ export default function UploadImageSection() {
   const handleZoom = (event) => {
     event.preventDefault();
     setScale((prevScale) => {
-      const newScale = event.deltaY < 0 ? prevScale + 0.1 : prevScale - 0.1;
-      return Math.min(Math.max(newScale, 1), 3); // Limit zoom between 1x and 3x
+      const zoomFactor = event.deltaY < 0 ? 0.1 : -0.1;
+      const newScale = prevScale + zoomFactor;
+      return Math.min(Math.max(newScale, 1), 3); 
     });
   };
 
@@ -80,15 +80,14 @@ export default function UploadImageSection() {
       sx={{
         bgcolor: grayish,
         borderRadius: "1vh",
-        height: "50vh",
-        flex: 1,
-        marginTop: -1,
-        marginLeft: "2%",
+        height: "80vh",
+        width: "100%",
         display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
         position: "relative",
         overflow: "hidden",
         flexDirection: "column",
-        justifyContent: "center",
       }}
     >
       {image ? (
@@ -113,7 +112,8 @@ export default function UploadImageSection() {
               maxHeight: "100%",
               objectFit: "contain",
               transform: `scale(${scale})`,
-              transition: "transform 0.2s ease-in-out",
+              transformOrigin: "center",
+              transition: "transform 0.3s ease-in-out",
             }}
           />
 
