@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import MDEditor, { commands } from "@uiw/react-md-editor";
 import plantumlEncoder from "plantuml-encoder";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom } from "jotai";
 import { plantUmlCodeAtom } from "../atoms";
 import SelectLanguage from "./SelectLanguage";
 import GenerateCode from "./GenerateButton";
@@ -12,7 +12,7 @@ import Box from '@mui/material/Box';
 const UMLPreviewDisplay = () => {
   const [plantUMLCode, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
   const [umlImage, setUmlImage] = useState("");
-  const [loading, setLoading] = useState(false); // Initialize loading to false
+  const [loading, setLoading] = useState(false); 
   const [isEditing, setIsEditing] = useState(false);
   const grayish = "#303134";
   const greencolor = "#B6D9D7";
@@ -34,7 +34,7 @@ const UMLPreviewDisplay = () => {
   const generatePlantUML = (umlText) => {
     if (!umlText) {
       setUmlImage("");
-      setLoading(false); // Ensure loading is false if input is empty
+      setLoading(false); 
       return;
     }
     setLoading(true);
@@ -45,7 +45,7 @@ const UMLPreviewDisplay = () => {
       console.error("Error generating PlantUML diagram", error);
       setUmlImage("");
     } finally {
-      setTimeout(() => setLoading(false), 5000);
+      setTimeout(() => setLoading(false), 2000);
     }
   };
 
@@ -54,7 +54,7 @@ const UMLPreviewDisplay = () => {
       generatePlantUML(plantUMLCode);
     } else {
       setUmlImage("");
-      setLoading(false); // Ensure loading is false if plantUMLCode is null
+      setLoading(false); 
     }
   }, [plantUMLCode]);
 

@@ -1,12 +1,14 @@
+//UploadImageSection
 import { useState } from "react";
-import { useAtom } from "jotai";
-import { 
-  plantUmlCodeAtom, 
-  selectedModelAtom, 
+import { useAtom } from "jotai"; // Import useSetAtom
+import {
+  plantUmlCodeAtom,
+  selectedModelAtom,
   uploadedImageAtom,
   processingErrorAtom,
   loadingOperationAtom,
-  readableModelNameAtom
+  readableModelNameAtom,
+  generatedCodeAtom 
 } from "../atoms";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
@@ -23,10 +25,19 @@ export default function UploadImageSection() {
   const [selectedModel] = useAtom(selectedModelAtom);
   const [readableModelName] = useAtom(readableModelNameAtom);
   const [, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
+  const [, setGeneratedCode] = useAtom(generatedCodeAtom); 
 
   const grayish = "#303134";
   const greencolor = "#B6D9D7";
   const errorColor = "#ff6b6b";
+
+  const resetSections = () => {
+    setPlantUMLCode(""); 
+    setGeneratedCode(""); 
+    setProcessingError(""); 
+    setIsProcessing(false); 
+    setScale(1); 
+  };
 
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
@@ -38,7 +49,7 @@ export default function UploadImageSection() {
 
       const formData = new FormData();
       formData.append("image", file);
-      
+
       if (selectedModel) {
         formData.append("model", selectedModel);
       }
@@ -70,7 +81,7 @@ export default function UploadImageSection() {
     setScale((prevScale) => {
       const zoomFactor = event.deltaY < 0 ? 0.1 : -0.1;
       const newScale = prevScale + zoomFactor;
-      return Math.min(Math.max(newScale, 1), 3); 
+      return Math.min(Math.max(newScale, 1), 3);
     });
   };
 
@@ -117,9 +128,11 @@ export default function UploadImageSection() {
             }}
           />
 
+          {/* side button */}
           <Button
             component="label"
             variant="contained"
+            onClick={resetSections} 
             sx={{
               position: "absolute",
               bottom: 16,
@@ -137,7 +150,8 @@ export default function UploadImageSection() {
             }}
           >
             <AddIcon sx={{ fontSize: 28, color: greencolor }} />
-            <input type="file" accept="image/*" hidden onChange={handleImageUpload} />
+            {/* reset */}
+             <input type="file" accept="image/*" hidden onChange={handleImageUpload} /> 
           </Button>
 
           {isProcessing && (
@@ -172,6 +186,7 @@ export default function UploadImageSection() {
         </Box>
       ) : (
         <Box display="flex" flexDirection="column" alignItems="center">
+          {/* center button */}
           <Button
             component="label"
             variant="contained"
@@ -204,7 +219,7 @@ export default function UploadImageSection() {
           >
             Upload a Class Diagram
           </Typography>
-          
+
           {selectedModel && (
             <Typography
               sx={{
