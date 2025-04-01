@@ -1,21 +1,17 @@
-//UploadImageSection
 import { useState } from "react";
 import { useAtom } from "jotai"; 
 import {
-  plantUmlCodeAtom,
-  selectedModelAtom,
-  uploadedImageAtom,
-  processingErrorAtom,
-  loadingOperationAtom,
-  readableModelNameAtom,
-  generatedCodeAtom,
+  plantUmlCodeAtom, selectedModelAtom,
+  uploadedImageAtom, processingErrorAtom,
+  loadingOperationAtom, readableModelNameAtom,
+  generatedCodeAtom, uploadedFileNameAtom,
 } from "../atoms";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
-import { CircularProgress } from "@mui/material";
+import LoadingOverlay from '../components/LoadingOverlay';
 import "@fontsource/jetbrains-mono";
 
 export default function UploadImageSection() {
@@ -27,6 +23,7 @@ export default function UploadImageSection() {
   const [readableModelName] = useAtom(readableModelNameAtom);
   const [, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
   const [, setGeneratedCode] = useAtom(generatedCodeAtom); 
+  const [, setFileName] = useAtom(uploadedFileNameAtom);
 
   const grayish = "#303134";
   const greencolor = "#B6D9D7";
@@ -44,6 +41,7 @@ export default function UploadImageSection() {
     const file = event.target.files[0];
     if (file) {
       setImage(URL.createObjectURL(file));
+      setFileName(file.name);
       setScale(1);
       setIsProcessing(true);
       setProcessingError("");
@@ -155,64 +153,7 @@ export default function UploadImageSection() {
              <input type="file" accept="image/*" hidden onChange={handleImageUpload} /> 
           </Button>
 
-          {/* {isProcessing && (
-            <Typography
-              sx={{
-                position: "absolute",
-                bottom: 90,
-                right: 16,
-                color: greencolor,
-                fontSize: "14px",
-                fontFamily: "JetBrains Mono",
-              }}
-            >
-              Processing with {readableModelName}...
-            </Typography>
-          )}
-
-          {processingError && (
-            <Typography
-              sx={{
-                position: "absolute",
-                bottom: 90,
-                right: 16,
-                color: errorColor,
-                fontSize: "14px",
-                fontFamily: "JetBrains Mono",
-              }}
-            >
-              Error: {processingError}
-            </Typography>
-          )} */}
-        {isProcessing && (
-            <Box
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 1, // Space between spinner and text
-                color: greencolor,
-              }}
-            >
-              <CircularProgress
-                sx={{ color: "black" }} // Use the custom greencolor
-                size={30}
-              />
-              <Typography
-                sx={{
-                  fontSize: "20px",
-                  fontFamily: "JetBrains Mono",
-                  color: "black",
-                }}
-              >
-                Processing...
-              </Typography>
-            </Box>
-          )}
+        {isProcessing && <LoadingOverlay message={`Processing with ${readableModelName}`} />}
         </Box>
       ) : (
         <Box display="flex" flexDirection="column" alignItems="center">

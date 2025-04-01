@@ -8,18 +8,19 @@ import UMLPreview from "./UmlPreview";
 import CodeGeneratedSection from "./CodeGeneratedSection";
 import { Typography } from "@mui/material";
 import MenuAppBar from "./AppBar";
+import { useState, useEffect, useRef, Fragment } from "react";
 
 export default function Homepage() {
     const [plantUMLCode] = useAtom(plantUmlCodeAtom);
     const [generatedCode] = useAtom(generatedCodeAtom);
-    const umlSectionRef = React.useRef(null);
-    const codeSectionRef = React.useRef(null);
-    const [isUmlPreviewRendered, setIsUmlPreviewRendered] = React.useState(false);
-    const [isCodeGeneratedRendered, setIsCodeGeneratedRendered] = React.useState(false);
-    const [isScrollable, setIsScrollable] = React.useState(false);
-    const appBarRef = React.useRef(null);
+    const umlSectionRef = useRef(null);
+    const codeSectionRef = useRef(null);
+    const [isUmlPreviewRendered, setIsUmlPreviewRendered] = useState(false);
+    const [isCodeGeneratedRendered, setIsCodeGeneratedRendered] = useState(false);
+    const [isScrollable, setIsScrollable] = useState(false);
+    const appBarRef = useRef(null);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (plantUMLCode) {
             setIsUmlPreviewRendered(true);
             setTimeout(() => {
@@ -39,7 +40,7 @@ export default function Homepage() {
         }
     }, [plantUMLCode, generatedCode]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (generatedCode) {
             setIsCodeGeneratedRendered(true);
             setIsScrollable(true);
@@ -67,7 +68,7 @@ export default function Homepage() {
     };
 
     return (
-        <React.Fragment>
+        <Fragment>
             <CssBaseline />
             <MenuAppBar ref={appBarRef} />
             <Box
@@ -90,12 +91,12 @@ export default function Homepage() {
                 }}
                 onScroll={(e) => {
                     const scrollTop = e.currentTarget.scrollTop;
-                    const buffer = 50; 
-                
+                    const buffer = 50;
+
                     const uploadSection = document.getElementById('upload-image-section');
                     const umlSection = document.getElementById('uml-preview-section');
                     const codeSection = document.getElementById('code-generated-section');
-                
+
                     if (uploadSection && scrollTop < uploadSection.offsetTop + buffer) {
                         handleSectionVisible('upload-image-section');
                     } else if (umlSection && isUmlPreviewRendered && scrollTop < umlSection.offsetTop + buffer) {
@@ -103,7 +104,7 @@ export default function Homepage() {
                     } else if (codeSection && isCodeGeneratedRendered && scrollTop < codeSection.offsetTop + buffer) {
                         handleSectionVisible('code-generated-section');
                     } else if (scrollTop < buffer && appBarRef.current) {
-                        appBarRef.current.setActiveIcon('upload'); 
+                        appBarRef.current.setActiveIcon('upload');
                     }
                 }}
             >
@@ -177,6 +178,6 @@ export default function Homepage() {
                     </Box>
                 )}
             </Box>
-        </React.Fragment>
+        </Fragment>
     );
 }
