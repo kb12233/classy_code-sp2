@@ -25,6 +25,9 @@ import logoDark from '../assets/images/logo_dark.png';
 import AddPhotoAlternate from '@mui/icons-material/AddPhotoAlternate';
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import CodeOutlined from '@mui/icons-material/CodeOutlined';
+import { useAuth } from '../utils/AuthContext';
+import LoadingOverlay from './LoadingOverlay';
+import Sidebar from './sidebar';
 
 const MenuAppBar = forwardRef((props, ref) => {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -35,7 +38,9 @@ const MenuAppBar = forwardRef((props, ref) => {
     const [groupedModels] = useAtom(groupedModelsAtom);
     const [plantUMLCode] = useAtom(plantUmlCodeAtom);
     const [generatedCode] = useAtom(generatedCodeAtom);
+    const [signOutLoading, setSignOutLoading] = useState(false);
     const navigate = useNavigate();
+    const { user, logoutUser } = useAuth();
 
     const greencolor = '#B6D9D7';
     const greencolorLight = '#00ffe4'; //changing color of icons
@@ -46,10 +51,16 @@ const MenuAppBar = forwardRef((props, ref) => {
     const handleMenu = (event) => setAnchorEl(event.currentTarget);
     const handleClose = () => setAnchorEl(null);
 
-    const handleSignOut = () => {
-        setAnchorEl(null);
-        navigate('/login');
-    };
+    const handleSignOut = async () => {
+        setSignOutLoading(true);
+        try {
+          await logoutUser();
+          navigate('/login');
+        } catch(error) {
+          console.error("Logout failed:", error.message);
+        }
+        setSignOutLoading(false);
+      };    
 
     const handleModelChange = (event) => {
         setSelectedModel(event.target.value);
@@ -95,6 +106,7 @@ const MenuAppBar = forwardRef((props, ref) => {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
+            {signOutLoading && <LoadingOverlay message="Signing out..." />}
             <AppBar position="static" sx={{ backgroundColor: '#121212', maxHeight: '10vh', width: '100vw' }}>
                 <Toolbar sx={{ justifyContent: 'space-between', px: isMobile ? 1 : 3 }}>
                     {/* Left Side: Menu Icon + Model Select */}
@@ -229,6 +241,8 @@ const MenuAppBar = forwardRef((props, ref) => {
                     </Box>
                 </Toolbar>
             </AppBar>
+            {/* Sidebar Component */}
+            <Sidebar isDrawerOpen={isDrawerOpen} toggleDrawer={toggleDrawer} />
         </Box>
     );
 });
