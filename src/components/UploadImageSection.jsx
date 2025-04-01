@@ -1,6 +1,6 @@
 //UploadImageSection
 import { useState } from "react";
-import { useAtom } from "jotai"; // Import useSetAtom
+import { useAtom } from "jotai"; 
 import {
   plantUmlCodeAtom,
   selectedModelAtom,
@@ -8,7 +8,7 @@ import {
   processingErrorAtom,
   loadingOperationAtom,
   readableModelNameAtom,
-  generatedCodeAtom 
+  generatedCodeAtom,
 } from "../atoms";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";

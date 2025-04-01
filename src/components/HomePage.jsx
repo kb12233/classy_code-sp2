@@ -1,4 +1,3 @@
-//HomePage.jsx
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import * as React from "react";
@@ -11,145 +10,173 @@ import { Typography } from "@mui/material";
 import MenuAppBar from "./AppBar";
 
 export default function Homepage() {
-  const [plantUMLCode] = useAtom(plantUmlCodeAtom);
-  const [generatedCode] = useAtom(generatedCodeAtom);
-  const umlSectionRef = React.useRef(null);
-  const codeSectionRef = React.useRef(null);
-  const [isUmlPreviewRendered, setIsUmlPreviewRendered] = React.useState(false);
-  const [isCodeGeneratedRendered, setIsCodeGeneratedRendered] = React.useState(false);
-  const [isScrollable, setIsScrollable] = React.useState(false);
+    const [plantUMLCode] = useAtom(plantUmlCodeAtom);
+    const [generatedCode] = useAtom(generatedCodeAtom);
+    const umlSectionRef = React.useRef(null);
+    const codeSectionRef = React.useRef(null);
+    const [isUmlPreviewRendered, setIsUmlPreviewRendered] = React.useState(false);
+    const [isCodeGeneratedRendered, setIsCodeGeneratedRendered] = React.useState(false);
+    const [isScrollable, setIsScrollable] = React.useState(false);
+    const appBarRef = React.useRef(null);
 
-  // Render UML Preview section when plantUMLCode is available
-  React.useEffect(() => {
-    if (plantUMLCode) {
-      setIsUmlPreviewRendered(true);
-      // Scroll to UML Preview after it's rendered
-      setTimeout(() => {
-        if (umlSectionRef.current) {
-          umlSectionRef.current.scrollIntoView({ behavior: 'smooth' });
-          setIsScrollable(true); // Enable scrolling after reaching the second section
+    React.useEffect(() => {
+        if (plantUMLCode) {
+            setIsUmlPreviewRendered(true);
+            setTimeout(() => {
+                if (umlSectionRef.current) {
+                    umlSectionRef.current.scrollIntoView({ behavior: 'smooth' });
+                    setIsScrollable(true);
+                    if (appBarRef.current) {
+                        appBarRef.current.setActiveIcon('uml');
+                    }
+                }
+            }, 10);
+        } else {
+            setIsUmlPreviewRendered(false);
+            if (!generatedCode) {
+                setIsScrollable(false);
+            }
         }
-      }, 50); 
-    } else {
-      setIsUmlPreviewRendered(false);
-      setIsScrollable(false); 
-    }
-  }, [plantUMLCode]);
+    }, [plantUMLCode, generatedCode]);
 
-  // Render Code Generated section when generatedCode is available
-  React.useEffect(() => {
-    if (generatedCode) {
-      setIsCodeGeneratedRendered(true);
-      // Scroll to Code Generated section after it's rendered
-      setTimeout(() => {
-        if (codeSectionRef.current) {
-          codeSectionRef.current.scrollIntoView({ behavior: 'smooth' });
+    React.useEffect(() => {
+        if (generatedCode) {
+            setIsCodeGeneratedRendered(true);
+            setIsScrollable(true);
+            setTimeout(() => {
+                if (codeSectionRef.current) {
+                    codeSectionRef.current.scrollIntoView({ behavior: 'smooth' });
+                    if (appBarRef.current) {
+                        appBarRef.current.setActiveIcon('code');
+                    }
+                }
+            }, 10);
+        } else {
+            setIsCodeGeneratedRendered(false);
+            if (!plantUMLCode) {
+                setIsScrollable(false);
+            }
         }
-      }, 50); // Small delay to ensure rendering
-    } else {
-      setIsCodeGeneratedRendered(false);
-    }
-  }, [generatedCode]);
+    }, [generatedCode, plantUMLCode]);
 
-  return (
-    <React.Fragment>
-      <CssBaseline />
-      <MenuAppBar />
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          height: "calc(100vh - 64px)",
-          overflowY: isScrollable ? "auto" : "hidden", 
-          scrollSnapType: "y proximity",
-          '&::-webkit-scrollbar': {
-            width: '10px',
-          },
-          '&::-webkit-scrollbar-track': {
-            background: '#121212', // Dark background
-          },
-          '&::-webkit-scrollbar-thumb': {
-            backgroundColor: '#333', // Black scrollbar
-            borderRadius: '5px',
-          }
-        }}
-      >
+    const handleSectionVisible = (sectionId) => {
+        if (appBarRef.current) {
+            const iconId = appBarRef.current.getIconIdFromSectionId(sectionId);
+            appBarRef.current.setActiveIcon(iconId);
+        }
+    };
 
-        {/* Section 1: Upload Image */}
-        <Box
-          sx={{
-            height: "calc(100vh - 64px)",
-            scrollSnapAlign: "start",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "#121212",
-            flexShrink: 0,
-          }}
-        >
-          <Box sx={{ width: "85%" }}>
-            <Typography
-              sx={{
-                color: "white",
-                fontFamily: "JetBrains Mono",
-                fontSize: 20,
-                marginBottom: "1rem",
-              }}
-            >
-              Class Diagram
-            </Typography>
-            <UploadImageSection />
-          </Box>
-        </Box>
-
-        {/* Section 2: UML Preview */}
-        {isUmlPreviewRendered && (
-          <Box
-            ref={umlSectionRef}
-            sx={{
-              height: "calc(100vh - 64px)",
-              scrollSnapAlign: "start",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: "#121212",
-              flexShrink: 0,
-            }}
-          >
-            <UMLPreview />
-          </Box>
-        )}
-
-        {/* Section 3: Code Generated Section */}
-        {isCodeGeneratedRendered && (
-          <Box
-            ref={codeSectionRef}
-            sx={{
-              height: "calc(100vh - 64px)",
-              scrollSnapAlign: "start",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: "#121212",
-              flexShrink: 0,
-            }}
-          >
-            <Box sx={{ width: "85%" }}>
-              <Typography
+    return (
+        <React.Fragment>
+            <CssBaseline />
+            <MenuAppBar ref={appBarRef} />
+            <Box
                 sx={{
-                  color: "white",
-                  fontFamily: "JetBrains Mono",
-                  fontSize: 20,
-                  marginBottom: "1rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "calc(100vh - 64px)",
+                    overflowY: isScrollable ? "auto" : "hidden",
+                    scrollSnapType: "y proximity",
+                    '&::-webkit-scrollbar': {
+                        width: '10px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                        background: '#121212',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                        backgroundColor: '#333',
+                        borderRadius: '5px',
+                    }
                 }}
-              >
-                Generated Code
-              </Typography>
-              <CodeGeneratedSection />
+                onScroll={(e) => {
+                    const scrollTop = e.currentTarget.scrollTop;
+                    const buffer = 50; 
+                
+                    const uploadSection = document.getElementById('upload-image-section');
+                    const umlSection = document.getElementById('uml-preview-section');
+                    const codeSection = document.getElementById('code-generated-section');
+                
+                    if (uploadSection && scrollTop < uploadSection.offsetTop + buffer) {
+                        handleSectionVisible('upload-image-section');
+                    } else if (umlSection && isUmlPreviewRendered && scrollTop < umlSection.offsetTop + buffer) {
+                        handleSectionVisible('uml-preview-section');
+                    } else if (codeSection && isCodeGeneratedRendered && scrollTop < codeSection.offsetTop + buffer) {
+                        handleSectionVisible('code-generated-section');
+                    } else if (scrollTop < buffer && appBarRef.current) {
+                        appBarRef.current.setActiveIcon('upload'); 
+                    }
+                }}
+            >
+                <Box
+                    id="upload-image-section"
+                    sx={{
+                        height: "calc(100vh - 64px)",
+                        scrollSnapAlign: "start",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundColor: "#121212",
+                        flexShrink: 0,
+                    }}
+                >
+                    <Box sx={{ width: "85%" }}>
+                        <Typography
+                            sx={{ color: "white", fontFamily: "JetBrains Mono", fontSize: 20, marginBottom: "1rem" }}
+                        >
+                            Class Diagram
+                        </Typography>
+                        <UploadImageSection />
+                    </Box>
+                </Box>
+
+                {isUmlPreviewRendered && (
+                    <Box
+                        id="uml-preview-section"
+                        ref={umlSectionRef}
+                        sx={{
+                            height: "calc(100vh - 64px)",
+                            scrollSnapAlign: "start",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            backgroundColor: "#121212",
+                            flexShrink: 0,
+                        }}
+                    >
+                        <UMLPreview />
+                    </Box>
+                )}
+
+                {isCodeGeneratedRendered && (
+                    <Box
+                        id="code-generated-section"
+                        ref={codeSectionRef}
+                        sx={{
+                            height: "calc(100vh - 64px)",
+                            scrollSnapAlign: "start",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            backgroundColor: "#121212",
+                            flexShrink: 0,
+                        }}
+                    >
+                        <Box sx={{ width: "85%" }}>
+                            <Typography
+                                sx={{
+                                    color: "white",
+                                    fontFamily: "JetBrains Mono",
+                                    fontSize: 20,
+                                    marginBottom: "1rem",
+                                }}
+                            >
+                                Generated Code
+                            </Typography>
+                            <CodeGeneratedSection />
+                        </Box>
+                    </Box>
+                )}
             </Box>
-          </Box>
-        )}
-      </Box>
-    </React.Fragment>
-  );
+        </React.Fragment>
+    );
 }
