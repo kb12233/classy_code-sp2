@@ -7,6 +7,7 @@ import {
   generatedCodeAtom,
   loadingOperationAtom 
 } from '../atoms';
+import PlantUMLTranspiler from 'plantuml-transpiler';
 
 export default function GenerateCode() {
   const [plantUMLCode] = useAtom(plantUmlCodeAtom);
@@ -22,18 +23,10 @@ export default function GenerateCode() {
     
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/convert", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plantUML: plantUMLCode, language }),
-      });
-
-      const data = await response.json();
-      if (data.code) {
-        setGeneratedCode(`\`\`\`${language}\n${data.code}\n\`\`\``); // Wrap in a code block
-      } else {
-        console.error("Conversion failed:", data.error);
-      }
+      const transpiler = new PlantUMLTranspiler();
+      const code = transpiler.transpile(plantUMLCode, language);
+      console.log("Generated code:", code);
+      setGeneratedCode(`\`\`\`${language}\n${code}\n\`\`\``); // Wrap in a code block
     } catch (error) {
       console.error("Error converting PlantUML to code:", error);
     } finally {
