@@ -25,6 +25,7 @@ import logoDark from '../assets/images/logo_dark.png';
 import AddPhotoAlternate from '@mui/icons-material/AddPhotoAlternate';
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import CodeOutlined from '@mui/icons-material/CodeOutlined';
+import Sidebar from './Sidebar'; // Assuming Sidebar is a separate component
 
 const MenuAppBar = forwardRef((props, ref) => {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -229,6 +230,7 @@ const MenuAppBar = forwardRef((props, ref) => {
                     </Box>
                 </Toolbar>
             </AppBar>
+            <Sidebar isDrawerOpen={isDrawerOpen} toggleDrawer={toggleDrawer} />
         </Box>
     );
 });
