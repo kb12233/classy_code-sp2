@@ -27,6 +27,7 @@
     "jotai": "^2.12.1",
     "plantcode": "^0.2.2",
     "plantuml-encoder": "^1.4.0",
+    "plantuml-transpiler": "^1.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.4.0",

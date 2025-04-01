@@ -116,39 +116,38 @@ app.post('/upload', upload.single('image'), async (req, res) => {
     
     // The prompt for the model
     const prompt = 
-    `Given the image of a UML class diagram provided, can you faithfully translate it into PlantUML notation, 
-    preserving all class relationships, including associations, aggregations, and generalizations? 
-    Ensure that attributes, methods, and their respective access modifiers are accurately represented. 
-    Don't assign values to attributes or methods. Also, don't surround class names in quotes.
-    If class names are compound words, use camelCase.
-    Additionally, please accurately replicate the existing cardinalities and multiplicities without altering them. 
-    Please provide a clear and coherent conversion, maintaining the integrity of the original diagram. 
-    Only provide the PlantUML notation (it should not be surrounded in a markdown code block). 
-    Also, for declaring attributes and methods, please use the following format:
+    `
+    Given the image of a UML class diagram provided, faithfully translate it into PlantUML notation that is fully compatible with a standard PlantUML transpiler. Your translation should:
 
-    class Car {
-      + String modelName
-      + String modelYear
-      + int modelPrice
-      + void setModel(String model)
-      + void setMake(String make)
-      + void setYear(Number)
-      + String getModel()
-      + String getMake()
-      + Number getYear()
-    }
+    1. Begin with @startuml and end with @enduml
+    2. Preserve all class relationships, including:
+      - Inheritance: Child --|> Parent
+      - Implementation: Class ..|> Interface
+      - Association: ClassA --> ClassB
+      - Aggregation: Container o--> Element
+      - Composition: Container *--> Element
+      - Dependency: Client ..> Service
+    3. Accurately represent attributes and methods with their access modifiers:
+      - +publicAttr: Type
+      - -privateAttr: Type
+      - #protectedAttr: Type
+      - ~packageAttr: Type
+    4. Define methods with parameters and return types:
+      - +publicMethod(param: Type): ReturnType
+    5. Use these modifiers in curly braces where needed:
+      - {abstract}, {static}, {final}
+    6. For constructors: +ClassName(param: Type)
+    7. Define packages where appropriate: package packageName { ... }
+    8. For generics use angle brackets: class List<T> { }
 
+    Important style guidelines:
+    - Do not surround class names in quotes
+    - Use camelCase for compound class names
+    - Maintain the integrity and structure of the original diagram
+    - Provide only the raw PlantUML notation (no markdown code blocks)
 
-    And not something like the following:
-
-    class Student {
-      - FacultyNumber : String
-      - Grades : Integer[]
-      - / AvarageGrade : Double
-      - hasFine : Bool
-      - lastLog : DateTime
-      - books : Book[]
-    }`;
+    Your response should be a clear, coherent, and accurate representation of the diagram that can be directly used with a PlantUML transpiler.
+    `;
 
     let plantUML;
 
