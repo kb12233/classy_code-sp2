@@ -1,12 +1,14 @@
+//UploadImageSection
 import { useState } from "react";
-import { useAtom } from "jotai";
-import { 
-  plantUmlCodeAtom, 
-  selectedModelAtom, 
+import { useAtom } from "jotai"; 
+import {
+  plantUmlCodeAtom,
+  selectedModelAtom,
   uploadedImageAtom,
   processingErrorAtom,
   loadingOperationAtom,
-  readableModelNameAtom
+  readableModelNameAtom,
+  generatedCodeAtom,
 } from "../atoms";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
@@ -24,10 +26,19 @@ export default function UploadImageSection() {
   const [selectedModel] = useAtom(selectedModelAtom);
   const [readableModelName] = useAtom(readableModelNameAtom);
   const [, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
+  const [, setGeneratedCode] = useAtom(generatedCodeAtom); 
 
   const grayish = "#303134";
   const greencolor = "#B6D9D7";
   const errorColor = "#ff6b6b";
+
+  const resetSections = () => {
+    setPlantUMLCode(""); 
+    setGeneratedCode(""); 
+    setProcessingError(""); 
+    setIsProcessing(false); 
+    setScale(1); 
+  };
 
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
@@ -39,8 +50,7 @@ export default function UploadImageSection() {
 
       const formData = new FormData();
       formData.append("image", file);
-      
-      // Include the selected model in the request
+
       if (selectedModel) {
         formData.append("model", selectedModel);
       }
@@ -53,7 +63,7 @@ export default function UploadImageSection() {
 
         const data = await response.json();
         if (data.plantUML) {
-          setPlantUMLCode(data.plantUML); // Update UML Code atom
+          setPlantUMLCode(data.plantUML);
         } else {
           console.error("Failed to generate PlantUML:", data.error);
           setProcessingError(data.error || "Failed to process image");
@@ -70,8 +80,9 @@ export default function UploadImageSection() {
   const handleZoom = (event) => {
     event.preventDefault();
     setScale((prevScale) => {
-      const newScale = event.deltaY < 0 ? prevScale + 0.1 : prevScale - 0.1;
-      return Math.min(Math.max(newScale, 1), 3); // Limit zoom between 1x and 3x
+      const zoomFactor = event.deltaY < 0 ? 0.1 : -0.1;
+      const newScale = prevScale + zoomFactor;
+      return Math.min(Math.max(newScale, 1), 3);
     });
   };
 
@@ -81,15 +92,14 @@ export default function UploadImageSection() {
       sx={{
         bgcolor: grayish,
         borderRadius: "1vh",
-        height: "50vh",
-        flex: 1,
-        marginTop: -1,
-        marginLeft: "2%",
+        height: "80vh",
+        width: "100%",
         display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
         position: "relative",
         overflow: "hidden",
         flexDirection: "column",
-        justifyContent: "center",
       }}
     >
       {image ? (
@@ -114,13 +124,16 @@ export default function UploadImageSection() {
               maxHeight: "100%",
               objectFit: "contain",
               transform: `scale(${scale})`,
-              transition: "transform 0.2s ease-in-out",
+              transformOrigin: "center",
+              transition: "transform 0.3s ease-in-out",
             }}
           />
 
+          {/* side button */}
           <Button
             component="label"
             variant="contained"
+            onClick={resetSections} 
             sx={{
               position: "absolute",
               bottom: 16,
@@ -138,7 +151,8 @@ export default function UploadImageSection() {
             }}
           >
             <AddIcon sx={{ fontSize: 28, color: greencolor }} />
-            <input type="file" accept="image/*" hidden onChange={handleImageUpload} />
+            {/* reset */}
+             <input type="file" accept="image/*" hidden onChange={handleImageUpload} /> 
           </Button>
 
           {/* {isProcessing && (
@@ -202,6 +216,7 @@ export default function UploadImageSection() {
         </Box>
       ) : (
         <Box display="flex" flexDirection="column" alignItems="center">
+          {/* center button */}
           <Button
             component="label"
             variant="contained"
@@ -234,7 +249,7 @@ export default function UploadImageSection() {
           >
             Upload a Class Diagram
           </Typography>
-          
+
           {selectedModel && (
             <Typography
               sx={{
