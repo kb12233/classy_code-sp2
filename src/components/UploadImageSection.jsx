@@ -6,7 +6,8 @@ import {
   uploadedImageAtom,
   processingErrorAtom,
   loadingOperationAtom,
-  readableModelNameAtom
+  readableModelNameAtom, 
+  uploadedFileNameAtom
 } from "../atoms";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
@@ -23,6 +24,7 @@ export default function UploadImageSection() {
   const [selectedModel] = useAtom(selectedModelAtom);
   const [readableModelName] = useAtom(readableModelNameAtom);
   const [, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
+  const [, setFileName] = useAtom(uploadedFileNameAtom);
 
   const grayish = "#303134";
   const greencolor = "#B6D9D7";
@@ -32,6 +34,7 @@ export default function UploadImageSection() {
     const file = event.target.files[0];
     if (file) {
       setImage(URL.createObjectURL(file));
+      setFileName(file.name);
       setScale(1);
       setIsProcessing(true);
       setProcessingError("");

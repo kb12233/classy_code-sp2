@@ -5,21 +5,43 @@ import {
   plantUmlCodeAtom, 
   selectedLanguageAtom, 
   generatedCodeAtom,
-  loadingOperationAtom 
+  loadingOperationAtom, 
+  historyAtom,
+  uploadedImageAtom,
+  uploadedFileNameAtom,
 } from '../atoms';
+import { account } from '../appwrite/config';
+import { saveHistory } from '../appwrite/HistoryService';
+import { useEffect, useState } from 'react';
 
 export default function GenerateCode() {
   const [plantUMLCode] = useAtom(plantUmlCodeAtom);
   const [language] = useAtom(selectedLanguageAtom);
-  const [, setGeneratedCode] = useAtom(generatedCodeAtom);
+  const [generatedCode, setGeneratedCode] = useAtom(generatedCodeAtom);
   const [isLoading, setIsLoading] = useAtom(loadingOperationAtom);
+  const [history, setHistory] = useAtom(historyAtom);
+  const [image] = useAtom(uploadedImageAtom);
+  const [fileName] = useAtom(uploadedFileNameAtom);
+  const [userID, setUserID] = useState(null);
+
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const user = await account.get();
+        setUserID(user.$id);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    }
+    fetchUser();
+  }, []);
 
   const handleGenerateClick = async () => {
     if (!plantUMLCode) {
       console.warn("No PlantUML code to convert");
       return;
     }
-    
+
     setIsLoading(true);
     try {
       const response = await fetch("http://localhost:5000/convert", {
@@ -30,7 +52,7 @@ export default function GenerateCode() {
 
       const data = await response.json();
       if (data.code) {
-        setGeneratedCode(`\`\`\`${language}\n${data.code}\n\`\`\``); // Wrap in a code block
+        setGeneratedCode(`\`\`\`${language}\n${data.code}\n\`\`\``);
       } else {
         console.error("Conversion failed:", data.error);
       }
@@ -40,6 +62,16 @@ export default function GenerateCode() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (generatedCode && userID && plantUMLCode) {
+        if (typeof fileName !== 'string' || !fileName) {
+            console.error('Filename is invalid', fileName);
+            return;
+        }
+        saveHistory(userID, image, generatedCode, language, plantUMLCode, fileName);
+    }
+  }, [generatedCode, userID, image, fileName, plantUMLCode]);
 
   return (
     <Container
