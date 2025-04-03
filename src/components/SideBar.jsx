@@ -2,7 +2,9 @@ import { useAtom } from 'jotai';
 import { 
   groupedModelsAtom, modelsLoadingAtom, 
   historyDataAtom, historyLoadingAtom,
-  selectedHistoryAtom,
+  selectedHistoryAtom, selectedLanguageAtom,
+  uploadedImageAtom, plantUmlCodeAtom,
+  generatedCodeAtom,
  } from '../atoms';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
@@ -21,6 +23,10 @@ export default function Sidebar({ isDrawerOpen, toggleDrawer }) {
   const [historyData, setHistoryData] = useAtom(historyDataAtom);
   const [historyLoading, setHistoryLoading] = useAtom(historyLoadingAtom);
   const [, setSelectedHistory] = useAtom(selectedHistoryAtom);
+  const [, setUploadedImage] = useAtom(uploadedImageAtom);
+  const [, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
+  const [, setGeneratedCode] = useAtom(generatedCodeAtom);
+  const [, setLanguage] = useAtom(selectedLanguageAtom);
 
   useEffect(() => {
       const loadHistory = async () => {
@@ -41,9 +47,14 @@ export default function Sidebar({ isDrawerOpen, toggleDrawer }) {
   }, []);
 
   const handleHistoryItemClick = (item) => {
-      setSelectedHistoryItem(item);
+      setSelectedHistory(item);
+      setUploadedImage(item.photoUrl);
+      setPlantUMLCode(item.umlCodeURL);
+      setGeneratedCode(item.codeURL);
+      setLanguage(item.language);
       toggleDrawer(false);
   };
+
 
     return (
         <Drawer

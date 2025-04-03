@@ -3,7 +3,7 @@ import MDEditor, { commands } from "@uiw/react-md-editor";
 import plantumlEncoder from "plantuml-encoder";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { useAtom } from "jotai";
-import { plantUmlCodeAtom } from "../atoms";
+import { plantUmlCodeAtom, selectedHistoryAtom } from "../atoms";
 import SelectLanguage from "./SelectLanguage";
 import GenerateCode from "./GenerateButton";
 import Skeleton from '@mui/material/Skeleton';
@@ -14,6 +14,7 @@ const UMLPreviewDisplay = () => {
   const [umlImage, setUmlImage] = useState("");
   const [loading, setLoading] = useState(false); 
   const [isEditing, setIsEditing] = useState(false);
+  const [selectedHistory] = useAtom(selectedHistoryAtom);
   const grayish = "#303134";
   const greencolor = "#B6D9D7";
   const markdownSkeletonArray = [
@@ -127,9 +128,17 @@ const UMLPreviewDisplay = () => {
         </div>
       )}
     </div>
-
-      <GenerateCode />
-      <SelectLanguage />
+    {selectedHistory ? (
+      <></>
+    ) : (
+      <div>
+        <GenerateCode />
+        <SelectLanguage />
+      </div>
+      
+    )}
+      {/* <GenerateCode />
+      <SelectLanguage /> */}
     </div>
   );
 };

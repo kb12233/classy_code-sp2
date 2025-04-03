@@ -2,13 +2,14 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import MDEditor, { commands } from "@uiw/react-md-editor";
 import { useAtom } from 'jotai';
-import { generatedCodeAtom } from '../atoms';
+import { codeGenerationLoadingAtom, generatedCodeAtom, } from '../atoms';
 import Skeleton from '@mui/material/Skeleton';
+import LoadingOverlay from './LoadingOverlay';
 import * as React from 'react';
 
 export default function CodeGeneratedSection() {
   const [generatedCode] = useAtom(generatedCodeAtom);
-  const [loading, setLoading] = React.useState(true);
+  const [isProcessing, setIsProcessing] = useAtom(codeGenerationLoadingAtom);
   const skeletonArray = [
     { height: 35, width: 800 },
     { height: 35, width: 700 },
@@ -25,8 +26,8 @@ export default function CodeGeneratedSection() {
   ];
 
   const simulateLoading = () => {
-    setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 2000);
+    setIsProcessing(true);
+    const timer = setTimeout(() => setIsProcessing(false), 2000);
     return () => clearTimeout(timer);
   };
 
@@ -34,7 +35,7 @@ export default function CodeGeneratedSection() {
     if (generatedCode) {
       simulateLoading();
     } else {
-      setLoading(false);
+      setIsProcessing(false);
     }
   }, [generatedCode]);
 
@@ -53,7 +54,7 @@ export default function CodeGeneratedSection() {
         padding: '1%',
       }}
     >
-      {loading ? (
+      {isProcessing && <LoadingOverlay message="Generating Code..." /> ? (
         <Box className="flex flex-col space-y-3" sx={{ width: '100%', marginTop: '3%', marginLeft: '3%' }}>
           <Box className="space-y-5">
           {skeletonArray.map((skeleton, index) => (

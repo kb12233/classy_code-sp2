@@ -64,3 +64,6 @@ export const uploadedFileNameAtom = atom("");
 
 export const historyDataAtom = atom([]);
 export const historyLoadingAtom = atom(false);
+
+export const codeGenerationLoadingAtom = atom(false);
+export const imageUploadLoadingAtom = atom(false);

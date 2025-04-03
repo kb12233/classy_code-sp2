@@ -15,5 +15,6 @@ export const HISTORY_COLLECTION_ID = import.meta.env.VITE_HISTORY_COLLECTION_ID;
 export const CODE_BUCKET_ID = import.meta.env.VITE_CODE_BUCKET_ID;
 export const UMLCODE_BUCKET_ID = import.meta.env.VITE_UMLCODE_BUCKET_ID;
 export const IMAGES_BUCKET_ID = import.meta.env.VITE_IMAGES_BUCKET_ID;
+export const PROJECT_ID = import.meta.env.VITE_PROJECT_ID;
 
 export default client;
