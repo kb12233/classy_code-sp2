@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import * as React from "react";
 import { useAtom } from 'jotai';
-import { plantUmlCodeAtom, generatedCodeAtom, 
+import { plantUmlCodeAtom, generatedCodeAtom,
     selectedHistoryAtom, uploadedImageAtom } from '../atoms';
 import UploadImageSection from "./UploadImageSection";
 import UMLPreview from "./UmlPreview";
@@ -10,7 +10,7 @@ import CodeGeneratedSection from "./CodeGeneratedSection";
 import { Typography } from "@mui/material";
 import MenuAppBar from "./AppBar";
 import { useState, useEffect, useRef, Fragment } from "react";
-import { account, PROJECT_ID } from "../appwrite/config";   
+import { account } from "../appwrite/config";
 
 export default function Homepage() {
     const [plantUMLCode] = useAtom(plantUmlCodeAtom);
@@ -27,134 +27,47 @@ export default function Homepage() {
     const [isScrollable, setIsScrollable] = useState(false);
     const appBarRef = useRef(null);
 
-    const fetchTextContent = async (url) => {
-        try {
-            const response = await fetch(url, {
-                headers: {
-                    "X-Appwrite-Project": PROJECT_ID, 
-                },
-            });
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.text();
-        } catch (error) {
-            console.error("Error fetching text content:", error);
-            return "";
-        }
-    };
-
-    // useEffect(() => {
-    //     const loadHistoryData = async () => {
-    //         if (selectedHistory) {
-    //             try {
-    //                 await account.get();
-    //                 setUploadedImage(selectedHistory.photoURL);
-    //                 const umlContent = await fetchTextContent(selectedHistory.umlCodeURL);
-    //                 const generatedContent = await fetchTextContent(selectedHistory.codeURL);
-    //                 setPlantUMLCode(umlContent);
-    //                 setGeneratedCode(generatedContent);
-    
-    //                 setIsUmlPreviewRendered(true);
-    //                 setIsCodeGeneratedRendered(true);
-    //                 setIsScrollable(true);
-    //             } catch (error) {
-    //                 console.error("Failed to load history data:", error);
-    //             }
-    //         }
-    //     };
-    
-    //     loadHistoryData();
-    // }, [selectedHistory, setUploadedImage, setPlantUMLCode, setGeneratedCode]);
-    
-    // // Separate useEffect for plantUMLCode
-    // useEffect(() => {
-    //     if (plantUMLCode) {
-    //         setIsUmlPreviewRendered(true);
-    //         setTimeout(() => {
-    //             if (umlSectionRef.current) {
-    //                 umlSectionRef.current.scrollIntoView({ behavior: 'smooth' });
-    //                 setIsScrollable(true);
-    //                 if (appBarRef.current) {
-    //                     appBarRef.current.setActiveIcon('uml');
-    //                 }
-    //             }
-    //         }, 10);
-    //     } else {
-    //         setIsUmlPreviewRendered(false);
-    //         if (!generatedCode) {
-    //             setIsScrollable(false);
-    //         }
-    //     }
-    // }, [plantUMLCode, generatedCode]);
-    
-    // // Separate useEffect for generatedCode
-    // useEffect(() => {
-    //     if (generatedCode) {
-    //         setIsCodeGeneratedRendered(true);
-    //         setIsScrollable(true);
-    //         setTimeout(() => {
-    //             if (codeSectionRef.current) {
-    //                 codeSectionRef.current.scrollIntoView({ behavior: 'smooth' });
-    //                 if (appBarRef.current) {
-    //                     appBarRef.current.setActiveIcon('code');
-    //                 }
-    //             }
-    //         }, 10);
-    //     } else {
-    //         setIsCodeGeneratedRendered(false);
-    //         if (!plantUMLCode) {
-    //             setIsScrollable(false);
-    //         }
-    //     }
-    // }, [generatedCode, plantUMLCode]);
-
     useEffect(() => {
         const loadHistoryData = async () => {
             if (selectedHistory) {
-                //setUploadedImage(selectedHistory.photoURL);
                 try {
                     await account.get();
-
                     setUploadedImage(selectedHistory.photoURL);
-                    const umlContent = await fetchTextContent(selectedHistory.umlCodeURL);
-                    const generatedContent = await fetchTextContent(selectedHistory.codeURL);
-                    setPlantUMLCode(umlContent);
-                    setGeneratedCode(generatedContent);
+                    setPlantUMLCode(selectedHistory.umlCode); 
+                    setGeneratedCode(selectedHistory.generatedCode); 
 
-                    setIsUmlPreviewRendered(true);
-                    setIsCodeGeneratedRendered(true);
+                    setIsUmlPreviewRendered(!!selectedHistory.umlCode);
+                    setIsCodeGeneratedRendered(!!selectedHistory.generatedCode);
                     setIsScrollable(true);
 
-                    if (appBarRef.current && plantUMLCode && generatedCode) {
-                        appBarRef.current.setActiveIcon('uml');
-                        appBarRef.current.setActiveIcon('code');
+                    if (appBarRef.current) {
+                        if (selectedHistory.umlCode) {
+                            appBarRef.current.setActiveIcon('uml');
+                        }
+                        if (selectedHistory.generatedCode) {
+                            appBarRef.current.setActiveIcon('code');
+                        }
                     }
                 } catch (error) {
                     console.error("Failed to load history data:", error);
                 }
             } else {
+                setIsUmlPreviewRendered(!!plantUMLCode);
+                setIsCodeGeneratedRendered(!!generatedCode);
+                setIsScrollable(!!plantUMLCode || !!generatedCode);
+
                 if (plantUMLCode) {
-                    setIsUmlPreviewRendered(true);
                     setTimeout(() => {
                         if (umlSectionRef.current) {
                             umlSectionRef.current.scrollIntoView({ behavior: 'smooth' });
-                            setIsScrollable(true);
                             if (appBarRef.current) {
                                 appBarRef.current.setActiveIcon('uml');
                             }
                         }
                     }, 10);
-                } else {
-                    setIsUmlPreviewRendered(false);
-                    if (!generatedCode) {
-                        setIsScrollable(false);
-                    }
                 }
 
                 if (generatedCode) {
-                    setIsCodeGeneratedRendered(true);
-                    setIsScrollable(true);
                     setTimeout(() => {
                         if (codeSectionRef.current) {
                             codeSectionRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -163,11 +76,6 @@ export default function Homepage() {
                             }
                         }
                     }, 10);
-                } else {
-                    setIsCodeGeneratedRendered(false);
-                    if (!plantUMLCode) {
-                        setIsScrollable(false);
-                    }
                 }
             }
         };
@@ -259,7 +167,7 @@ export default function Homepage() {
                             flexShrink: 0,
                         }}
                     >
-                        <UMLPreview />
+                        <UMLPreview umlCode={plantUMLCode} /> {/* Pass plantUMLCode as prop */}
                     </Box>
                 )}
 
@@ -288,7 +196,7 @@ export default function Homepage() {
                             >
                                 Generated Code
                             </Typography>
-                            <CodeGeneratedSection />
+                            <CodeGeneratedSection generatedCode={generatedCode} /> {/* Pass generatedCode as prop */}
                         </Box>
                     </Box>
                 )}

@@ -102,65 +102,6 @@ export default function Sidebar({ isDrawerOpen, toggleDrawer }) {
                     ))}
                 </List>
             )}
-
-            {/* Available Models Section */}
-            <List sx={{ mt: 2 }}>
-                <ListItem>
-                    <ListItemText
-                        primary="Available Models"
-                        sx={{ color: 'white', fontWeight: 'bold' }}
-                    />
-                </ListItem>
-            </List>
-            <Divider sx={{ bgcolor: greencolor }} />
-
-            {loading ? (
-                <Box sx={{ display: 'flex', justifyContent: 'center', padding: 2 }}>
-                    <CircularProgress size={24} sx={{ color: greencolor }} />
-                </Box>
-            ) : (
-                <List>
-                    {Object.entries(groupedModels).map(([provider, providerModels]) => (
-                        <Box key={provider}>
-                            <ListItem>
-                                <Typography
-                                    variant="subtitle2"
-                                    sx={{
-                                        color: 'rgba(255, 255, 255, 0.7)',
-                                        fontSize: '0.9rem',
-                                        fontWeight: 'bold',
-                                    }}
-                                >
-                                    {provider}
-                                </Typography>
-                            </ListItem>
-
-                            {providerModels.map((model) => (
-                                <ListItem
-                                    key={model.id}
-                                    sx={{
-                                        pl: 3,
-                                        transition: 'background-color 0.2s ease-in-out',
-                                        '&:hover': {
-                                            bgcolor: 'rgba(255, 255, 255, 0.1)',
-                                        },
-                                    }}
-                                >
-                                    <ListItemText
-                                        primary={model.name}
-                                        sx={{
-                                            color: greencolor,
-                                            '& .MuiTypography-root': {
-                                                fontSize: '0.9rem',
-                                            },
-                                        }}
-                                    />
-                                </ListItem>
-                            ))}
-                        </Box>
-                    ))}
-                </List>
-            )}
         </Drawer>
     );
 }
