@@ -28,6 +28,8 @@ import CodeOutlined from '@mui/icons-material/CodeOutlined';
 import { useAuth } from '../utils/AuthContext';
 import LoadingOverlay from './LoadingOverlay';
 import Sidebar from './sidebar';
+import RestartAltIcon from '@mui/icons-material/RestartAlt'; // Add this import
+
 
 const MenuAppBar = forwardRef((props, ref) => {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -188,6 +190,18 @@ const MenuAppBar = forwardRef((props, ref) => {
                         )}
                     </Box>
 
+                    {/* Restart Button */}
+                    <IconButton
+                        onClick={props.onRestart}
+                        sx={{
+                            color: '#FFFFFF',
+                            marginLeft: 'auto', // pushes it to the far right
+                        }}
+                        title="Restart"
+                        >
+                        <RestartAltIcon />
+                        </IconButton>
+                        
                     {/* Centered Logo */}
                     {!isMobile && (
                         <Box sx={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>

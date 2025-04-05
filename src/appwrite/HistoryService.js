@@ -19,6 +19,18 @@ const uploadToStorage = async (file, bucketID, userID) => {
     }
 };
 
+const convertBlobToFile = async (blobUrl, filename) => {
+    try {
+        const response = await fetch(blobUrl);
+        const blob = await response.blob();
+        const file = new File([blob], filename, { type: blob.type });
+        return file;
+    } catch (error) {
+        console.error("Error converting blob to file:", error);
+        return null;
+    }
+};
+
 export const saveHistory = async (userID, image, generatedCode, language, umlCode, fileName) => {
     try {
         if(!userID) {

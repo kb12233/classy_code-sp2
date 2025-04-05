@@ -19,6 +19,7 @@ export default function Homepage() {
     const [, setUploadedImage] = useAtom(uploadedImageAtom);
     const [, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
     const [, setGeneratedCode] = useAtom(generatedCodeAtom);
+    const[, setHistory] = useAtom(selectedHistoryAtom);
 
     const umlSectionRef = useRef(null);
     const codeSectionRef = useRef(null);
@@ -90,10 +91,38 @@ export default function Homepage() {
         }
     };
 
+    const handleRestart = () => {
+        if(selectedHistory) {
+            setHistory(null);
+            setUploadedImage(null);
+            setPlantUMLCode('');
+            setGeneratedCode('');
+            setIsUmlPreviewRendered(false);
+            setIsCodeGeneratedRendered(false);
+            setIsScrollable(false);
+        } else {
+            setUploadedImage(null);
+            setPlantUMLCode('');
+            setGeneratedCode('');
+            setIsUmlPreviewRendered(false);
+            setIsCodeGeneratedRendered(false);
+            setIsScrollable(false);
+        }
+
+        const uploadSection = document.getElementById('upload-image-section');
+        if (uploadSection) {
+            uploadSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    
+        if (appBarRef.current) {
+            appBarRef.current.setActiveIcon('upload');
+        }
+    }
+
     return (
         <Fragment>
             <CssBaseline />
-            <MenuAppBar ref={appBarRef} />
+            <MenuAppBar ref={appBarRef} onRestart={handleRestart}/>
             <Box
                 sx={{
                     display: "flex",
