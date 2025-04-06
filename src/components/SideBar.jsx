@@ -1,60 +1,99 @@
 import { useAtom } from 'jotai';
-import { 
-  groupedModelsAtom, modelsLoadingAtom, 
-  historyDataAtom, historyLoadingAtom,
-  selectedHistoryAtom, selectedLanguageAtom,
-  uploadedImageAtom, plantUmlCodeAtom,
-  generatedCodeAtom,
- } from '../atoms';
+import {
+    historyDataAtom, historyLoadingAtom,
+    selectedHistoryAtom, selectedLanguageAtom,
+    uploadedImageAtom, plantUmlCodeAtom,
+    generatedCodeAtom,
+} from '../atoms';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import { Box, Typography, CircularProgress } from '@mui/material';
-import { useEffect } from 'react';
-import { fetchHistory } from '../appwrite/HistoryService';
+import { Box, Typography, CircularProgress, IconButton, Menu, MenuItem } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { fetchHistory, deleteHistoryItem } from '../appwrite/HistoryService';
 import { account } from '../appwrite/config';
+import { SlOptionsVertical } from "react-icons/sl";
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit'; // Import EditIcon if you plan to add update functionality
 
 export default function Sidebar({ isDrawerOpen, toggleDrawer }) {
-  const greencolor = '#B6D9D7';
-  const [groupedModels] = useAtom(groupedModelsAtom);
-  const [loading] = useAtom(modelsLoadingAtom);
-  const [historyData, setHistoryData] = useAtom(historyDataAtom);
-  const [historyLoading, setHistoryLoading] = useAtom(historyLoadingAtom);
-  const [, setSelectedHistory] = useAtom(selectedHistoryAtom);
-  const [, setUploadedImage] = useAtom(uploadedImageAtom);
-  const [, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
-  const [, setGeneratedCode] = useAtom(generatedCodeAtom);
-  const [, setLanguage] = useAtom(selectedLanguageAtom);
+    const greencolor = '#B6D9D7';
+    const [historyData, setHistoryData] = useAtom(historyDataAtom);
+    const [historyLoading, setHistoryLoading] = useAtom(historyLoadingAtom);
+    const [, setSelectedHistory] = useAtom(selectedHistoryAtom);
+    const [, setUploadedImage] = useAtom(uploadedImageAtom);
+    const [, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
+    const [, setGeneratedCode] = useAtom(generatedCodeAtom);
+    const [, setLanguage] = useAtom(selectedLanguageAtom);
+    const [optionsAnchorEl, setOptionsAnchorEl] = useState(null);
+    const [selectedItemId, setSelectedItemId] = useState(null);
 
-  useEffect(() => {
-      const loadHistory = async () => {
-          setHistoryLoading(true);
-          try {
-              const user = await account.get();
-              const fetchedHistory = await fetchHistory(user.$id);
-              setHistoryData(fetchedHistory);
-          } catch (error) {
-              console.error("Error loading history:", error);
-              setHistoryData([]);
-          } finally {
-              setHistoryLoading(false);
-          }
-      };
+    const isOptionsOpen = Boolean(optionsAnchorEl);
 
-      loadHistory();
-  }, []);
+    useEffect(() => {
+        const loadHistory = async () => {
+            setHistoryLoading(true);
+            try {
+                const user = await account.get();
+                const fetchedHistory = await fetchHistory(user.$id);
+                setHistoryData(fetchedHistory);
+            } catch (error) {
+                console.error("Error loading history:", error);
+                setHistoryData([]);
+            } finally {
+                setHistoryLoading(false);
+            }
+        };
 
-  const handleHistoryItemClick = (item) => {
-      setSelectedHistory(item);
-      setUploadedImage(item.photoUrl);
-      setPlantUMLCode(item.umlCodeURL);
-      setGeneratedCode(item.codeURL);
-      setLanguage(item.language);
-      toggleDrawer(false);
-  };
+        loadHistory();
+    }, []);
 
+    const handleHistoryItemClick = (item) => {
+        setSelectedHistory(item);
+        setUploadedImage(item.photoURL);
+        setPlantUMLCode(item.umlCode);
+        setGeneratedCode(item.generatedCode);
+        setLanguage(item.language);
+        toggleDrawer(false)();
+    };
+
+    const handleMoreOptionsClick = (event, itemId) => {
+        event.stopPropagation(); // Prevent the history item click from firing
+        setSelectedItemId(itemId);
+        setOptionsAnchorEl(event.currentTarget);
+    };
+
+    const handleOptionsClose = () => {
+        setOptionsAnchorEl(null);
+        setSelectedItemId(null);
+    };
+
+    const handleDeleteClick = async () => {
+        handleOptionsClose();
+        if (selectedItemId) {
+            setHistoryLoading(true);
+            try {
+                await deleteHistoryItem(selectedItemId);
+                // Refresh history after deletion
+                const user = await account.get();
+                const fetchedHistory = await fetchHistory(user.$id);
+                setHistoryData(fetchedHistory);
+            } catch (error) {
+                console.error("Error deleting history item:", error);
+                // Optionally show an error message to the user
+            } finally {
+                setHistoryLoading(false);
+            }
+        }
+    };
+
+    const handleUpdateClick = () => {
+        handleOptionsClose();
+        // Implement your update logic here, e.g., navigate to an edit page
+        console.log("Update clicked for item:", selectedItemId);
+    };
 
     return (
         <Drawer
@@ -92,16 +131,64 @@ export default function Sidebar({ isDrawerOpen, toggleDrawer }) {
                                 '&:hover': {
                                     bgcolor: 'rgba(255, 255, 255, 0.2)',
                                 },
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
                             }}
                         >
                             <ListItemText
                                 primary={item.fileName}
-                                sx={{ color: greencolor }}
+                                sx={{
+                                    color: greencolor,
+                                    flexGrow: 1 ,
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                }}
                             />
+
+                            <IconButton onClick={(e) => handleMoreOptionsClick(e, item.$id)}>
+                                <SlOptionsVertical color='#B6D9D7' size={15} />
+                            </IconButton>
                         </ListItem>
                     ))}
                 </List>
             )}
+
+            <Menu
+                id="history-options-menu"
+                anchorEl={optionsAnchorEl}
+                open={isOptionsOpen}
+                onClose={handleOptionsClose}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                MenuListProps={{
+                    'aria-labelledby': 'history-options-button',
+                }}
+                sx={{
+                    '& .MuiPaper-root': {
+                        bgcolor: '#303134',
+                        color: greencolor,
+                        fontFamily: 'JetBrains Mono'
+                    },
+                    '& .MuiMenuItem-root': {
+                        fontFamily: 'JetBrains Mono'
+                    }
+                }}
+            >
+                <MenuItem onClick={handleDeleteClick}>
+                    <DeleteIcon sx={{ mr: 1 }} /> Delete
+                </MenuItem>
+                {/* <MenuItem onClick={handleUpdateClick}>
+                    <EditIcon sx={{ mr: 1 }} /> Update
+                </MenuItem> */}
+            </Menu>
         </Drawer>
     );
 }

@@ -27,8 +27,8 @@ import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import CodeOutlined from '@mui/icons-material/CodeOutlined';
 import { useAuth } from '../utils/AuthContext';
 import LoadingOverlay from './LoadingOverlay';
-import Sidebar from './sidebar';
-import RestartAltIcon from '@mui/icons-material/RestartAlt'; // Add this import
+import Sidebar from './SideBar';
+import RestartAltIcon from '@mui/icons-material/RestartAlt'; 
 
 
 const MenuAppBar = forwardRef((props, ref) => {
@@ -104,6 +104,7 @@ const MenuAppBar = forwardRef((props, ref) => {
         setActiveIcon: setActiveIcon,
         getIconIdFromSectionId: getIconIdFromSectionId,
         activeIcon: activeIcon, // Expose activeIcon
+        toggleDrawer: (open) => setDrawerOpen(open),
     }));
 
     return (

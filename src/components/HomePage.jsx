@@ -94,20 +94,13 @@ export default function Homepage() {
     const handleRestart = () => {
         if(selectedHistory) {
             setHistory(null);
-            setUploadedImage(null);
-            setPlantUMLCode('');
-            setGeneratedCode('');
-            setIsUmlPreviewRendered(false);
-            setIsCodeGeneratedRendered(false);
-            setIsScrollable(false);
-        } else {
-            setUploadedImage(null);
-            setPlantUMLCode('');
-            setGeneratedCode('');
-            setIsUmlPreviewRendered(false);
-            setIsCodeGeneratedRendered(false);
-            setIsScrollable(false);
-        }
+        } 
+        setUploadedImage(null);
+        setPlantUMLCode('');
+        setGeneratedCode('');
+        setIsUmlPreviewRendered(false);      
+        setIsCodeGeneratedRendered(false);
+        setIsScrollable(false);
 
         const uploadSection = document.getElementById('upload-image-section');
         if (uploadSection) {

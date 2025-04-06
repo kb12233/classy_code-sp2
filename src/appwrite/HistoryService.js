@@ -90,3 +90,13 @@ export const fetchHistory = async (userID) => {
     }
     
 }
+
+export const deleteHistoryItem = async (documentId) => {
+    try {
+        await database.deleteDocument(DATABASE_ID, HISTORY_COLLECTION_ID, documentId);
+        console.log(`History item with ID ${documentId} deleted successfully.`);
+    } catch (error) {
+        console.error(`Error deleting history item with ID ${documentId}:`, error);
+        throw error; // Re-throw the error for the component to handle
+    }
+};
