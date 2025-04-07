@@ -19,7 +19,7 @@
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
     "@mui/icons-material": "^6.4.3",
-    "@mui/material": "^6.4.3",
+    "@mui/material": "^6.4.10",
     "@mui/styled-engine-sc": "^6.4.3",
     "@tailwindcss/vite": "^4.0.6",
     "@uiw/react-md-editor": "^4.0.5",

@@ -44,7 +44,7 @@ export default function CodeGeneratedSection() {
       maxWidth="sx"
       sx={{
         height: "80vh",
-        bgcolor: '#303134',
+        bgcolor: '#303030',
         borderRadius: '1vh',
         display: 'flex',
         flexDirection: 'column',
@@ -78,7 +78,7 @@ export default function CodeGeneratedSection() {
               minHeight: "100%", 
               height: "100%", 
               width: "100%",
-              backgroundColor: "#303134", 
+              backgroundColor: "#303030", 
           }}  />
         </Box>
       ) : (

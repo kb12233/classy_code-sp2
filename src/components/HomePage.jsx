@@ -26,6 +26,7 @@ export default function Homepage() {
     const [isCodeGeneratedRendered, setIsCodeGeneratedRendered] = useState(false);
     const [isScrollable, setIsScrollable] = useState(false);
     const appBarRef = useRef(null);
+    const darkbgColor = "#1E1E1E";
 
     const fetchTextContent = async (url) => {
         try {
@@ -231,7 +232,7 @@ export default function Homepage() {
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
-                        backgroundColor: "#121212",
+                        backgroundColor: darkbgColor,
                         flexShrink: 0,
                     }}
                 >
@@ -255,7 +256,7 @@ export default function Homepage() {
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
-                            backgroundColor: "#121212",
+                            backgroundColor: darkbgColor,
                             flexShrink: 0,
                         }}
                     >
@@ -273,7 +274,7 @@ export default function Homepage() {
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
-                            backgroundColor: "#121212",
+                            backgroundColor: darkbgColor,
                             flexShrink: 0,
                         }}
                     >

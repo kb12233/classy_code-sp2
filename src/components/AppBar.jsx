@@ -1,5 +1,5 @@
 // AppBar.jsx
-import  { useState, forwardRef, useImperativeHandle } from 'react';
+import  { useState, forwardRef, useImperativeHandle } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAtom } from 'jotai';
 import {
@@ -9,6 +9,7 @@ import {
     groupedModelsAtom,
     plantUmlCodeAtom,
     generatedCodeAtom,
+    uploadedImageAtom, // Import the atom
 } from '../atoms';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -25,6 +26,7 @@ import logoDark from '../assets/images/logo_dark.png';
 import AddPhotoAlternate from '@mui/icons-material/AddPhotoAlternate';
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import CodeOutlined from '@mui/icons-material/CodeOutlined';
+import RestartAltIcon from '@mui/icons-material/RestartAlt'; // Import the RestartAltIcon
 import { useAuth } from '../utils/AuthContext';
 import LoadingOverlay from './LoadingOverlay';
 import Sidebar from './sidebar';
@@ -36,8 +38,9 @@ const MenuAppBar = forwardRef((props, ref) => {
     const [models] = useAtom(modelsAtom);
     const [loading] = useAtom(modelsLoadingAtom);
     const [groupedModels] = useAtom(groupedModelsAtom);
-    const [plantUMLCode] = useAtom(plantUmlCodeAtom);
-    const [generatedCode] = useAtom(generatedCodeAtom);
+    const [plantUMLCode, setPlantUMLCode] = useAtom(plantUmlCodeAtom); // Get the setter
+    const [generatedCode, setGeneratedCode] = useAtom(generatedCodeAtom); // Get the setter
+    const [, setUploadedImage] = useAtom(uploadedImageAtom); // Get the setter
     const [signOutLoading, setSignOutLoading] = useState(false);
     const navigate = useNavigate();
     const { user, logoutUser } = useAuth();
@@ -54,16 +57,24 @@ const MenuAppBar = forwardRef((props, ref) => {
     const handleSignOut = async () => {
         setSignOutLoading(true);
         try {
-          await logoutUser();
-          navigate('/login');
+            await logoutUser();
+            navigate('/login');
         } catch(error) {
-          console.error("Logout failed:", error.message);
+            console.error("Logout failed:", error.message);
         }
         setSignOutLoading(false);
-      };    
+    };
 
     const handleModelChange = (event) => {
         setSelectedModel(event.target.value);
+    };
+
+    const handleRestartModel = () => {
+        setSelectedModel('');
+        setPlantUMLCode(''); 
+        setGeneratedCode(''); 
+        setUploadedImage(null); 
+        console.log('Model selection and related sections reset');
     };
 
     const toggleDrawer = (open) => (event) => {
@@ -107,7 +118,7 @@ const MenuAppBar = forwardRef((props, ref) => {
     return (
         <Box sx={{ flexGrow: 1 }}>
             {signOutLoading && <LoadingOverlay message="Signing out..." />}
-            <AppBar position="static" sx={{ backgroundColor: '#121212', maxHeight: '10vh', width: '100vw' }}>
+            <AppBar position="static" sx={{ backgroundColor: '#1E1E1E', maxHeight: '10vh', width: '100vw' }}>
                 <Toolbar sx={{ justifyContent: 'space-between', px: isMobile ? 1 : 3 }}>
                     {/* Left Side: Menu Icon + Model Select */}
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -116,75 +127,86 @@ const MenuAppBar = forwardRef((props, ref) => {
                         </IconButton>
 
                         {!isMobile && (
-                            <FormControl sx={{ minWidth: 220 }} size="small">
-                                {loading ? (
-                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <CircularProgress size={20} sx={{ color: greencolor, marginRight: 1 }} />
-                                        <Typography sx={{ color: 'white', fontFamily: 'JetBrains Mono' }}>
-                                            Loading models...
-                                        </Typography>
-                                    </Box>
-                                ) : (
-                                    <Select
-                                        value={selectedModel || ''}
-                                        onChange={handleModelChange}
-                                        displayEmpty
-                                        renderValue={(selected) => {
-                                            if (!selected) return "Select Model";
-                                            const model = models.find(m => m.id === selected);
-                                            return model ? model.name : selected;
-                                        }}
-                                        MenuProps={{
-                                            PaperProps: {
-                                                sx: {
-                                                    bgcolor: '#121212',
-                                                    color: greencolor,
-                                                    maxHeight: 300
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <FormControl sx={{ minWidth: 220, marginRight: 1 }} size="small">
+                                    {loading ? (
+                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                            <CircularProgress size={20} sx={{ color: greencolor, marginRight: 1 }} />
+                                            <Typography sx={{ color: 'white', fontFamily: 'JetBrains Mono' }}>
+                                                Loading models...
+                                            </Typography>
+                                        </Box>
+                                    ) : (
+                                        <Select
+                                            value={selectedModel || ''}
+                                            onChange={handleModelChange}
+                                            displayEmpty
+                                            renderValue={(selected) => {
+                                                if (!selected) return "Select Model";
+                                                const model = models.find(m => m.id === selected);
+                                                return model ? model.name : selected;
+                                            }}
+                                            MenuProps={{
+                                                PaperProps: {
+                                                    sx: {
+                                                        bgcolor: '#121212',
+                                                        color: greencolor,
+                                                        maxHeight: 300
+                                                    }
                                                 }
-                                            }
-                                        }}
-                                        sx={{
-                                            '.MuiOutlinedInput-notchedOutline': { borderColor: '#303134' },
-                                            '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: greencolor },
-                                            '.MuiSvgIcon-root': { color: greencolor, fontSize: 20 },
-                                            color: 'white',
-                                            fontFamily: 'JetBrains Mono',
-                                            fontSize: 16,
-                                        }}
-                                    >
-                                        {Object.entries(groupedModels).length > 0 ? (
-                                            Object.entries(groupedModels).map(([provider, providerModels]) => [
-                                                <MenuItem
-                                                    key={provider}
-                                                    disabled
-                                                    sx={{
-                                                        fontFamily: 'JetBrains Mono',
-                                                        opacity: 0.7,
-                                                        fontSize: '0.9rem',
-                                                        pointerEvents: 'none'
-                                                    }}
-                                                >
-                                                    {provider}
-                                                </MenuItem>,
-                                                ...providerModels.map(model => (
+                                            }}
+                                            sx={{
+                                                '.MuiOutlinedInput-notchedOutline': { borderColor: '#303134' },
+                                                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: greencolor },
+                                                '.MuiSvgIcon-root': { color: greencolor, fontSize: 20 },
+                                                color: 'white',
+                                                fontFamily: 'JetBrains Mono',
+                                                fontSize: 16,
+                                            }}
+                                        >
+                                            {Object.entries(groupedModels).length > 0 ? (
+                                                Object.entries(groupedModels).map(([provider, providerModels]) => [
                                                     <MenuItem
-                                                        key={model.id}
-                                                        value={model.id}
+                                                        key={provider}
+                                                        disabled
                                                         sx={{
                                                             fontFamily: 'JetBrains Mono',
-                                                            paddingLeft: 3
+                                                            opacity: 0.7,
+                                                            fontSize: '0.9rem',
+                                                            pointerEvents: 'none'
                                                         }}
                                                     >
-                                                        {model.name}
-                                                    </MenuItem>
-                                                ))
-                                            ]).flat()
-                                        ) : (
-                                            <MenuItem disabled>No models available</MenuItem>
-                                        )}
-                                    </Select>
-                                )}
-                            </FormControl>
+                                                        {provider}
+                                                    </MenuItem>,
+                                                    ...providerModels.map(model => (
+                                                        <MenuItem
+                                                            key={model.id}
+                                                            value={model.id}
+                                                            sx={{
+                                                                fontFamily: 'JetBrains Mono',
+                                                                paddingLeft: 3
+                                                            }}
+                                                        >
+                                                            {model.name}
+                                                        </MenuItem>
+                                                    ))
+                                                ]).flat()
+                                            ) : (
+                                                <MenuItem disabled>No models available</MenuItem>
+                                            )}
+                                        </Select>
+                                    )}
+                                </FormControl>
+                                {/* Restart Icon */}
+                                <IconButton
+                                    color="inherit"
+                                    onClick={handleRestartModel}
+                                    aria-label="reset model selection"
+                                    title="Reset Model Selection"
+                                >
+                                    <RestartAltIcon sx={{ color: greencolor }} />
+                                </IconButton>
+                            </Box>
                         )}
                     </Box>
 
@@ -247,4 +269,5 @@ const MenuAppBar = forwardRef((props, ref) => {
     );
 });
 
+MenuAppBar.displayName = 'MenuAppBar'; // Added the displayName
 export default MenuAppBar;

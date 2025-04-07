@@ -79,7 +79,7 @@ export default function GenerateCode({}) {
       sx={{
         height: '8vh',
         flex: 1,
-        marginLeft: -0.5,
+        marginLeft: -3,
         width: '50vh',
       }}
     >

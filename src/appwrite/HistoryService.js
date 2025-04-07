@@ -49,32 +49,20 @@ export const saveHistory = async (userID, image, generatedCode, language, umlCod
         }
 
         const photoURL = await uploadToStorage(fileToUpload, IMAGES_BUCKET_ID, userID);
-
-        //Uploading of Generated Code
-        const codeBlob = new Blob([generatedCode], { type: 'text/plain' });
-        const codeFile = new File([codeBlob], `${fileName}_code.txt`);
-        const codeURL = await uploadToStorage(codeFile, CODE_BUCKET_ID, userID);
-
-        //Uploading of UML Code
-        const umlBlob = new Blob([umlCode], { type: 'text/plain' });
-        const umlFile = new File([umlBlob], `${fileName}_uml.txt`);
-        const umlURL = await uploadToStorage(umlFile, UMLCODE_BUCKET_ID, userID);
-
-        if(!photoURL || !codeURL || !umlURL) {
-            console.error("Error uploading files");
+        if(!photoURL) {
+            console.error("Error uploading image");
             return;
         }
 
-        //save History
         await database.createDocument(
             DATABASE_ID, HISTORY_COLLECTION_ID, ID.unique(), {
                 userID,
                 dateTime: new Date().toISOString(),
                 fileName,
                 photoURL,
-                codeURL,
+                generatedCode,
                 language,
-                umlCodeURL: umlURL,
+                umlCode,
             }
         );
         console.log("History saved successfully.");
@@ -102,3 +90,13 @@ export const fetchHistory = async (userID) => {
     }
     
 }
+
+export const deleteHistoryItem = async (documentId) => {
+    try {
+        await database.deleteDocument(DATABASE_ID, HISTORY_COLLECTION_ID, documentId);
+        console.log(`History item with ID ${documentId} deleted successfully.`);
+    } catch (error) {
+        console.error(`Error deleting history item with ID ${documentId}:`, error);
+        throw error; // Re-throw the error for the component to handle
+    }
+};

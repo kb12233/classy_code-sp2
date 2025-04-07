@@ -14,6 +14,8 @@ import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import LoadingOverlay from '../components/LoadingOverlay';
 import "@fontsource/jetbrains-mono";
+import Card from "@mui/material/Card";
+
 
 export default function UploadImageSection() {
     const [image, setImage] = useAtom(uploadedImageAtom);
@@ -27,7 +29,7 @@ export default function UploadImageSection() {
     const [, setFileName] = useAtom(uploadedFileNameAtom);
     const [selectedHistory] = useAtom(selectedHistoryAtom);
 
-    const grayish = "#303134";
+    const grayish = "#303030";
     const greencolor = "#B6D9D7";
     const errorColor = "#ff6b6b";
 
@@ -155,7 +157,7 @@ export default function UploadImageSection() {
                                     transition: "transform 0.3s ease-in-out",
                                 }}
                             />
-                            <Button
+                            {/* <Button
                                 component="label"
                                 variant="contained"
                                 onClick={resetSections}
@@ -177,7 +179,7 @@ export default function UploadImageSection() {
                             >
                                 <AddIcon sx={{ fontSize: 28, color: greencolor }} />
                                 <input type="file" accept="image/*" hidden onChange={handleImageUpload} />
-                            </Button>
+                            </Button> */}
 
                             {isProcessing && <LoadingOverlay message={`Processing with ${readableModelName}`} />}
                             {processingError && (
@@ -199,7 +201,7 @@ export default function UploadImageSection() {
                 </Box>
             ) : (
                 <Box display="flex" flexDirection="column" alignItems="center">
-                    <Button
+                    {/* <Button
                         component="label"
                         variant="contained"
                         sx={{
@@ -217,8 +219,16 @@ export default function UploadImageSection() {
                     >
                         <AddIcon sx={{ fontSize: 32 }} />
                         <input type="file" accept="image/*" hidden onChange={handleImageUpload} />
-                    </Button>
+                    </Button> */}
+                    
 
+                    <Card variant="outlined" sx={{
+                        outline: "2px solid #454545",
+                        width: '300px',
+                        height: '200px',
+                        backgroundColor: "rgba(48, 48, 48, 1)", 
+                        outlineColor: "rgba(69, 69, 69, 0.8)",
+                    }}> sdfsdfasdf</Card>
                     <Typography
                         sx={{
                             color: greencolor,
