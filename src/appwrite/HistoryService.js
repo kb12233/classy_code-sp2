@@ -16,7 +16,7 @@ const uploadToStorage = async (file, bucketID, userID) => {
         console.log("Appwrite createFile response:", uploadedFile);
         const imageUrl = await storage.getFileView(bucketID, uploadedFile.$id);
         console.log("imageUrl before return:", imageUrl);
-        return imageUrl; // ✅ Fixed line
+        return imageUrl; 
     } catch (error) {
         console.error("Error uploading file:", error);
         throw error;
@@ -31,7 +31,7 @@ const convertBlobToFile = async (blobUrl, filename) => {
         const blob = await response.blob();
         console.log("Fetched blob:", blob); 
         const file = new File([blob], filename, { type: blob.type });
-        console.log("Created file from blob:", file); // Log the created file
+        console.log("Created file from blob:", file); 
         return file;
     } catch (error) {
         console.error("Error converting blob to file:", error);
@@ -57,7 +57,7 @@ export const saveHistory = async (userID, image, generatedCode, language, umlCod
         }
 
         const photoURL = await uploadToStorage(fileToUpload, IMAGES_BUCKET_ID, userID);
-        console.log("photoURL after uploadToStorage:", photoURL); // This should be the URL
+        console.log("photoURL after uploadToStorage:", photoURL); 
         if(!photoURL) {
             console.error("Error uploading image");
             return;
@@ -100,12 +100,29 @@ export const fetchHistory = async (userID) => {
     
 }
 
+
 export const deleteHistoryItem = async (documentId) => {
     try {
+        
+        const doc = await database.getDocument(DATABASE_ID, HISTORY_COLLECTION_ID, documentId);
+
+        
+        const photoURL = doc.photoURL;
+        const match = photoURL.match(/files\/([^/]+)\//); 
+        const fileId = match ? match[1] : null;
+
+        if (fileId) {
+            await storage.deleteFile(IMAGES_BUCKET_ID, fileId);
+            console.log(`File with ID ${fileId} deleted from storage.`);
+        } else {
+            console.warn("Could not extract fileId from photoURL:", photoURL);
+        }
+
         await database.deleteDocument(DATABASE_ID, HISTORY_COLLECTION_ID, documentId);
         console.log(`History item with ID ${documentId} deleted successfully.`);
     } catch (error) {
         console.error(`Error deleting history item with ID ${documentId}:`, error);
-        throw error; 
+        throw error;
     }
 };
+
