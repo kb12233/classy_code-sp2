@@ -1,6 +1,5 @@
 import { database, storage, 
     DATABASE_ID, HISTORY_COLLECTION_ID, 
-    CODE_BUCKET_ID, UMLCODE_BUCKET_ID, 
     IMAGES_BUCKET_ID } from "./config";
 
 import { ID, Query } from "appwrite";

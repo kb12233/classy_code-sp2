@@ -28,6 +28,7 @@ import CodeOutlined from '@mui/icons-material/CodeOutlined';
 import { useAuth } from '../utils/AuthContext';
 import LoadingOverlay from './LoadingOverlay';
 import Sidebar from './SideBar';
+import RestartAltIcon from '@mui/icons-material/RestartAlt'; 
 
 const MenuAppBar = forwardRef((props, ref) => {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -107,6 +108,7 @@ const MenuAppBar = forwardRef((props, ref) => {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
+             {signOutLoading && <LoadingOverlay message="Signing out..." />}
             <AppBar position="static" sx={{ backgroundColor: '#121212', maxHeight: '10vh', width: '100vw' }}>
                 <Toolbar sx={{ justifyContent: 'space-between', px: isMobile ? 1 : 3 }}>
                     {/* Left Side: Menu Icon + Model Select */}
@@ -187,6 +189,18 @@ const MenuAppBar = forwardRef((props, ref) => {
                             </FormControl>
                         )}
                     </Box>
+
+                     {/* Restart Button */}
+                     <IconButton
+                        onClick={props.onRestart}
+                        sx={{
+                            color: '#FFFFFF',
+                            marginLeft: 'auto', // pushes it to the far right
+                        }}
+                        title="Restart"
+                        >
+                        <RestartAltIcon />
+                    </IconButton>
 
                     {/* Centered Logo */}
                     {!isMobile && (
