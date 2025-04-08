@@ -5,15 +5,38 @@ import {
   plantUmlCodeAtom, 
   selectedLanguageAtom, 
   generatedCodeAtom,
-  loadingOperationAtom 
+  loadingOperationAtom,
+  historyAtom,
+  uploadedImageAtom,
+  uploadedFileNameAtom, 
 } from '../atoms';
 import PlantUMLTranspiler from 'plantuml-transpiler';
+import { account } from '../appwrite/config';
+import { saveHistory } from '../appwrite/HistoryService';
+import { useEffect, useState } from 'react';
 
-export default function GenerateCode() {
+export default function GenerateCode({}) {
   const [plantUMLCode] = useAtom(plantUmlCodeAtom);
   const [language] = useAtom(selectedLanguageAtom);
-  const [, setGeneratedCode] = useAtom(generatedCodeAtom);
+  const [generatedCode, setGeneratedCode] = useAtom(generatedCodeAtom);
   const [isLoading, setIsLoading] = useAtom(loadingOperationAtom);
+  const [history, setHistory] = useAtom(historyAtom);
+  const [image] = useAtom(uploadedImageAtom);
+  const [fileName] = useAtom(uploadedFileNameAtom);
+  const [userID, setUserID] = useState(null);
+
+
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const user = await account.get();
+        setUserID(user.$id);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    }
+    fetchUser();
+  }, []);
 
   const handleGenerateClick = async () => {
     if (!plantUMLCode) {
@@ -33,6 +56,16 @@ export default function GenerateCode() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (generatedCode && userID && plantUMLCode) {
+        if (typeof fileName !== 'string' || !fileName) {
+            console.error('Filename is invalid', fileName);
+            return;
+        }
+        saveHistory(userID, image, generatedCode, language, plantUMLCode, fileName);
+    }
+  }, [generatedCode, userID, image, fileName, plantUMLCode]);
 
   return (
     <Container
