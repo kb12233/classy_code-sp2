@@ -10,15 +10,15 @@ import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import { Box, Typography, CircularProgress, IconButton, Menu, MenuItem } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { Box, CircularProgress, IconButton, Menu, MenuItem } from '@mui/material';
+import { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { fetchHistory, deleteHistoryItem } from '../appwrite/HistoryService';
 import { account } from '../appwrite/config';
 import { SlOptionsVertical } from "react-icons/sl";
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit'; // Import EditIcon if you plan to add update functionality
 
-export default function Sidebar({ isDrawerOpen, toggleDrawer }) {
+const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref) {
+
     const greencolor = '#B6D9D7';
     const [historyData, setHistoryData] = useAtom(historyDataAtom);
     const [historyLoading, setHistoryLoading] = useAtom(historyLoadingAtom);
@@ -32,22 +32,44 @@ export default function Sidebar({ isDrawerOpen, toggleDrawer }) {
 
     const isOptionsOpen = Boolean(optionsAnchorEl);
 
-    useEffect(() => {
-        const loadHistory = async () => {
-            setHistoryLoading(true);
-            try {
-                const user = await account.get();
-                const fetchedHistory = await fetchHistory(user.$id);
-                setHistoryData(fetchedHistory);
-            } catch (error) {
-                console.error("Error loading history:", error);
-                setHistoryData([]);
-            } finally {
-                setHistoryLoading(false);
-            }
-        };
+    // useEffect(() => {
+    //     const loadHistory = async () => {
+    //         setHistoryLoading(true);
+    //         try {
+    //             const user = await account.get();
+    //             const fetchedHistory = await fetchHistory(user.$id);
+    //             setHistoryData(fetchedHistory);
+    //         } catch (error) {
+    //             console.error("Error loading history:", error);
+    //             setHistoryData([]);
+    //         } finally {
+    //             setHistoryLoading(false);
+    //         }
+    //     };
 
-        loadHistory();
+    //     loadHistory();
+    // }, []);
+
+    const loadHistory = async () => {
+        setHistoryLoading(true);
+        try {
+            const user = await account.get();
+            const fetchedHistory = await fetchHistory(user.$id);
+            setHistoryData(fetchedHistory);
+        } catch (error) {
+            console.error("Error loading history:", error);
+            setHistoryData([]);
+        } finally {
+            setHistoryLoading(false);
+        }
+    };
+
+    useImperativeHandle(ref, () => ({
+        loadHistory,
+    }));
+
+    useEffect(() => {
+        loadHistory(); // Optional: load once on mount
     }, []);
 
     const handleHistoryItemClick = (item) => {
@@ -87,12 +109,6 @@ export default function Sidebar({ isDrawerOpen, toggleDrawer }) {
                 setHistoryLoading(false);
             }
         }
-    };
-
-    const handleUpdateClick = () => {
-        handleOptionsClose();
-        // Implement your update logic here, e.g., navigate to an edit page
-        console.log("Update clicked for item:", selectedItemId);
     };
 
     return (
@@ -185,10 +201,9 @@ export default function Sidebar({ isDrawerOpen, toggleDrawer }) {
                 <MenuItem onClick={handleDeleteClick}>
                     <DeleteIcon sx={{ mr: 1 }} /> Delete
                 </MenuItem>
-                {/* <MenuItem onClick={handleUpdateClick}>
-                    <EditIcon sx={{ mr: 1 }} /> Update
-                </MenuItem> */}
             </Menu>
         </Drawer>
     );
-}
+});
+
+export default Sidebar;
