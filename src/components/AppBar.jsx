@@ -69,16 +69,11 @@ const MenuAppBar = forwardRef((props, ref) => {
         setSelectedModel(event.target.value);
     };
 
-    // const toggleDrawer = (open) => (event) => {
-    //     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) return;
-    //     setDrawerOpen(open);
-    // };
-
     const toggleDrawer = (open) => (event) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) return;
 
         if (open && sidebarRef.current) {
-            sidebarRef.current.loadHistory(); // <-- Load history whenever opening drawer
+            sidebarRef.current.loadHistory(); 
         }
 
         setDrawerOpen(open);
@@ -207,7 +202,7 @@ const MenuAppBar = forwardRef((props, ref) => {
                         onClick={props.onRestart}
                         sx={{
                             color: '#FFFFFF',
-                            marginLeft: 'auto', // pushes it to the far right
+                            marginLeft: 'auto', // pushes to the far right
                         }}
                         title="Restart"
                         >

@@ -22,7 +22,7 @@ const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref)
     const greencolor = '#B6D9D7';
     const [historyData, setHistoryData] = useAtom(historyDataAtom);
     const [historyLoading, setHistoryLoading] = useAtom(historyLoadingAtom);
-    const [, setSelectedHistory] = useAtom(selectedHistoryAtom);
+    const [selectedHistory, setSelectedHistory] = useAtom(selectedHistoryAtom);
     const [, setUploadedImage] = useAtom(uploadedImageAtom);
     const [, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
     const [, setGeneratedCode] = useAtom(generatedCodeAtom);
@@ -31,24 +31,6 @@ const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref)
     const [selectedItemId, setSelectedItemId] = useState(null);
 
     const isOptionsOpen = Boolean(optionsAnchorEl);
-
-    // useEffect(() => {
-    //     const loadHistory = async () => {
-    //         setHistoryLoading(true);
-    //         try {
-    //             const user = await account.get();
-    //             const fetchedHistory = await fetchHistory(user.$id);
-    //             setHistoryData(fetchedHistory);
-    //         } catch (error) {
-    //             console.error("Error loading history:", error);
-    //             setHistoryData([]);
-    //         } finally {
-    //             setHistoryLoading(false);
-    //         }
-    //     };
-
-    //     loadHistory();
-    // }, []);
 
     const loadHistory = async () => {
         setHistoryLoading(true);
@@ -69,7 +51,7 @@ const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref)
     }));
 
     useEffect(() => {
-        loadHistory(); // Optional: load once on mount
+        loadHistory(); 
     }, []);
 
     const handleHistoryItemClick = (item) => {
@@ -82,7 +64,7 @@ const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref)
     };
 
     const handleMoreOptionsClick = (event, itemId) => {
-        event.stopPropagation(); // Prevent the history item click from firing
+        event.stopPropagation(); 
         setSelectedItemId(itemId);
         setOptionsAnchorEl(event.currentTarget);
     };
@@ -94,22 +76,35 @@ const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref)
 
     const handleDeleteClick = async () => {
         handleOptionsClose();
+    
         if (selectedItemId) {
             setHistoryLoading(true);
             try {
                 await deleteHistoryItem(selectedItemId);
-                // Refresh history after deletion
+    
+                // If the deleted item is the one currently selected
+                if (selectedHistory?.$id === selectedItemId) {
+                    // Clear related atoms
+                    setSelectedHistory(null);
+                    setUploadedImage(null);
+                    setPlantUMLCode('');
+                    setGeneratedCode('');
+                    setLanguage('');
+                }
+    
+                // Fetch updated history
                 const user = await account.get();
                 const fetchedHistory = await fetchHistory(user.$id);
                 setHistoryData(fetchedHistory);
+    
             } catch (error) {
                 console.error("Error deleting history item:", error);
-                // Optionally show an error message to the user
             } finally {
                 setHistoryLoading(false);
             }
         }
     };
+    
 
     return (
         <Drawer
