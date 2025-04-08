@@ -7,14 +7,21 @@ import { ID, Query } from "appwrite";
 
 const uploadToStorage = async (file, bucketID, userID) => {
     try {
-        if(!(file instanceof File)) {
+        if (!(file instanceof File)) {
+            console.error("Invalid file object detected:", file);
             throw new Error(`Invalid file type: ${file}`);
         }
+        console.log("Attempting to upload file:", file);
         const uploadedFile = await storage.createFile(bucketID, ID.unique(), file);
-        return storage.getFileView(bucketID, uploadedFile.$id).href;
+        console.log("Appwrite createFile response:", uploadedFile);
+        const imageUrl = await storage.getFileView(bucketID, uploadedFile.$id);
+        console.log("imageUrl before return:", imageUrl);
+        return imageUrl; // ✅ Fixed line
     } catch (error) {
         console.error("Error uploading file:", error);
         throw error;
+    } finally {
+        console.log("uploadToStorage finally block executed");
     }
 };
 
@@ -22,7 +29,9 @@ const convertBlobToFile = async (blobUrl, filename) => {
     try {
         const response = await fetch(blobUrl);
         const blob = await response.blob();
+        console.log("Fetched blob:", blob); 
         const file = new File([blob], filename, { type: blob.type });
+        console.log("Created file from blob:", file); // Log the created file
         return file;
     } catch (error) {
         console.error("Error converting blob to file:", error);
@@ -48,6 +57,7 @@ export const saveHistory = async (userID, image, generatedCode, language, umlCod
         }
 
         const photoURL = await uploadToStorage(fileToUpload, IMAGES_BUCKET_ID, userID);
+        console.log("photoURL after uploadToStorage:", photoURL); // This should be the URL
         if(!photoURL) {
             console.error("Error uploading image");
             return;
@@ -96,6 +106,6 @@ export const deleteHistoryItem = async (documentId) => {
         console.log(`History item with ID ${documentId} deleted successfully.`);
     } catch (error) {
         console.error(`Error deleting history item with ID ${documentId}:`, error);
-        throw error; // Re-throw the error for the component to handle
+        throw error; 
     }
 };

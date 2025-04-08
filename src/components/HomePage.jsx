@@ -1,6 +1,5 @@
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
-import * as React from "react";
 import { useAtom } from 'jotai';
 import { plantUmlCodeAtom, generatedCodeAtom, 
     selectedHistoryAtom, uploadedImageAtom } from '../atoms';
@@ -189,7 +188,7 @@ export default function Homepage() {
                             flexShrink: 0,
                         }}
                     >
-                        <UMLPreview umlCode={plantUMLCode} />
+                        <UMLPreview />
                     </Box>
                 )}
 
@@ -218,7 +217,7 @@ export default function Homepage() {
                             >
                                 Generated Code
                             </Typography>
-                            <CodeGeneratedSection generatedCode={generatedCode} />
+                            <CodeGeneratedSection />
                         </Box>
                     </Box>
                 )}

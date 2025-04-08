@@ -41,7 +41,6 @@ const MenuAppBar = forwardRef((props, ref) => {
     const [generatedCode] = useAtom(generatedCodeAtom);
     const [signOutLoading, setSignOutLoading] = useState(false);
     const navigate = useNavigate();
-
     const { user, logoutUser } = useAuth();
 
     const greencolor = '#B6D9D7';
@@ -108,7 +107,7 @@ const MenuAppBar = forwardRef((props, ref) => {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-             {signOutLoading && <LoadingOverlay message="Signing out..." />}
+            {signOutLoading && <LoadingOverlay message="Signing out..." />}
             <AppBar position="static" sx={{ backgroundColor: '#121212', maxHeight: '10vh', width: '100vw' }}>
                 <Toolbar sx={{ justifyContent: 'space-between', px: isMobile ? 1 : 3 }}>
                     {/* Left Side: Menu Icon + Model Select */}
@@ -190,8 +189,9 @@ const MenuAppBar = forwardRef((props, ref) => {
                         )}
                     </Box>
 
-                     {/* Restart Button */}
-                     <IconButton
+                    {/* Restart Button */}
+                    <IconButton
+                        // eslint-disable-next-line react/prop-types
                         onClick={props.onRestart}
                         sx={{
                             color: '#FFFFFF',
@@ -200,7 +200,7 @@ const MenuAppBar = forwardRef((props, ref) => {
                         title="Restart"
                         >
                         <RestartAltIcon />
-                    </IconButton>
+                        </IconButton>
 
                     {/* Centered Logo */}
                     {!isMobile && (
@@ -260,4 +260,5 @@ const MenuAppBar = forwardRef((props, ref) => {
     );
 });
 
+MenuAppBar.displayName = 'MenuAppBar'; 
 export default MenuAppBar;
