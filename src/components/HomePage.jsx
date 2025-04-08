@@ -10,7 +10,8 @@ import CodeGeneratedSection from "./CodeGeneratedSection";
 import { Typography } from "@mui/material";
 import MenuAppBar from "./AppBar";
 import { useState, useEffect, useRef, Fragment } from "react";
-import { account, PROJECT_ID } from "../appwrite/config";   
+import { account, PROJECT_ID } from "../appwrite/config"; 
+import Upload from "./Upload";    
 
 export default function Homepage() {
     const [plantUMLCode] = useAtom(plantUmlCodeAtom);
@@ -242,7 +243,8 @@ export default function Homepage() {
                         >
                             Class Diagram
                         </Typography>
-                        <UploadImageSection />
+                        {/* <UploadImageSection /> */}
+                        <Upload />
                     </Box>
                 </Box>
 
