@@ -10,19 +10,19 @@ import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import { Box, Typography, CircularProgress, IconButton, Menu, MenuItem } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { Box, CircularProgress, IconButton, Menu, MenuItem } from '@mui/material';
+import { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { fetchHistory, deleteHistoryItem } from '../appwrite/HistoryService';
 import { account } from '../appwrite/config';
 import { SlOptionsVertical } from "react-icons/sl";
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit'; // Import EditIcon if you plan to add update functionality
 
-export default function Sidebar({ isDrawerOpen, toggleDrawer }) {
+const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref) {
+
     const greencolor = '#B6D9D7';
     const [historyData, setHistoryData] = useAtom(historyDataAtom);
     const [historyLoading, setHistoryLoading] = useAtom(historyLoadingAtom);
-    const [, setSelectedHistory] = useAtom(selectedHistoryAtom);
+    const [selectedHistory, setSelectedHistory] = useAtom(selectedHistoryAtom);
     const [, setUploadedImage] = useAtom(uploadedImageAtom);
     const [, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
     const [, setGeneratedCode] = useAtom(generatedCodeAtom);
@@ -32,22 +32,26 @@ export default function Sidebar({ isDrawerOpen, toggleDrawer }) {
 
     const isOptionsOpen = Boolean(optionsAnchorEl);
 
-    useEffect(() => {
-        const loadHistory = async () => {
-            setHistoryLoading(true);
-            try {
-                const user = await account.get();
-                const fetchedHistory = await fetchHistory(user.$id);
-                setHistoryData(fetchedHistory);
-            } catch (error) {
-                console.error("Error loading history:", error);
-                setHistoryData([]);
-            } finally {
-                setHistoryLoading(false);
-            }
-        };
+    const loadHistory = async () => {
+        setHistoryLoading(true);
+        try {
+            const user = await account.get();
+            const fetchedHistory = await fetchHistory(user.$id);
+            setHistoryData(fetchedHistory);
+        } catch (error) {
+            console.error("Error loading history:", error);
+            setHistoryData([]);
+        } finally {
+            setHistoryLoading(false);
+        }
+    };
 
-        loadHistory();
+    useImperativeHandle(ref, () => ({
+        loadHistory,
+    }));
+
+    useEffect(() => {
+        loadHistory(); 
     }, []);
 
     const handleHistoryItemClick = (item) => {
@@ -60,7 +64,7 @@ export default function Sidebar({ isDrawerOpen, toggleDrawer }) {
     };
 
     const handleMoreOptionsClick = (event, itemId) => {
-        event.stopPropagation(); // Prevent the history item click from firing
+        event.stopPropagation(); 
         setSelectedItemId(itemId);
         setOptionsAnchorEl(event.currentTarget);
     };
@@ -72,28 +76,35 @@ export default function Sidebar({ isDrawerOpen, toggleDrawer }) {
 
     const handleDeleteClick = async () => {
         handleOptionsClose();
+    
         if (selectedItemId) {
             setHistoryLoading(true);
             try {
                 await deleteHistoryItem(selectedItemId);
-                // Refresh history after deletion
+    
+                // If the deleted item is the one currently selected
+                if (selectedHistory?.$id === selectedItemId) {
+                    // Clear related atoms
+                    setSelectedHistory(null);
+                    setUploadedImage(null);
+                    setPlantUMLCode('');
+                    setGeneratedCode('');
+                    setLanguage('');
+                }
+    
+                // Fetch updated history
                 const user = await account.get();
                 const fetchedHistory = await fetchHistory(user.$id);
                 setHistoryData(fetchedHistory);
+    
             } catch (error) {
                 console.error("Error deleting history item:", error);
-                // Optionally show an error message to the user
             } finally {
                 setHistoryLoading(false);
             }
         }
     };
-
-    const handleUpdateClick = () => {
-        handleOptionsClose();
-        // Implement your update logic here, e.g., navigate to an edit page
-        console.log("Update clicked for item:", selectedItemId);
-    };
+    
 
     return (
         <Drawer
@@ -185,10 +196,9 @@ export default function Sidebar({ isDrawerOpen, toggleDrawer }) {
                 <MenuItem onClick={handleDeleteClick}>
                     <DeleteIcon sx={{ mr: 1 }} /> Delete
                 </MenuItem>
-                {/* <MenuItem onClick={handleUpdateClick}>
-                    <EditIcon sx={{ mr: 1 }} /> Update
-                </MenuItem> */}
             </Menu>
         </Drawer>
     );
-}
+});
+
+export default Sidebar;

@@ -1,5 +1,5 @@
 // AppBar.jsx
-import  { useState, forwardRef, useImperativeHandle } from 'react';
+import  { useState, forwardRef, useImperativeHandle, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAtom } from 'jotai';
 import {
@@ -31,6 +31,8 @@ import Sidebar from './SideBar';
 import RestartAltIcon from '@mui/icons-material/RestartAlt'; 
 
 const MenuAppBar = forwardRef((props, ref) => {
+    const sidebarRef = useRef(null);
+
     const [anchorEl, setAnchorEl] = useState(null);
     const [isDrawerOpen, setDrawerOpen] = useState(false);
     const [selectedModel, setSelectedModel] = useAtom(selectedModelAtom);
@@ -41,8 +43,7 @@ const MenuAppBar = forwardRef((props, ref) => {
     const [generatedCode] = useAtom(generatedCodeAtom);
     const [signOutLoading, setSignOutLoading] = useState(false);
     const navigate = useNavigate();
-
-    const { user, logoutUser } = useAuth();
+    const { logoutUser } = useAuth();
 
     const greencolor = '#B6D9D7';
     const greencolorLight = '#00ffe4'; //changing color of icons
@@ -70,6 +71,11 @@ const MenuAppBar = forwardRef((props, ref) => {
 
     const toggleDrawer = (open) => (event) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) return;
+
+        if (open && sidebarRef.current) {
+            sidebarRef.current.loadHistory(); 
+        }
+
         setDrawerOpen(open);
     };
 
@@ -108,7 +114,7 @@ const MenuAppBar = forwardRef((props, ref) => {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-             {signOutLoading && <LoadingOverlay message="Signing out..." />}
+            {signOutLoading && <LoadingOverlay message="Signing out..." />}
             <AppBar position="static" sx={{ backgroundColor: '#121212', maxHeight: '10vh', width: '100vw' }}>
                 <Toolbar sx={{ justifyContent: 'space-between', px: isMobile ? 1 : 3 }}>
                     {/* Left Side: Menu Icon + Model Select */}
@@ -190,17 +196,18 @@ const MenuAppBar = forwardRef((props, ref) => {
                         )}
                     </Box>
 
-                     {/* Restart Button */}
-                     <IconButton
+                    {/* Restart Button */}
+                    <IconButton
+                        // eslint-disable-next-line react/prop-types
                         onClick={props.onRestart}
                         sx={{
                             color: '#FFFFFF',
-                            marginLeft: 'auto', // pushes it to the far right
+                            marginLeft: 'auto', // pushes to the far right
                         }}
                         title="Restart"
                         >
                         <RestartAltIcon />
-                    </IconButton>
+                        </IconButton>
 
                     {/* Centered Logo */}
                     {!isMobile && (
@@ -255,9 +262,10 @@ const MenuAppBar = forwardRef((props, ref) => {
                     </Box>
                 </Toolbar>
             </AppBar>
-            <Sidebar isDrawerOpen={isDrawerOpen} toggleDrawer={toggleDrawer} />
+            <Sidebar ref={sidebarRef} isDrawerOpen={isDrawerOpen} toggleDrawer={toggleDrawer} />
         </Box>
     );
 });
 
+MenuAppBar.displayName = 'MenuAppBar'; 
 export default MenuAppBar;

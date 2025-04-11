@@ -6,7 +6,6 @@ import {
   selectedLanguageAtom, 
   generatedCodeAtom,
   loadingOperationAtom,
-  historyAtom,
   uploadedImageAtom,
   uploadedFileNameAtom, 
 } from '../atoms';
@@ -15,12 +14,11 @@ import { account } from '../appwrite/config';
 import { saveHistory } from '../appwrite/HistoryService';
 import { useEffect, useState } from 'react';
 
-export default function GenerateCode({}) {
+export default function GenerateCode() {
   const [plantUMLCode] = useAtom(plantUmlCodeAtom);
   const [language] = useAtom(selectedLanguageAtom);
   const [generatedCode, setGeneratedCode] = useAtom(generatedCodeAtom);
-  const [isLoading, setIsLoading] = useAtom(loadingOperationAtom);
-  const [history, setHistory] = useAtom(historyAtom);
+  const [, setIsLoading] = useAtom(loadingOperationAtom);
   const [image] = useAtom(uploadedImageAtom);
   const [fileName] = useAtom(uploadedFileNameAtom);
   const [userID, setUserID] = useState(null);
@@ -63,9 +61,10 @@ export default function GenerateCode({}) {
             console.error('Filename is invalid', fileName);
             return;
         }
+        console.log("Image atom value before saveHistory:", image); // Log the image atom
         saveHistory(userID, image, generatedCode, language, plantUMLCode, fileName);
     }
-  }, [generatedCode, userID, image, fileName, plantUMLCode]);
+}, [generatedCode, userID, image, fileName, plantUMLCode, language]);
 
   return (
     <Container
