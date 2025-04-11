@@ -1,8 +1,9 @@
+//HomePage.jsx
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import * as React from "react";
 import { useAtom } from 'jotai';
-import { plantUmlCodeAtom, generatedCodeAtom, 
+import { plantUmlCodeAtom, generatedCodeAtom,
     selectedHistoryAtom, uploadedImageAtom } from '../atoms';
 import UploadImageSection from "./UploadImageSection";
 import UMLPreview from "./UmlPreview";
@@ -10,7 +11,10 @@ import CodeGeneratedSection from "./CodeGeneratedSection";
 import { Typography } from "@mui/material";
 import MenuAppBar from "./AppBar";
 import { useState, useEffect, useRef, Fragment } from "react";
-import { account } from "../appwrite/config";   
+import { account, PROJECT_ID } from "../appwrite/config";
+import Upload from "./Upload";
+import SelectLanguage from "./SelectLanguage";
+import GenerateCode from "./GenerateButton";
 
 export default function Homepage() {
     const [plantUMLCode] = useAtom(plantUmlCodeAtom);
@@ -19,7 +23,6 @@ export default function Homepage() {
     const [, setUploadedImage] = useAtom(uploadedImageAtom);
     const [, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
     const [, setGeneratedCode] = useAtom(generatedCodeAtom);
-    const[, setHistory] = useAtom(selectedHistoryAtom);
 
     const umlSectionRef = useRef(null);
     const codeSectionRef = useRef(null);
@@ -27,48 +30,71 @@ export default function Homepage() {
     const [isCodeGeneratedRendered, setIsCodeGeneratedRendered] = useState(false);
     const [isScrollable, setIsScrollable] = useState(false);
     const appBarRef = useRef(null);
+    const darkbgColor = "#1E1E1E";
+
+    const fetchTextContent = async (url) => {
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    "X-Appwrite-Project": PROJECT_ID,
+                },
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return await response.text();
+        } catch (error) {
+            console.error("Error fetching text content:", error);
+            return "";
+        }
+    };
 
     useEffect(() => {
         const loadHistoryData = async () => {
             if (selectedHistory) {
+                //setUploadedImage(selectedHistory.photoURL);
                 try {
                     await account.get();
-                    setUploadedImage(selectedHistory.photoURL);
-                    setPlantUMLCode(selectedHistory.umlCode); 
-                    setGeneratedCode(selectedHistory.generatedCode); 
 
-                    setIsUmlPreviewRendered(!!selectedHistory.umlCode);
-                    setIsCodeGeneratedRendered(!!selectedHistory.generatedCode);
+                    setUploadedImage(selectedHistory.photoURL);
+                    const umlContent = await fetchTextContent(selectedHistory.umlCodeURL);
+                    const generatedContent = await fetchTextContent(selectedHistory.codeURL);
+                    setPlantUMLCode(umlContent);
+                    setGeneratedCode(generatedContent);
+
+                    setIsUmlPreviewRendered(true);
+                    setIsCodeGeneratedRendered(true);
                     setIsScrollable(true);
 
-                    if (appBarRef.current) {
-                        if (selectedHistory.umlCode) {
-                            appBarRef.current.setActiveIcon('uml');
-                        }
-                        if (selectedHistory.generatedCode) {
-                            appBarRef.current.setActiveIcon('code');
-                        }
+                    if (appBarRef.current && plantUMLCode && generatedCode) {
+                        appBarRef.current.setActiveIcon('uml');
+                        appBarRef.current.setActiveIcon('code');
                     }
                 } catch (error) {
                     console.error("Failed to load history data:", error);
                 }
             } else {
-                setIsUmlPreviewRendered(!!plantUMLCode);
-                setIsCodeGeneratedRendered(!!generatedCode);
-                setIsScrollable(!!plantUMLCode || !!generatedCode);
-
                 if (plantUMLCode) {
+                    setIsUmlPreviewRendered(true);
                     setTimeout(() => {
                         if (umlSectionRef.current) {
                             umlSectionRef.current.scrollIntoView({ behavior: 'smooth' });
+                            setIsScrollable(true);
                             if (appBarRef.current) {
                                 appBarRef.current.setActiveIcon('uml');
                             }
                         }
                     }, 10);
+                } else {
+                    setIsUmlPreviewRendered(false);
+                    if (!generatedCode) {
+                        setIsScrollable(false);
+                    }
                 }
 
                 if (generatedCode) {
+                    setIsCodeGeneratedRendered(true);
+                    setIsScrollable(true);
                     setTimeout(() => {
                         if (codeSectionRef.current) {
                             codeSectionRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -77,34 +103,18 @@ export default function Homepage() {
                             }
                         }
                     }, 10);
+                } else {
+                    setIsCodeGeneratedRendered(false);
+                    if (!plantUMLCode) {
+                        setIsScrollable(false);
+                    }
                 }
             }
         };
 
         loadHistoryData();
     }, [plantUMLCode, generatedCode, selectedHistory, setUploadedImage, setPlantUMLCode, setGeneratedCode]);
-    
-    const handleRestart = () => {
-        if(selectedHistory) {
-            setHistory(null);
-        } 
-        setUploadedImage(null);
-        setPlantUMLCode('');
-        setGeneratedCode('');
-        setIsUmlPreviewRendered(false);      
-        setIsCodeGeneratedRendered(false);
-        setIsScrollable(false);
 
-        const uploadSection = document.getElementById('upload-image-section');
-        if (uploadSection) {
-            uploadSection.scrollIntoView({ behavior: 'smooth' });
-        }
-    
-        if (appBarRef.current) {
-            appBarRef.current.setActiveIcon('upload');
-        }
-    }
-    
     const handleSectionVisible = (sectionId) => {
         if (appBarRef.current) {
             const iconId = appBarRef.current.getIconIdFromSectionId(sectionId);
@@ -115,7 +125,7 @@ export default function Homepage() {
     return (
         <Fragment>
             <CssBaseline />
-            <MenuAppBar ref={appBarRef} onRestart={handleRestart} />
+            <MenuAppBar ref={appBarRef} />
             <Box
                 sx={{
                     display: "flex",
@@ -161,16 +171,11 @@ export default function Homepage() {
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
-                        backgroundColor: "#121212",
+                        backgroundColor: darkbgColor,
                         flexShrink: 0,
                     }}
                 >
                     <Box sx={{ width: "85%" }}>
-                        <Typography
-                            sx={{ color: "white", fontFamily: "JetBrains Mono", fontSize: 20, marginBottom: "1rem" }}
-                        >
-                            Class Diagram
-                        </Typography>
                         <UploadImageSection />
                     </Box>
                 </Box>
@@ -185,11 +190,11 @@ export default function Homepage() {
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
-                            backgroundColor: "#121212",
+                            backgroundColor: darkbgColor,
                             flexShrink: 0,
                         }}
                     >
-                        <UMLPreview umlCode={plantUMLCode} />
+                       <UMLPreview isCodeGeneratedVisible={isCodeGeneratedRendered} />
                     </Box>
                 )}
 
@@ -201,24 +206,26 @@ export default function Homepage() {
                             height: "calc(100vh - 64px)",
                             scrollSnapAlign: "start",
                             display: "flex",
-                            justifyContent: "center",
+                            flexDirection: "column", // Arrange children vertically
+                            justifyContent: "flex-start", // Align items at the top
                             alignItems: "center",
-                            backgroundColor: "#121212",
+                            backgroundColor: darkbgColor,
                             flexShrink: 0,
+                            paddingTop: '2rem', // Add some top padding for spacing
                         }}
                     >
-                        <Box sx={{ width: "85%" }}>
-                            <Typography
-                                sx={{
-                                    color: "white",
-                                    fontFamily: "JetBrains Mono",
-                                    fontSize: 20,
-                                    marginBottom: "1rem",
-                                }}
-                            >
-                                Generated Code
-                            </Typography>
-                            <CodeGeneratedSection generatedCode={generatedCode} />
+                        <Box sx={{
+                            width: "85%",
+                            display: 'flex',
+                            justifyContent: 'center', // Center the items horizontally
+                            alignItems: 'center', // Center the items vertically (optional, but can be useful for alignment)
+                            marginBottom: '1rem'
+                        }}>
+                            <SelectLanguage />
+                            <GenerateCode />
+                        </Box>
+                        <Box sx={{ width: "85%", flexGrow: 1 ,marginTop: 5}}> {/* Let the code editor take up remaining space */}
+                            <CodeGeneratedSection />
                         </Box>
                     </Box>
                 )}

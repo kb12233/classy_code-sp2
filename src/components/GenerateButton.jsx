@@ -1,14 +1,14 @@
+//GenerateButton.jsx
 import { Button } from '@mui/material';
-import Container from '@mui/material/Container';
 import { useAtom } from 'jotai';
-import { 
-  plantUmlCodeAtom, 
-  selectedLanguageAtom, 
+import {
+  plantUmlCodeAtom,
+  selectedLanguageAtom,
   generatedCodeAtom,
   loadingOperationAtom,
   historyAtom,
   uploadedImageAtom,
-  uploadedFileNameAtom, 
+  uploadedFileNameAtom,
 } from '../atoms';
 import PlantUMLTranspiler from 'plantuml-transpiler';
 import { account } from '../appwrite/config';
@@ -43,7 +43,7 @@ export default function GenerateCode({}) {
       console.warn("No PlantUML code to convert");
       return;
     }
-    
+
     setIsLoading(true);
     try {
       const transpiler = new PlantUMLTranspiler();
@@ -59,47 +59,36 @@ export default function GenerateCode({}) {
 
   useEffect(() => {
     if (generatedCode && userID && plantUMLCode) {
-        if (typeof fileName !== 'string' || !fileName) {
-            console.error('Filename is invalid', fileName);
-            return;
-        }
-        saveHistory(userID, image, generatedCode, language, plantUMLCode, fileName);
+      if (typeof fileName !== 'string' || !fileName) {
+        console.error('Filename is invalid', fileName);
+        return;
+      }
+      saveHistory(userID, image, generatedCode, language, plantUMLCode, fileName);
     }
   }, [generatedCode, userID, image, fileName, plantUMLCode]);
 
   return (
-    <Container
-      maxWidth="sx"
+    <Button
+      variant="contained"
       sx={{
-        height: '8vh',
-        flex: 1,
-        marginLeft: -0.5,
-        width: '50vh',
+        bgcolor: 'white',
+        color: 'black',
+        fontFamily: 'JetBrains Mono',
+        fontWeight: 'bold',
+        fontSize: 24,
+        // paddingTop: '1%', // Adjusted padding
+        // paddingBottom: '1%', // Adjusted padding
+        paddingLeft: '2%',  // Adjusted padding
+        paddingRight: '2%', // Adjusted padding
+        height: "auto",     // Allow height to adjust to content
+        minHeight: "auto",  // Allow minHeight to adjust
+        // width: "auto",     // Allow width to adjust to content
+        // maxWidth: "none",  // Remove maxWidth
+        minWidth: 250,
       }}
+      onClick={handleGenerateClick}
     >
-      <Button
-        variant="contained"
-        sx={{
-          bgcolor: '#b8dbd9',
-          color: 'black',
-          fontFamily: 'JetBrains Mono',
-          fontWeight: 'bold',
-          fontSize: 24,
-          paddingTop: '2%',
-          paddingBottom: '2%',
-          paddingLeft: '15%',
-          paddingRight: '15%',
-          height: "75%",
-          minHeight: "75%",
-          width: "100%",
-          maxWidth: "11000px",
-        }}
-        onClick={handleGenerateClick}
-        // disabled={isLoading || !plantUMLCode}
-      >
-        {/* {isLoading ? 'GENERATING...' : 'GENERATE'} */}
-        GENERATE
-      </Button>
-    </Container>
+      GENERATE
+    </Button>
   );
 }

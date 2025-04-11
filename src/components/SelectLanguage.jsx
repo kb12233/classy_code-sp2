@@ -1,11 +1,12 @@
-import { Container, FormControl, MenuItem, Select } from "@mui/material";
+//SelectLanguage.jsx
+import { FormControl, MenuItem, Select } from "@mui/material";
 import { useAtom } from "jotai";
 import { selectedLanguageAtom } from "../atoms";
 
 export default function SelectLanguage() {
   const [language, setLanguage] = useAtom(selectedLanguageAtom);
   const greencolor = "#B6D9D7";
-  const grayish = "#303134";
+  const grayish = "#1E1E1E";
   const blackish = "#121212";
 
   const handleChange = (event) => {
@@ -13,66 +14,62 @@ export default function SelectLanguage() {
   };
 
   return (
-    <Container
+    <FormControl
       sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "flex-start",
-        height: "100%",
-        minHeight: "80%",
-        width: "30%",
+        // display: "flex", // No need for flex here, let the parent handle layout
+        // justifyContent: "center",
+        // alignItems: "flex-start",
+        height: "auto", // Adjust height as needed
+        minHeight: "auto", // Adjust minHeight as needed
+        width: "auto", // Allow width to adjust to content
         marginRight: "2%",
+        color: blackish,
+        fontFamily: "JetBrains Mono",
+        minWidth: 250,
+        borderRadius: "1vh",
       }}
     >
-      <FormControl
+      <Select
+        value={language}
+        onChange={handleChange}
+        displayEmpty
+        renderValue={language !== "" ? undefined : () => "Select Language"}
+        MenuProps={{
+          PaperProps: {
+            sx: {
+              bgcolor: blackish,
+              color: "white",
+            },
+          },
+        }}
         sx={{
-          color: blackish,
+          bgcolor: grayish,
+          color: "white",
+          ".MuiOutlinedInput-notchedOutline": { borderColor: greencolor },
+          "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: greencolor },
+          ".MuiSvgIcon-root": { color: "white" },
           fontFamily: "JetBrains Mono",
-          minWidth: 250,
         }}
       >
-        <Select
-          value={language}
-          onChange={handleChange}
-          displayEmpty
-          renderValue={language !== "" ? undefined : () => "Select Language"}
-          MenuProps={{
-            PaperProps: {
-              sx: {
-                bgcolor: blackish,
-                color: "white",
-              },
-            },
-          }}
-          sx={{
-            bgcolor: grayish,
-            color: "white",
-            ".MuiOutlinedInput-notchedOutline": { borderColor: greencolor },
-            "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: greencolor },
-            ".MuiSvgIcon-root": { color: "white" },
-            fontFamily: "JetBrains Mono",
-          }}
-        >
-          <MenuItem value="python" sx={{ fontFamily: "JetBrains Mono" }}>
-            Python
-          </MenuItem>
-          <MenuItem value="java" sx={{ fontFamily: "JetBrains Mono" }}>
-            Java
-          </MenuItem>
-          <MenuItem value="csharp" sx={{ fontFamily: "JetBrains Mono" }}>
-            C#
-          </MenuItem>
-          <MenuItem value="ruby" sx={{ fontFamily: "JetBrains Mono" }}>
-            Ruby
-          </MenuItem>
-          <MenuItem value="kotlin" sx={{ fontFamily: "JetBrains Mono" }}>
-            Kotlin
-          </MenuItem>
-          <MenuItem value="typescript" sx={{ fontFamily: "JetBrains Mono" }}>
-            Typescript
-          </MenuItem>
-        </Select>
-      </FormControl>
-    </Container>
+        <MenuItem value="python" sx={{ fontFamily: "JetBrains Mono", borderRadius: "inherit",}}>
+          Python
+        </MenuItem>
+        <MenuItem value="java" sx={{ fontFamily: "JetBrains Mono" }}>
+          Java
+        </MenuItem>
+        <MenuItem value="csharp" sx={{ fontFamily: "JetBrains Mono" }}>
+          C#
+        </MenuItem>
+        <MenuItem value="ruby" sx={{ fontFamily: "JetBrains Mono" }}>
+          Ruby
+        </MenuItem>
+        <MenuItem value="kotlin" sx={{ fontFamily: "JetBrains Mono" }}>
+          Kotlin
+        </MenuItem>
+        <MenuItem value="typescript" sx={{ fontFamily: "JetBrains Mono" }}>
+          Typescript
+        </MenuItem>
+      </Select>
+    </FormControl>
   );
 }
