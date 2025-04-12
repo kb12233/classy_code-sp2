@@ -8,8 +8,10 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [forgotPasswordSuccess, setForgotPasswordSuccess] = useState("");
+
   const navigate = useNavigate(); 
-  const { user, loginUser }  = useAuth();
+  const { user, loginUser, requestPasswordReset }  = useAuth();
 
   useEffect(() => {
     if (user) {
@@ -32,6 +34,23 @@ export default function LoginPage() {
   const handleRegister = () => {
     navigate('/register');
   }
+
+  const handleForgotPassword = async () => {
+    setError("");
+    setForgotPasswordSuccess("");
+
+    if (!email) {
+      alert("Please enter your email first.");
+      return;
+    }
+
+    try {
+      await requestPasswordReset(email);
+      setForgotPasswordSuccess("Password reset email sent! Please check your inbox.");
+    } catch (error) {
+      setError(error.message);
+    }
+  };
 
   return (
     <>
@@ -58,6 +77,23 @@ export default function LoginPage() {
             </button>
           </div>          
           )}
+
+          {/* SUCCESS ALERT */}
+        {forgotPasswordSuccess && (
+          <div className="bg-[#1E1E1E] text-green-400 px-4 py-3 rounded relative mt-4 flex items-center justify-between w-2/3 text-sm" role="alert">
+            <span className="block sm:inline">{forgotPasswordSuccess}</span>
+            <button
+              onClick={() => setForgotPasswordSuccess("")}
+              className="absolute top-0 bottom-0 right-0 px-4 py-3"
+            >
+              <svg className="fill-current h-6 w-6 text-green-400" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                <title>Close</title>
+                <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
+              </svg>
+            </button>
+          </div>
+        )}
+
         <div className="mt-10 w-1/2">
           <input
             type="email"
@@ -73,8 +109,10 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {/* {error && <p className="text-red-500">{error}</p>} */}
-          <p className="text-[#B4B4B4] cursor-pointer mb-4">Forgot your password?</p>
+          <button className="text-[#B4B4B4] cursor-pointer mb-4"
+            onClick={handleForgotPassword} 
+          > Forgot your password?
+          </button>
           <button onClick={handleLogin} className="w-full p-3 bg-[#212121] hover:bg-[#B4B4B4] 
             hover:text-[#303030] text-[#B4B4B4] rounded-lg transition border border-[#303030]">
             SIGN IN

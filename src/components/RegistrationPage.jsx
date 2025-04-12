@@ -72,7 +72,7 @@ const RegistrationPage = () => {
                 )}
 
                 {successMessage && (
-                    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 mt-4 flex items-center justify-center" role="alert">
+                    <div className="bg-[#1E1E1E] text-green-400 px-4 py-3 rounded relative mb-4 mt-4 flex items-center justify-center" role="alert">
                         <span className="block sm:inline">{successMessage}</span>
                     </div>
                 )}
