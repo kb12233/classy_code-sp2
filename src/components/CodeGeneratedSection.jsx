@@ -1,4 +1,3 @@
-//CodeGeneratedSection.jsx
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import MDEditor, { commands } from "@uiw/react-md-editor";
@@ -10,7 +9,6 @@ import * as React from 'react';
 export default function CodeGeneratedSection() {
   const [generatedCode] = useAtom(generatedCodeAtom);
   const [loading, setLoading] = React.useState(true);
-  const grayish = "#303030"; // Define the grayish color here
   const skeletonArray = [
     { height: 35, width: 800 },
     { height: 35, width: 700 },
@@ -25,6 +23,8 @@ export default function CodeGeneratedSection() {
     { height: 35, width: 550 },
     { height: 35, width: 500 },
   ];
+
+  const grayish = "#303030";
 
   const simulateLoading = () => {
     setLoading(true);
@@ -60,30 +60,29 @@ export default function CodeGeneratedSection() {
         <Box className="flex flex-col space-y-3" sx={{ width: '100%', marginTop: '3%', marginLeft: '3%' }}>
           <Box className="space-y-5">
           {skeletonArray.map((skeleton, index) => (
-    <Skeleton
-      key={index}
-      height={skeleton.height}
-      width={skeleton.width}
-      animation="wave"
-    />
-  ))}
+      <Skeleton
+        key={index}
+        height={skeleton.height}
+        width={skeleton.width}
+        animation="wave"
+      />
+    ))}
           </Box>
         </Box>
       ) : generatedCode ? (
         <Box sx={{ height: '100%', overflowY: 'auto' }}>
-          <MDEditor
-            value={generatedCode}
+          <MDEditor 
+            value={generatedCode} 
             preview="preview"
             commands={[]}
             extraCommands={[commands.fullscreen]}
             style={{
-              minHeight: "100%",
-              height: "100%",
+              minHeight: "100%", 
+              height: "100%", 
               width: "100%",
-              fontFamily: 'JetBrains Mono, monospace', // Added font family
-              backgroundColor: grayish, // Set background color to grayish
-            }}
-          />
+              fontFamily: 'JetBrains Mono',
+              backgroundColor: grayish, 
+          }}  />
         </Box>
       ) : (
         <p style={{ color: "white", fontFamily: 'JetBrains Mono',}}>No code generated yet.</p>

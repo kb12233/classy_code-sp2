@@ -1,26 +1,20 @@
-//GenerateButton.jsx
 import { Button } from '@mui/material';
 import { useAtom } from 'jotai';
-import {
-  plantUmlCodeAtom,
-  selectedLanguageAtom,
-  generatedCodeAtom,
-  loadingOperationAtom,
-  historyAtom,
-  uploadedImageAtom,
-  uploadedFileNameAtom,
-} from '../atoms';
+import { 
+  plantUmlCodeAtom, selectedLanguageAtom, 
+  generatedCodeAtom, loadingOperationAtom,
+  uploadedImageAtom, uploadedFileNameAtom, 
+  } from '../atoms';
 import PlantUMLTranspiler from 'plantuml-transpiler';
 import { account } from '../appwrite/config';
 import { saveHistory } from '../appwrite/HistoryService';
 import { useEffect, useState } from 'react';
 
-export default function GenerateCode({}) {
+export default function GenerateCode() {
   const [plantUMLCode] = useAtom(plantUmlCodeAtom);
   const [language] = useAtom(selectedLanguageAtom);
   const [generatedCode, setGeneratedCode] = useAtom(generatedCodeAtom);
-  const [isLoading, setIsLoading] = useAtom(loadingOperationAtom);
-  const [history, setHistory] = useAtom(historyAtom);
+  const [, setIsLoading] = useAtom(loadingOperationAtom);
   const [image] = useAtom(uploadedImageAtom);
   const [fileName] = useAtom(uploadedFileNameAtom);
   const [userID, setUserID] = useState(null);
@@ -43,7 +37,7 @@ export default function GenerateCode({}) {
       console.warn("No PlantUML code to convert");
       return;
     }
-
+    
     setIsLoading(true);
     try {
       const transpiler = new PlantUMLTranspiler();
@@ -59,36 +53,33 @@ export default function GenerateCode({}) {
 
   useEffect(() => {
     if (generatedCode && userID && plantUMLCode) {
-      if (typeof fileName !== 'string' || !fileName) {
-        console.error('Filename is invalid', fileName);
-        return;
-      }
-      saveHistory(userID, image, generatedCode, language, plantUMLCode, fileName);
+        if (typeof fileName !== 'string' || !fileName) {
+            console.error('Filename is invalid', fileName);
+            return;
+        }
+        console.log("Image atom value before saveHistory:", image); 
+        saveHistory(userID, image, generatedCode, language, plantUMLCode, fileName);
     }
-  }, [generatedCode, userID, image, fileName, plantUMLCode]);
+}, [generatedCode, userID, image, fileName, plantUMLCode, language]);
 
-  return (
-    <Button
-      variant="contained"
-      sx={{
-        bgcolor: 'white',
-        color: 'black',
-        fontFamily: 'JetBrains Mono',
-        fontWeight: 'bold',
-        fontSize: 24,
-        // paddingTop: '1%', // Adjusted padding
-        // paddingBottom: '1%', // Adjusted padding
-        paddingLeft: '2%',  // Adjusted padding
-        paddingRight: '2%', // Adjusted padding
-        height: "auto",     // Allow height to adjust to content
-        minHeight: "auto",  // Allow minHeight to adjust
-        // width: "auto",     // Allow width to adjust to content
-        // maxWidth: "none",  // Remove maxWidth
-        minWidth: 250,
-      }}
-      onClick={handleGenerateClick}
-    >
-      GENERATE
-    </Button>
-  );
+return (
+  <Button
+    variant="contained"
+    sx={{
+      bgcolor: 'white',
+      color: 'black',
+      fontFamily: 'JetBrains Mono',
+      fontWeight: 'bold',
+      fontSize: 24,
+      paddingLeft: '2%',  
+      paddingRight: '2%', 
+      height: "auto",     
+      minHeight: "auto",  
+      minWidth: 250,
+    }}
+    onClick={handleGenerateClick}
+  >
+    GENERATE
+  </Button>
+);
 }

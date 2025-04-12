@@ -1,4 +1,3 @@
-//SelectLanguage.jsx
 import { FormControl, MenuItem, Select } from "@mui/material";
 import { useAtom } from "jotai";
 import { selectedLanguageAtom } from "../atoms";
@@ -16,12 +15,9 @@ export default function SelectLanguage() {
   return (
     <FormControl
       sx={{
-        // display: "flex", // No need for flex here, let the parent handle layout
-        // justifyContent: "center",
-        // alignItems: "flex-start",
-        height: "auto", // Adjust height as needed
-        minHeight: "auto", // Adjust minHeight as needed
-        width: "auto", // Allow width to adjust to content
+        height: "auto", 
+        minHeight: "auto", 
+        width: "auto", 
         marginRight: "2%",
         color: blackish,
         fontFamily: "JetBrains Mono",

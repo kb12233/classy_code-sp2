@@ -18,7 +18,7 @@ export default function LoadingOverlay({ message = "Loading..." }) {
       }}
     >
       <Box sx={{ textAlign: "center" }}>
-        <CircularProgress sx={{ color: "#B6D9D7" }} size={50} />
+        <CircularProgress sx={{ color: "#B4B4B4" }} size={50} />
         <Typography variant="h6" sx={{ color: "#fff", mt: 2, fontFamily: "JetBrains Mono" }}>
           {message} {/* Dynamically display the message */}
         </Typography>

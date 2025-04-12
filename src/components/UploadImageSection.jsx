@@ -1,30 +1,27 @@
-// UploadImageSection.jsx (Combined Upload Functionality - Edited - Styled Zoom Buttons)
-import React, { useState, useRef, useEffect } from "react";
-import { useAtom } from "jotai";
-import {
-  plantUmlCodeAtom, selectedModelAtom,
-  uploadedImageAtom, processingErrorAtom,
-  readableModelNameAtom, imageUploadLoadingAtom,
-  generatedCodeAtom, uploadedFileNameAtom,
-  selectedHistoryAtom,
+//UploadImageSection
+import { useState, useEffect, useRef } from "react";
+import { useAtom } from "jotai"; 
+import { 
+    plantUmlCodeAtom, selectedModelAtom,
+    uploadedImageAtom, processingErrorAtom,
+    readableModelNameAtom, imageUploadLoadingAtom,
+    generatedCodeAtom, uploadedFileNameAtom,
+    selectedHistoryAtom,
 } from "../atoms";
 import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import "@fontsource/jetbrains-mono";
 import LoadingOverlay from '../components/LoadingOverlay';
-import logoDark from '../assets/images/logo_dark.png'; // Import logo
-import { account } from "../appwrite/config"; // Import account for fetching user
-import Skeleton from '@mui/material/Skeleton';
+import logoDark from '../assets/images/logo_dark.png'; 
+import { account } from "../appwrite/config"; 
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 
 const darkbgColor = "#1E1E1E";
-const grayish = "#303030"; // Inspiration from UMLPreview
-const greencolor = "#B6D9D7"; // Inspiration from UMLPreview
-const zoombgColor = "#212121"; // Inspiration from UMLPreview
-const errorColor = "#ff6b6b";
+const grayish = "#303030"; 
+const greencolor = "#B6D9D7"; 
+const zoombgColor = "#212121"; 
 
 const capitalizeFirstLetter = (str) => {
   if (!str) {
@@ -48,7 +45,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    height: 'calc(100vh - 64px)', // Adjust for AppBar if present
+    height: 'calc(100vh - 64px)',
     backgroundColor: darkbgColor,
     fontFamily: 'monospace',
     color: '#eee',
@@ -57,7 +54,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    width: '85%', // Match Homepage content width
+    width: '85%', 
   },
   helloContainer: {
     display: 'flex',
@@ -126,7 +123,7 @@ const styles = {
     transition: "transform 0.3s ease-in-out",
   },
   placeholderText: {
-    color: greencolor, // Placeholder text color inspired by UMLPreview
+    color: greencolor, 
     fontFamily: 'JetBrains Mono, monospace',
     fontSize: '1em',
   },
@@ -139,7 +136,6 @@ const styles = {
   },
 };
 
-
 export default function UploadImageSection() {
   const [image, setImage] = useAtom(uploadedImageAtom);
   const [scale, setScale] = useState(1);
@@ -148,15 +144,18 @@ export default function UploadImageSection() {
   const [selectedModel] = useAtom(selectedModelAtom);
   const [readableModelName] = useAtom(readableModelNameAtom);
   const [, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
-  const [, setGeneratedCode] = useAtom(generatedCodeAtom);
+  const [, setGeneratedCode] = useAtom(generatedCodeAtom); 
   const [, setFileName] = useAtom(uploadedFileNameAtom);
   const [selectedHistory] = useAtom(selectedHistoryAtom);
   const fileInputRef = useRef(null);
   const [userName, setUserName] = useState("");
 
+  const errorColor = "#ff6b6b";
+
   useEffect(() => {
     getUserName().then(name => setUserName(name));
   }, []);
+
 
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
@@ -171,6 +170,7 @@ export default function UploadImageSection() {
 
       const formData = new FormData();
       formData.append("image", file);
+
       if (selectedModel) {
         formData.append("model", selectedModel);
       }
@@ -180,6 +180,7 @@ export default function UploadImageSection() {
           method: "POST",
           body: formData,
         });
+
         const data = await response.json();
         if (data.plantUML) {
           setPlantUMLCode(data.plantUML);
@@ -211,75 +212,75 @@ export default function UploadImageSection() {
     }
   };
 
-  return (
-    <div style={styles.container}>
-      <div style={styles.content}>
-        {(!image && !selectedHistory) ? (
-          <div style={styles.helloContainer}>
-            <img src={logoDark} alt="Logo" style={styles.logo} />
-            <h1 style={styles.helloText}>Hello, {userName}</h1>
+return (
+  <div style={styles.container}>
+    <div style={styles.content}>
+      {(!image && !selectedHistory) ? (
+        <div style={styles.helloContainer}>
+          <img src={logoDark} alt="Logo" style={styles.logo} />
+          <h1 style={styles.helloText}>Hello, {userName}</h1>
+        </div>
+      ) : null}
+      {(!image && !selectedHistory) ? (
+        <div style={styles.uploadBox}>
+          <div style={styles.textContainer}>
+            <p style={styles.uploadText}>Upload an image of a UML class diagram and convert it to code</p>
+            <p style={styles.instructionText}>// Click the "Browse File" button to select an image</p>
           </div>
-        ) : null}
-        {(!image && !selectedHistory) ? (
-          <div style={styles.uploadBox}>
-            <div style={styles.textContainer}>
-              <p style={styles.uploadText}>Upload an image of a UML class diagram and convert it to code</p>
-              <p style={styles.instructionText}>// Click the "Browse File" button to select an image</p>
-            </div>
-            <button style={styles.browseButton} onClick={handleBrowseClick}>
-              Browse File
-            </button>
-            <input
-              type="file"
-              accept="image/*"
-              hidden
-              onChange={handleImageUpload}
-              ref={fileInputRef}
-            />
-          </div>
-        ) : null}
+          <button style={styles.browseButton} onClick={handleBrowseClick}>
+            Browse File
+          </button>
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={handleImageUpload}
+            ref={fileInputRef}
+          />
+        </div>
+      ) : null}
 
-        {(image || selectedHistory) && (
-          <Box style={styles.imageContainer} onWheel={handleZoom}>
-            {selectedHistory ? (
-              <img
-                src={selectedHistory.photoURL}
-                alt="Image of selected history"
-                style={{ ...styles.imageDisplay, transform: `scale(${scale})` }}
-              />
-            ) : (
-              <img
-                src={image}
-                alt="Uploaded"
-                style={{ ...styles.imageDisplay, transform: `scale(${scale})` }}
-              />
-            )}
-            {isProcessing && <LoadingOverlay message={`Processing with ${readableModelName}`} />}
-            {processingError && (
-              <Typography
-                sx={{
-                  position: "absolute",
-                  bottom: 16,
-                  right: 16,
-                  color: errorColor,
-                  fontSize: "14px",
-                  fontFamily: "JetBrains Mono",
-                }}
-              >
-                Error: {processingError}
-              </Typography>
-            )}
-            <Box sx={{ position: 'absolute', bottom: 16, right: 16, display: 'flex', gap: 1, backgroundColor: zoombgColor, padding: 1, borderRadius: 2 }}>
-              <Button onClick={() => setScale(prev => Math.min(prev + 0.1, 3))} size="small" variant="outlined" sx={styles.zoomButton}>
-                <ZoomInIcon />
-              </Button>
-              <Button onClick={() => setScale(prev => Math.max(prev - 0.1, 1))} size="small" variant="outlined" sx={styles.zoomButton}>
-                <ZoomOutIcon />
-              </Button>
-            </Box>
+      {(image || selectedHistory) && (
+        <Box style={styles.imageContainer} onWheel={handleZoom}>
+          {selectedHistory ? (
+            <img
+              src={selectedHistory.photoURL}
+              alt="Image of selected history"
+              style={{ ...styles.imageDisplay, transform: `scale(${scale})` }}
+            />
+          ) : (
+            <img
+              src={image}
+              alt="Uploaded"
+              style={{ ...styles.imageDisplay, transform: `scale(${scale})` }}
+            />
+          )}
+          {isProcessing && <LoadingOverlay message={`Processing with ${readableModelName}`} />}
+          {processingError && (
+            <Typography
+              sx={{
+                position: "absolute",
+                bottom: 16,
+                right: 16,
+                color: errorColor,
+                fontSize: "14px",
+                fontFamily: "JetBrains Mono",
+              }}
+            >
+              Error: {processingError}
+            </Typography>
+          )}
+          <Box sx={{ position: 'absolute', bottom: 16, right: 16, display: 'flex', gap: 1, backgroundColor: zoombgColor, padding: 1, borderRadius: 2 }}>
+            <Button onClick={() => setScale(prev => Math.min(prev + 0.1, 3))} size="small" variant="outlined" sx={styles.zoomButton}>
+              <ZoomInIcon />
+            </Button>
+            <Button onClick={() => setScale(prev => Math.max(prev - 0.1, 1))} size="small" variant="outlined" sx={styles.zoomButton}>
+              <ZoomOutIcon />
+            </Button>
           </Box>
-        )}
-      </div>
+        </Box>
+      )}
     </div>
-  );
+  </div>
+);
 }
