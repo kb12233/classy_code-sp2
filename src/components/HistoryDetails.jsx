@@ -64,11 +64,6 @@ const HistoryDetails = () => {
                     fontFamily: 'JetBrains Mono',
                     fontSize: 14,
                     color: white10,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    maxWidth: '250px',
-                    
                 }}
             > Filename: {selectedHistory.fileName}
             </Typography>

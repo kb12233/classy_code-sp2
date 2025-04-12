@@ -46,7 +46,6 @@ const MenuAppBar = forwardRef((props, ref) => {
     const greencolor = '#B6D9D7';
     const white = '#ffffff';
     const white10 = '#B4B4B4';
-    const disabledColor = '#6C6C6C';
 
     const isMobile = useMediaQuery('(max-width: 600px)');
 
@@ -59,6 +58,7 @@ const MenuAppBar = forwardRef((props, ref) => {
         setSignOutLoading(true);
         try {
           await logoutUser();
+          props.onSignOut(); 
           navigate('/login');
         } catch(error) {
           console.error("Logout failed:", error.message);
