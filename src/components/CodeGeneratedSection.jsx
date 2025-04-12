@@ -24,6 +24,8 @@ export default function CodeGeneratedSection() {
     { height: 35, width: 500 },
   ];
 
+  const grayish = "#303030";
+
   const simulateLoading = () => {
     setLoading(true);
     const timer = setTimeout(() => setLoading(false), 2000);
@@ -42,8 +44,9 @@ export default function CodeGeneratedSection() {
     <Container
       maxWidth="sx"
       sx={{
-        height: "80vh",
-        bgcolor: '#303134',
+        height: "70vh",
+        width: "70%",
+        bgcolor: '#303030',
         borderRadius: '1vh',
         display: 'flex',
         flexDirection: 'column',
@@ -77,7 +80,8 @@ export default function CodeGeneratedSection() {
               minHeight: "100%", 
               height: "100%", 
               width: "100%",
-              backgroundColor: "#303134", 
+              fontFamily: 'JetBrains Mono',
+              backgroundColor: grayish, 
           }}  />
         </Box>
       ) : (

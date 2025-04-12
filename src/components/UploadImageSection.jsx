@@ -1,20 +1,140 @@
 //UploadImageSection
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAtom } from "jotai"; 
-import {
-  plantUmlCodeAtom, selectedModelAtom,
+import { 
+    plantUmlCodeAtom, selectedModelAtom,
     uploadedImageAtom, processingErrorAtom,
     readableModelNameAtom, imageUploadLoadingAtom,
     generatedCodeAtom, uploadedFileNameAtom,
     selectedHistoryAtom,
 } from "../atoms";
 import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import AddIcon from "@mui/icons-material/Add";
 import "@fontsource/jetbrains-mono";
 import LoadingOverlay from '../components/LoadingOverlay';
+import logoDark from '../assets/images/logo_dark.png'; 
+import { account } from "../appwrite/config"; 
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import ZoomOutIcon from '@mui/icons-material/ZoomOut';
+
+const darkbgColor = "#1E1E1E";
+const grayish = "#303030"; 
+const greencolor = "#B6D9D7"; 
+const zoombgColor = "#212121"; 
+
+const capitalizeFirstLetter = (str) => {
+  if (!str) {
+    return "";
+  }
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
+async function getUserName() {
+  try {
+    const user = await account.get();
+    return capitalizeFirstLetter(user.name);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return "[username]";
+  }
+}
+
+const styles = {
+  container: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 'calc(100vh - 64px)',
+    backgroundColor: darkbgColor,
+    fontFamily: 'monospace',
+    color: '#eee',
+  },
+  content: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '85%', 
+  },
+  helloContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '20px',
+  },
+  logo: {
+    height: 50,
+    marginRight: '15px',
+  },
+  helloText: {
+    fontSize: '2.5em',
+    margin: 0,
+  },
+  uploadBox: {
+    display: 'flex',
+    alignItems: 'center',
+    backgroundColor: darkbgColor,
+    padding: '50px',
+    borderRadius: '10px',
+    border: '2px solid #555',
+    marginBottom: '20px',
+  },
+  textContainer: {
+    marginRight: '20px',
+  },
+  uploadText: {
+    fontSize: '1em',
+    margin: 0,
+  },
+  instructionText: {
+    fontSize: '0.8em',
+    color: '#aaa',
+    margin: '5px 0 0 0',
+  },
+  browseButton: {
+    backgroundColor: '#303030',
+    color: '#eee',
+    border: '2px solid #454545',
+    padding: '10px 20px',
+    borderRadius: '10px',
+    cursor: 'pointer',
+    fontSize: '1em',
+    transition: 'background-color 0.3s ease',
+  },
+  browseButtonHover: {
+    backgroundColor: '#777',
+  },
+  imageContainer: {
+    width: "80%",
+    height: "70vh",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+    position: "relative",
+    backgroundColor: grayish,
+    borderRadius: "10px",
+  },
+  imageDisplay: {
+    maxWidth: "100%",
+    maxHeight: "100%",
+    objectFit: "contain",
+    transformOrigin: "center",
+    transition: "transform 0.3s ease-in-out",
+  },
+  placeholderText: {
+    color: greencolor, 
+    fontFamily: 'JetBrains Mono, monospace',
+    fontSize: '1em',
+  },
+  zoomButton: {
+    color: '#eee',
+    borderColor: '#555',
+    '&:hover': {
+      borderColor: '#eee',
+    },
+  },
+};
 
 export default function UploadImageSection() {
   const [image, setImage] = useAtom(uploadedImageAtom);
@@ -27,18 +147,15 @@ export default function UploadImageSection() {
   const [, setGeneratedCode] = useAtom(generatedCodeAtom); 
   const [, setFileName] = useAtom(uploadedFileNameAtom);
   const [selectedHistory] = useAtom(selectedHistoryAtom);
+  const fileInputRef = useRef(null);
+  const [userName, setUserName] = useState("");
 
-  const grayish = "#303134";
-  const greencolor = "#B6D9D7";
   const errorColor = "#ff6b6b";
 
-  const resetSections = () => {
-    setPlantUMLCode(""); 
-    setGeneratedCode(""); 
-    setProcessingError(""); 
-    setIsProcessing(false); 
-    setScale(1); 
-  };
+  useEffect(() => {
+    getUserName().then(name => setUserName(name));
+  }, []);
+
 
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
@@ -48,6 +165,8 @@ export default function UploadImageSection() {
       setScale(1);
       setIsProcessing(true);
       setProcessingError("");
+      setPlantUMLCode("");
+      setGeneratedCode("");
 
       const formData = new FormData();
       formData.append("image", file);
@@ -87,167 +206,81 @@ export default function UploadImageSection() {
     });
   };
 
-  return (
-    <Container
-        maxWidth="sx"
-        sx={{
-            bgcolor: grayish,
-            borderRadius: "1vh",
-            height: "80vh",
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            position: "relative",
-            overflow: "hidden",
-            flexDirection: "column",
-        }}
-    >
-        {image ? (
-            <Box
-                sx={{
-                    width: "100%",
-                    height: "50vh",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    overflow: "hidden",
-                    position: "relative",
-                }}
-                onWheel={handleZoom}
+  const handleBrowseClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+return (
+  <div style={styles.container}>
+    <div style={styles.content}>
+      {(!image && !selectedHistory) ? (
+        <div style={styles.helloContainer}>
+          <img src={logoDark} alt="Logo" style={styles.logo} />
+          <h1 style={styles.helloText}>Hello, {userName}</h1>
+        </div>
+      ) : null}
+      {(!image && !selectedHistory) ? (
+        <div style={styles.uploadBox}>
+          <div style={styles.textContainer}>
+            <p style={styles.uploadText}>Upload an image of a UML class diagram and convert it to code</p>
+            <p style={styles.instructionText}>// Click the "Browse File" button to select an image</p>
+          </div>
+          <button style={styles.browseButton} onClick={handleBrowseClick}>
+            Browse File
+          </button>
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={handleImageUpload}
+            ref={fileInputRef}
+          />
+        </div>
+      ) : null}
+
+      {(image || selectedHistory) && (
+        <Box style={styles.imageContainer} onWheel={handleZoom}>
+          {selectedHistory ? (
+            <img
+              src={selectedHistory.photoURL}
+              alt="Image of selected history"
+              style={{ ...styles.imageDisplay, transform: `scale(${scale})` }}
+            />
+          ) : (
+            <img
+              src={image}
+              alt="Uploaded"
+              style={{ ...styles.imageDisplay, transform: `scale(${scale})` }}
+            />
+          )}
+          {isProcessing && <LoadingOverlay message={`Processing with ${readableModelName}`} />}
+          {processingError && (
+            <Typography
+              sx={{
+                position: "absolute",
+                bottom: 16,
+                right: 16,
+                color: errorColor,
+                fontSize: "14px",
+                fontFamily: "JetBrains Mono",
+              }}
             >
-                {selectedHistory ? (
-                    <img
-                        src={selectedHistory.photoURL}
-                        alt="Image of selected history"
-                        style={{
-                            maxWidth: "100%",
-                            maxHeight: "100%",
-                            objectFit: "contain",
-                            transform: `scale(${scale})`,
-                            transformOrigin: "center",
-                            transition: "transform 0.3s ease-in-out",
-                        }}
-                    />
-                ) : (
-                    <Box
-                        sx={{
-                            width: "100%",
-                            height: "50vh",
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            overflow: "hidden",
-                            position: "relative",
-                        }}
-                        onWheel={handleZoom}
-                    >
-                        <img
-                            src={image}
-                            alt="Uploaded"
-                            style={{
-                                maxWidth: "100%",
-                                maxHeight: "100%",
-                                objectFit: "contain",
-                                transform: `scale(${scale})`,
-                                transformOrigin: "center",
-                                transition: "transform 0.3s ease-in-out",
-                            }}
-                        />
-                        <Button
-                            component="label"
-                            variant="contained"
-                            onClick={resetSections}
-                            sx={{
-                                position: "absolute",
-                                bottom: 16,
-                                right: 16,
-                                bgcolor: "rgba(77, 75, 75, 0.99)",
-                                color: "white",
-                                borderRadius: "50%",
-                                width: 60,
-                                height: 60,
-                                minWidth: "auto",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                "&:hover": { bgcolor: "rgba(134, 131, 131, 0.99)" },
-                            }}
-                        >
-                            <AddIcon sx={{ fontSize: 28, color: greencolor }} />
-                            <input type="file" accept="image/*" hidden onChange={handleImageUpload} />
-                        </Button>
-
-                        {isProcessing && <LoadingOverlay message={`Processing with ${readableModelName}`} />}
-                        {processingError && (
-                            <Typography
-                                sx={{
-                                    position: "absolute",
-                                    bottom: 90,
-                                    right: 16,
-                                    color: errorColor,
-                                    fontSize: "14px",
-                                    fontFamily: "JetBrains Mono",
-                                }}
-                            >
-                                Error: {processingError}
-                            </Typography>
-                        )}
-                    </Box>
-                )}
-            </Box>
-        ) : (
-            <Box display="flex" flexDirection="column" alignItems="center">
-                <Button
-                    component="label"
-                    variant="contained"
-                    sx={{
-                        bgcolor: "rgba(255, 255, 255, 0.2)",
-                        color: greencolor,
-                        borderRadius: "50%",
-                        width: 60,
-                        height: 60,
-                        minWidth: "auto",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        "&:hover": { bgcolor: "rgba(255, 255, 255, 0.3)" },
-                    }}
-                >
-                    <AddIcon sx={{ fontSize: 32 }} />
-                    <input type="file" accept="image/*" hidden onChange={handleImageUpload} />
-                </Button>
-
-                <Typography
-                    sx={{
-                        color: greencolor,
-                        marginTop: 1.5,
-                        fontSize: "16px",
-                        fontWeight: 500,
-                        textAlign: "center",
-                        fontFamily: "JetBrains Mono",
-                    }}
-                >
-                    Upload a Class Diagram
-                </Typography>
-
-                {selectedModel && (
-                    <Typography
-                        sx={{
-                            color: "rgba(255, 255, 255, 0.7)",
-                            marginTop: 1,
-                            fontSize: "14px",
-                            textAlign: "center",
-                            fontFamily: "JetBrains Mono",
-                        }}
-                    >
-                        Using {readableModelName}
-                    </Typography>
-                )}
-            </Box>
-        )}
-    </Container>
+              Error: {processingError}
+            </Typography>
+          )}
+          <Box sx={{ position: 'absolute', bottom: 16, right: 16, display: 'flex', gap: 1, backgroundColor: zoombgColor, padding: 1, borderRadius: 2 }}>
+            <Button onClick={() => setScale(prev => Math.min(prev + 0.1, 3))} size="small" variant="outlined" sx={styles.zoomButton}>
+              <ZoomInIcon />
+            </Button>
+            <Button onClick={() => setScale(prev => Math.max(prev - 0.1, 1))} size="small" variant="outlined" sx={styles.zoomButton}>
+              <ZoomOutIcon />
+            </Button>
+          </Box>
+        </Box>
+      )}
+    </div>
+  </div>
 );
 }

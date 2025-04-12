@@ -1,26 +1,20 @@
 import { Button } from '@mui/material';
-import Container from '@mui/material/Container';
 import { useAtom } from 'jotai';
 import { 
-  plantUmlCodeAtom, 
-  selectedLanguageAtom, 
-  generatedCodeAtom,
-  loadingOperationAtom,
-  historyAtom,
-  uploadedImageAtom,
-  uploadedFileNameAtom, 
-} from '../atoms';
+  plantUmlCodeAtom, selectedLanguageAtom, 
+  generatedCodeAtom, loadingOperationAtom,
+  uploadedImageAtom, uploadedFileNameAtom, 
+  } from '../atoms';
 import PlantUMLTranspiler from 'plantuml-transpiler';
 import { account } from '../appwrite/config';
 import { saveHistory } from '../appwrite/HistoryService';
 import { useEffect, useState } from 'react';
 
-export default function GenerateCode({}) {
+export default function GenerateCode() {
   const [plantUMLCode] = useAtom(plantUmlCodeAtom);
   const [language] = useAtom(selectedLanguageAtom);
   const [generatedCode, setGeneratedCode] = useAtom(generatedCodeAtom);
-  const [isLoading, setIsLoading] = useAtom(loadingOperationAtom);
-  const [history, setHistory] = useAtom(historyAtom);
+  const [, setIsLoading] = useAtom(loadingOperationAtom);
   const [image] = useAtom(uploadedImageAtom);
   const [fileName] = useAtom(uploadedFileNameAtom);
   const [userID, setUserID] = useState(null);
@@ -63,43 +57,29 @@ export default function GenerateCode({}) {
             console.error('Filename is invalid', fileName);
             return;
         }
+        console.log("Image atom value before saveHistory:", image); 
         saveHistory(userID, image, generatedCode, language, plantUMLCode, fileName);
     }
-  }, [generatedCode, userID, image, fileName, plantUMLCode]);
+}, [generatedCode, userID, image, fileName, plantUMLCode, language]);
 
-  return (
-    <Container
-      maxWidth="sx"
-      sx={{
-        height: '8vh',
-        flex: 1,
-        marginLeft: -0.5,
-        width: '50vh',
-      }}
-    >
-      <Button
-        variant="contained"
-        sx={{
-          bgcolor: '#b8dbd9',
-          color: 'black',
-          fontFamily: 'JetBrains Mono',
-          fontWeight: 'bold',
-          fontSize: 24,
-          paddingTop: '2%',
-          paddingBottom: '2%',
-          paddingLeft: '15%',
-          paddingRight: '15%',
-          height: "75%",
-          minHeight: "75%",
-          width: "100%",
-          maxWidth: "11000px",
-        }}
-        onClick={handleGenerateClick}
-        // disabled={isLoading || !plantUMLCode}
-      >
-        {/* {isLoading ? 'GENERATING...' : 'GENERATE'} */}
-        GENERATE
-      </Button>
-    </Container>
-  );
+return (
+  <Button
+    variant="contained"
+    sx={{
+      bgcolor: 'white',
+      color: 'black',
+      fontFamily: 'JetBrains Mono',
+      fontWeight: 'bold',
+      fontSize: 24,
+      paddingLeft: '2%',  
+      paddingRight: '2%', 
+      height: "auto",     
+      minHeight: "auto",  
+      minWidth: 250,
+    }}
+    onClick={handleGenerateClick}
+  >
+    GENERATE
+  </Button>
+);
 }

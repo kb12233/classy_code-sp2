@@ -17,7 +17,7 @@ const UMLPreviewDisplay = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedHistory] = useAtom(selectedHistoryAtom);
 
-  const grayish = "#303134";
+  const grayish = "#303030";
   const greencolor = "#B6D9D7";
   const markdownSkeletonArray = [
     { height: 30, width: 550 },
@@ -65,8 +65,7 @@ const UMLPreviewDisplay = () => {
     <div className="flex flex-col gap-8" style={{ height: '80vh', width: '85%' }}>
         <div className="flex flex-row gap-8" style={{ height: '70vh' }}>
             {/* Markdown Editor Section */}
-            <div className="border rounded-lg shadow-lg overflow-hidden " style={{ backgroundColor: grayish, flex: 1, maxHeight: '70vh' }}>
-                <h2 className="text-xl p-4 border-b" style={{ color: "white", fontFamily: 'JetBrains Mono, monospace' }}>Markdown Editor</h2>
+            <div className="rounded-lg shadow-lg overflow-hidden " style={{ backgroundColor: grayish, flex: 1, maxHeight: '70vh' }}>
                 {loading && !isEditing && plantUMLCode ? (
                     <Box className="flex flex-col space-y-3" sx={{ width: '100%', padding: '3%' }}>
                         {markdownSkeletonArray.map((skeleton, index) => (
@@ -89,15 +88,20 @@ const UMLPreviewDisplay = () => {
                             setIsEditing(true);
                         }}
                         onBlur={() => setIsEditing(false)}
-                        height="calc(100% - 56px)"
-                        style={{ fontFamily: 'JetBrains Mono, monospace' }}
+                        height="calc(100% - 10px)"
+                        style=
+                        {{ 
+                            fontFamily: 'JetBrains Mono, monospace',
+                            backgroundColor: grayish,
+                            
+                        }}
                     />
                 )}
             </div>
 
             {/* UML Preview Section */}
             <div
-                className="border rounded-lg shadow-lg overflow-hidden flex items-center justify-center"
+                className="rounded-lg shadow-lg overflow-hidden flex items-center justify-center"
                 style={{ backgroundColor: grayish, flex: 1, maxHeight: '70vh' }}
             >   {loading && !isEditing ? (
                     <Box className="flex flex-col space-y-3 " sx={{ marginTop: '3%' }}>
@@ -138,10 +142,16 @@ const UMLPreviewDisplay = () => {
             {selectedHistory ? (
                 <HistoryDetails />
             ) : (
-                <div className="flex flex-row gap-4">
-                    <GenerateCode />
+                <Box sx={{
+                    width: "100%",
+                    display: 'flex',
+                    justifyContent: 'center', 
+                    alignItems: 'center',
+                    marginBottom: '1rem'
+                }}>
                     <SelectLanguage />
-                </div>
+                    <GenerateCode />
+                </Box>
             )}
         </div>
     </div>
