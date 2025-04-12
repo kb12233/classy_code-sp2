@@ -5,6 +5,7 @@ import {
     selectedModelAtom, modelsAtom,
     modelsLoadingAtom, groupedModelsAtom,
     plantUmlCodeAtom, generatedCodeAtom,
+    uploadedImageAtom,
 } from '../atoms';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -24,6 +25,7 @@ import { useAuth } from '../utils/AuthContext';
 import LoadingOverlay from './LoadingOverlay';
 import Sidebar from './SideBar';
 import RestartAltIcon from '@mui/icons-material/RestartAlt'; 
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const MenuAppBar = forwardRef((props, ref) => {
     const sidebarRef = useRef(null);
@@ -36,6 +38,7 @@ const MenuAppBar = forwardRef((props, ref) => {
     const [groupedModels] = useAtom(groupedModelsAtom);
     const [plantUMLCode] = useAtom(plantUmlCodeAtom);
     const [generatedCode] = useAtom(generatedCodeAtom);
+    const [image] = useAtom(uploadedImageAtom);
     const [signOutLoading, setSignOutLoading] = useState(false);
     const navigate = useNavigate();
     const { logoutUser } = useAuth();
@@ -43,6 +46,7 @@ const MenuAppBar = forwardRef((props, ref) => {
     const greencolor = '#B6D9D7';
     const white = '#ffffff';
     const white10 = '#B4B4B4';
+    const disabledColor = '#6C6C6C';
 
     const isMobile = useMediaQuery('(max-width: 600px)');
 
@@ -189,14 +193,19 @@ return (
                                     </Select>
                                 )}
                             </FormControl>
+
                             {/* Restart Icon */}
                             <IconButton
                                 color="inherit"
                                 onClick={props.onRestart}
                                 aria-label="reset model selection"
-                                title="Reset Model Selection"
+                                title="Restart"
+                                disabled={!image}
+                                sx={{
+                                    color: !image ? white : 'inherit', 
+                                }}
                             >
-                                <RestartAltIcon sx={{ color: white }} />
+                                <RestartAltIcon sx={{ color: 'inherit' }} /> 
                             </IconButton>
                         </Box>
                     )}
@@ -240,8 +249,9 @@ return (
                         onClose={handleClose}
                         sx={{ '.MuiPaper-root': { bgcolor: '#303134', color: greencolor } }}
                     >
+                        
                         <MenuItem onClick={handleSignOut} sx={{ fontFamily: 'JetBrains Mono', color: white }}>
-                            Sign-out
+                            <LogoutIcon sx={{size: 40, mr: 1,}}/> Sign Out
                         </MenuItem>
                     </Menu>
                 </Box>

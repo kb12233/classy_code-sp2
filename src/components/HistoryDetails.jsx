@@ -16,6 +16,8 @@ const HistoryDetails = () => {
     const [formattedDate, setFormattedDate] = useState('');
     const [formattedTime, setFormattedTime] = useState('');
 
+    const white10 = '#B4B4B4';
+
     useEffect(() => {
         if (selectedHistory?.$createdAt) {
             const date = new Date(selectedHistory.$createdAt);
@@ -48,7 +50,7 @@ const HistoryDetails = () => {
         <Box
             sx={{
                 backgroundColor: '#1e1e1e',
-                color: 'white',
+                color: white10,
                 borderRadius: 2,
                 padding: 2,
                 display: 'flex',
@@ -61,7 +63,12 @@ const HistoryDetails = () => {
                 sx={{
                     fontFamily: 'JetBrains Mono',
                     fontSize: 14,
-                    color: '#B6D9D7',
+                    color: white10,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    maxWidth: '250px',
+                    
                 }}
             > Filename: {selectedHistory.fileName}
             </Typography>
@@ -70,7 +77,7 @@ const HistoryDetails = () => {
                 sx={{
                     fontFamily: 'JetBrains Mono',
                     fontSize: 14,
-                    color: '#B6D9D7',
+                    color: white10,
                 }}
             > Language: {capitalizeFirstLetter(selectedHistory?.language)}
             </Typography>
@@ -79,7 +86,7 @@ const HistoryDetails = () => {
                 sx={{
                     fontFamily: 'JetBrains Mono',
                     fontSize: 14,
-                    color: '#B6D9D7',
+                    color: white10,
                 }}
             > Date: {formattedDate}
             </Typography>
@@ -88,7 +95,7 @@ const HistoryDetails = () => {
                 sx={{
                     fontFamily: 'JetBrains Mono',
                     fontSize: 14,
-                    color: '#B6D9D7',
+                    color: white10,
                 }}
             > Time: {formattedTime}
             </Typography>

@@ -91,8 +91,9 @@ const UMLPreviewDisplay = () => {
                         height="calc(100% - 10px)"
                         style=
                         {{ 
-                            fontFamily: 'JetBrains Mono, monospace',
+                            fontFamily: 'JetBrains Mono, monospace', 
                             backgroundColor: grayish,
+                            color: "white",
                             
                         }}
                     />
