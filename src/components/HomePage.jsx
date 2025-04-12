@@ -2,14 +2,16 @@ import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import { useAtom } from 'jotai';
 import { plantUmlCodeAtom, generatedCodeAtom, 
-    selectedHistoryAtom, uploadedImageAtom } from '../atoms';
+    selectedHistoryAtom, uploadedImageAtom,
+    selectedModelAtom
+} from '../atoms';
 import UploadImageSection from "./UploadImageSection";
 import UMLPreview from "./UmlPreview";
 import CodeGeneratedSection from "./CodeGeneratedSection";
-import { Typography } from "@mui/material";
 import MenuAppBar from "./AppBar";
 import { useState, useEffect, useRef, Fragment } from "react";
 import { account } from "../appwrite/config";   
+
 
 export default function Homepage() {
     const [plantUMLCode] = useAtom(plantUmlCodeAtom);
@@ -19,6 +21,7 @@ export default function Homepage() {
     const [, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
     const [, setGeneratedCode] = useAtom(generatedCodeAtom);
     const[, setHistory] = useAtom(selectedHistoryAtom);
+    const [, setSelectedModel] = useAtom(selectedModelAtom);
 
     const umlSectionRef = useRef(null);
     const codeSectionRef = useRef(null);
@@ -26,6 +29,8 @@ export default function Homepage() {
     const [isCodeGeneratedRendered, setIsCodeGeneratedRendered] = useState(false);
     const [isScrollable, setIsScrollable] = useState(false);
     const appBarRef = useRef(null);
+
+    const darkbgColor = "#1E1E1E";
 
     useEffect(() => {
         const loadHistoryData = async () => {
@@ -87,6 +92,7 @@ export default function Homepage() {
         if(selectedHistory) {
             setHistory(null);
         } 
+        setSelectedModel('');
         setUploadedImage(null);
         setPlantUMLCode('');
         setGeneratedCode('');
@@ -102,6 +108,8 @@ export default function Homepage() {
         if (appBarRef.current) {
             appBarRef.current.setActiveIcon('upload');
         }
+
+        console.log('Model selection and related sections reset');
     }
     
     const handleSectionVisible = (sectionId) => {
@@ -160,16 +168,11 @@ export default function Homepage() {
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
-                        backgroundColor: "#121212",
+                        backgroundColor: darkbgColor,
                         flexShrink: 0,
                     }}
                 >
                     <Box sx={{ width: "85%" }}>
-                        <Typography
-                            sx={{ color: "white", fontFamily: "JetBrains Mono", fontSize: 20, marginBottom: "1rem" }}
-                        >
-                            Class Diagram
-                        </Typography>
                         <UploadImageSection />
                     </Box>
                 </Box>
@@ -182,14 +185,16 @@ export default function Homepage() {
                             height: "calc(100vh - 64px)",
                             scrollSnapAlign: "start",
                             display: "flex",
+                            flexDirection: "column",
                             justifyContent: "center",
                             alignItems: "center",
-                            backgroundColor: "#121212",
+                            backgroundColor: darkbgColor,
                             flexShrink: 0,
                         }}
                     >
                         <UMLPreview />
                     </Box>
+                    
                 )}
 
                 {isCodeGeneratedRendered && (
@@ -200,23 +205,15 @@ export default function Homepage() {
                             height: "calc(100vh - 64px)",
                             scrollSnapAlign: "start",
                             display: "flex",
-                            justifyContent: "center",
+                            flexDirection: "column",
+                            justifyContent: "flex-start",
                             alignItems: "center",
-                            backgroundColor: "#121212",
+                            backgroundColor: darkbgColor,
                             flexShrink: 0,
+                            paddingTop: "2rem",
                         }}
                     >
-                        <Box sx={{ width: "85%" }}>
-                            <Typography
-                                sx={{
-                                    color: "white",
-                                    fontFamily: "JetBrains Mono",
-                                    fontSize: 20,
-                                    marginBottom: "1rem",
-                                }}
-                            >
-                                Generated Code
-                            </Typography>
+                        <Box sx={{ width: "85%", flexGrow: 1 ,marginTop: 5}}>
                             <CodeGeneratedSection />
                         </Box>
                     </Box>

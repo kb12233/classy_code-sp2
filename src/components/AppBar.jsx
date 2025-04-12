@@ -1,14 +1,10 @@
-// AppBar.jsx
 import  { useState, forwardRef, useImperativeHandle, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAtom } from 'jotai';
 import {
-    selectedModelAtom,
-    modelsAtom,
-    modelsLoadingAtom,
-    groupedModelsAtom,
-    plantUmlCodeAtom,
-    generatedCodeAtom,
+    selectedModelAtom, modelsAtom,
+    modelsLoadingAtom, groupedModelsAtom,
+    plantUmlCodeAtom, generatedCodeAtom,
 } from '../atoms';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -20,8 +16,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Toolbar from '@mui/material/Toolbar';
-import { useMediaQuery, Typography, CircularProgress } from '@mui/material';
-import logoDark from '../assets/images/logo_dark.png';
+import { useMediaQuery } from '@mui/material';
 import AddPhotoAlternate from '@mui/icons-material/AddPhotoAlternate';
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import CodeOutlined from '@mui/icons-material/CodeOutlined';
@@ -46,10 +41,12 @@ const MenuAppBar = forwardRef((props, ref) => {
     const { logoutUser } = useAuth();
 
     const greencolor = '#B6D9D7';
-    const greencolorLight = '#00ffe4'; //changing color of icons
+    const white = '#ffffff';
+    const white10 = '#B4B4B4';
+
     const isMobile = useMediaQuery('(max-width: 600px)');
 
-    const [activeIcon, setActiveIconState] = useState('upload'); // Initialize with the first icon
+    const [activeIcon, setActiveIconState] = useState('upload'); 
 
     const handleMenu = (event) => setAnchorEl(event.currentTarget);
     const handleClose = () => setAnchorEl(null);
@@ -76,7 +73,8 @@ const MenuAppBar = forwardRef((props, ref) => {
             sidebarRef.current.loadHistory(); 
         }
 
-        setDrawerOpen(open);
+        // setDrawerOpen(open);
+        setDrawerOpen((prev) => !prev);
     };
 
     const handleIconClick = (sectionId) => {
@@ -109,28 +107,26 @@ const MenuAppBar = forwardRef((props, ref) => {
     useImperativeHandle(ref, () => ({
         setActiveIcon: setActiveIcon,
         getIconIdFromSectionId: getIconIdFromSectionId,
-        activeIcon: activeIcon, // Expose activeIcon
+        activeIcon: activeIcon, 
     }));
 
-    return (
-        <Box sx={{ flexGrow: 1 }}>
-            {signOutLoading && <LoadingOverlay message="Signing out..." />}
-            <AppBar position="static" sx={{ backgroundColor: '#121212', maxHeight: '10vh', width: '100vw' }}>
-                <Toolbar sx={{ justifyContent: 'space-between', px: isMobile ? 1 : 3 }}>
-                    {/* Left Side: Menu Icon + Model Select */}
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <IconButton size="large" edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)}>
-                            <MenuIcon />
-                        </IconButton>
+return (
+    <Box sx={{ flexGrow: 1 }}>
+        {signOutLoading && <LoadingOverlay message="Signing out..." />}
+        <AppBar position="static" sx={{ backgroundColor: '#1E1E1E', maxHeight: '10vh', width: '100vw' }}>
+            <Toolbar sx={{ justifyContent: 'space-between', px: isMobile ? 1 : 3 }}>
+                {/* Left Side: Menu Icon + Model Select */}
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <IconButton size="large" edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)}>
+                        <MenuIcon />
+                    </IconButton>
 
-                        {!isMobile && (
-                            <FormControl sx={{ minWidth: 220 }} size="small">
+                    {!isMobile && (
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <FormControl sx={{ minWidth: 220, marginRight: 1 }} size="small">
                                 {loading ? (
                                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <CircularProgress size={20} sx={{ color: greencolor, marginRight: 1 }} />
-                                        <Typography sx={{ color: 'white', fontFamily: 'JetBrains Mono' }}>
-                                            Loading models...
-                                        </Typography>
+                                        <LoadingOverlay message="Loading models..." />
                                     </Box>
                                 ) : (
                                     <Select
@@ -146,15 +142,15 @@ const MenuAppBar = forwardRef((props, ref) => {
                                             PaperProps: {
                                                 sx: {
                                                     bgcolor: '#121212',
-                                                    color: greencolor,
+                                                    color: white10,
                                                     maxHeight: 300
                                                 }
                                             }
                                         }}
                                         sx={{
-                                            '.MuiOutlinedInput-notchedOutline': { borderColor: '#303134' },
-                                            '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: greencolor },
-                                            '.MuiSvgIcon-root': { color: greencolor, fontSize: 20 },
+                                            '.MuiOutlinedInput-notchedOutline': { borderColor: white },
+                                            '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: white10 },
+                                            '.MuiSvgIcon-root': { color: white10, fontSize: 20 },
                                             color: 'white',
                                             fontFamily: 'JetBrains Mono',
                                             fontSize: 16,
@@ -193,78 +189,68 @@ const MenuAppBar = forwardRef((props, ref) => {
                                     </Select>
                                 )}
                             </FormControl>
-                        )}
-                    </Box>
-
-                    {/* Restart Button */}
-                    <IconButton
-                        // eslint-disable-next-line react/prop-types
-                        onClick={props.onRestart}
-                        sx={{
-                            color: '#FFFFFF',
-                            marginLeft: 'auto', // pushes to the far right
-                        }}
-                        title="Restart"
-                        >
-                        <RestartAltIcon />
-                        </IconButton>
-
-                    {/* Centered Logo */}
-                    {!isMobile && (
-                        <Box sx={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
-                            <img src={logoDark} alt="Logo" style={{ height: 50 }} />
+                            {/* Restart Icon */}
+                            <IconButton
+                                color="inherit"
+                                onClick={props.onRestart}
+                                aria-label="reset model selection"
+                                title="Reset Model Selection"
+                            >
+                                <RestartAltIcon sx={{ color: white }} />
+                            </IconButton>
                         </Box>
                     )}
+                </Box>
 
-                    {/* Right Side: Icons and User Icon */}
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <IconButton
+                        color="inherit"
+                        onClick={() => handleIconClick('upload-image-section')}
+                        sx={{ color: activeIcon === 'upload' ? white : '#616161' }}
+                    >
+                        <AddPhotoAlternate />
+                    </IconButton>
+                    {(plantUMLCode || activeIcon === 'uml') && (
                         <IconButton
                             color="inherit"
-                            onClick={() => handleIconClick('upload-image-section')}
-                            sx={{ color: activeIcon === 'upload' ? greencolorLight : '#616161' }}
+                            onClick={() => handleIconClick('uml-preview-section')}
+                            sx={{ color: activeIcon === 'uml' ? white : '#616161' }}
                         >
-                            <AddPhotoAlternate />
+                            <BorderColorOutlinedIcon />
                         </IconButton>
-                        {(plantUMLCode || activeIcon === 'uml') && (
-                            <IconButton
-                                color="inherit"
-                                onClick={() => handleIconClick('uml-preview-section')}
-                                sx={{ color: activeIcon === 'uml' ? greencolorLight : '#616161' }}
-                            >
-                                <BorderColorOutlinedIcon />
-                            </IconButton>
-                        )}
-                        {(generatedCode || activeIcon === 'code') && (
-                            <IconButton
-                                color="inherit"
-                                onClick={() => handleIconClick('code-generated-section')}
-                                sx={{ color: activeIcon === 'code' ? greencolorLight : '#616161' }}
-                            >
-                                <CodeOutlined />
-                            </IconButton>
-                        )}
-                        <IconButton size="large" color="inherit" onClick={handleMenu} sx={{ ml: 1 }}>
-                            <AccountCircle fontSize='large' />
-                        </IconButton>
-                        <Menu
-                            anchorEl={anchorEl}
-                            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                            keepMounted
-                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                            open={Boolean(anchorEl)}
-                            onClose={handleClose}
-                            sx={{ '.MuiPaper-root': { bgcolor: '#303134', color: greencolor } }}
+                    )}
+                    {(generatedCode || activeIcon === 'code') && (
+                        <IconButton
+                            color="inherit"
+                            onClick={() => handleIconClick('code-generated-section')}
+                            sx={{ color: activeIcon === 'code' ? white : '#616161' }}
                         >
-                            <MenuItem onClick={handleSignOut} sx={{ fontFamily: 'JetBrains Mono' }}>
-                                Sign-out
-                            </MenuItem>
-                        </Menu>
-                    </Box>
-                </Toolbar>
-            </AppBar>
-            <Sidebar ref={sidebarRef} isDrawerOpen={isDrawerOpen} toggleDrawer={toggleDrawer} />
-        </Box>
-    );
+                            <CodeOutlined />
+                        </IconButton>
+                    )}
+                    <IconButton size="large" color="inherit" onClick={handleMenu} sx={{ ml: 1 }}>
+                        <AccountCircle fontSize='large' />
+                    </IconButton>
+                    <Menu
+                        anchorEl={anchorEl}
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                        keepMounted
+                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        open={Boolean(anchorEl)}
+                        onClose={handleClose}
+                        sx={{ '.MuiPaper-root': { bgcolor: '#303134', color: greencolor } }}
+                    >
+                        <MenuItem onClick={handleSignOut} sx={{ fontFamily: 'JetBrains Mono', color: white }}>
+                            Sign-out
+                        </MenuItem>
+                    </Menu>
+                </Box>
+            </Toolbar>
+        </AppBar>
+        {/* Sidebar Component */}
+        <Sidebar ref={sidebarRef} isDrawerOpen={isDrawerOpen} toggleDrawer={toggleDrawer} />
+    </Box>
+);
 });
 
 MenuAppBar.displayName = 'MenuAppBar'; 
