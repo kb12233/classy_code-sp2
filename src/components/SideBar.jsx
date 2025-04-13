@@ -10,18 +10,19 @@ import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import { IconButton, Menu, MenuItem } from '@mui/material';
+import { IconButton, Menu, MenuItem, Skeleton } from '@mui/material'; // Import Skeleton
 import { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { fetchHistory, deleteHistoryItem } from '../appwrite/HistoryService';
 import { account } from '../appwrite/config';
 import { SlOptionsVertical } from "react-icons/sl";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
-const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref) {
-    const white = '#ffffff';
-    const white10 = '#B4B4B4';
-    const red = '#df0100';
+const grayish = "#303030";
+const white = '#ffffff';
+const white10 = '#B4B4B4';
+const red = '#df0100';
 
+const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref) {
     const [historyData, setHistoryData] = useAtom(historyDataAtom);
     const [historyLoading, setHistoryLoading] = useAtom(historyLoadingAtom);
     const [selectedHistory, setSelectedHistory] = useAtom(selectedHistoryAtom);
@@ -53,7 +54,7 @@ const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref)
     }));
 
     useEffect(() => {
-        loadHistory(); 
+        loadHistory();
     }, []);
 
     const handleHistoryItemClick = (item) => {
@@ -76,7 +77,7 @@ const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref)
     };
 
     const handleMoreOptionsClick = (event, itemId) => {
-        event.stopPropagation(); 
+        event.stopPropagation();
         setSelectedItemId(itemId);
         setOptionsAnchorEl(event.currentTarget);
     };
@@ -88,12 +89,12 @@ const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref)
 
     const handleDeleteClick = async () => {
         handleOptionsClose();
-    
+
         if (selectedItemId) {
             setHistoryLoading(true);
             try {
                 await deleteHistoryItem(selectedItemId);
-    
+
                 if (selectedHistory?.$id === selectedItemId) {
                     setSelectedHistory(null);
                     setUploadedImage(null);
@@ -101,12 +102,12 @@ const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref)
                     setGeneratedCode('');
                     setLanguage('');
                 }
-    
+
                 const user = await account.get();
                 const fetchedHistory = await fetchHistory(user.$id);
                 setHistoryData(fetchedHistory);
 
-    
+
             } catch (error) {
                 console.error("Error deleting history item:", error);
             } finally {
@@ -114,7 +115,7 @@ const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref)
             }
         }
     };
-    
+
 
     return (
         <Drawer
@@ -137,11 +138,16 @@ const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref)
             </List>
             <Divider sx={{ bgcolor: white }} />
 
-            {historyLoading ? (
-                <></>
-            ) : (
-                <List>
-                    {historyData.map((item) => (
+            <List>
+                {historyLoading ? (
+                    // Render a list of skeleton items while loading
+                    Array.from({ length: 5 }).map((_, index) => (
+                        <ListItem key={`skeleton-${index}`} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 1 }}>
+                            <Skeleton variant="text" width={150} height={20} sx={{ flexGrow: 1, bgcolor: grayish }} />
+                        </ListItem>
+                    ))
+                ) : (
+                    historyData.map((item) => (
                         <ListItem
                             key={item.$id}
                             onClick={() => handleHistoryItemClick(item)}
@@ -150,10 +156,10 @@ const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref)
                                 '&:hover': {
                                     bgcolor: 'rgba(255, 255, 255, 0.2)',
                                 },
-                                
                                 display: 'flex',
                                 justifyContent: 'space-between',
                                 alignItems: 'center',
+                                py: 1,
                             }}
                         >
                             <ListItemText
@@ -171,9 +177,9 @@ const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref)
                                 <SlOptionsVertical color='white' size={15} />
                             </IconButton>
                         </ListItem>
-                    ))}
-                </List>
-            )}
+                    ))
+                )}
+            </List>
 
             <Menu
                 id="history-options-menu"
@@ -194,8 +200,7 @@ const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref)
                 sx={{
                     '& .MuiPaper-root': {
                         bgcolor: '#303134',
-                        color: white10,   
-                             
+                        color: white10,
                         fontFamily: 'JetBrains Mono'
                     },
                     '& .MuiMenuItem-root': {

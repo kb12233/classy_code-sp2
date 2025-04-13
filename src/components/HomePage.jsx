@@ -263,7 +263,7 @@ export default function Homepage() {
                         </Box>
                             </Box>
                             )}
-                        <Box sx={{ width: "85%", marginTop: 5, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <Box sx={{ width: "85%", marginTop: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <CodeGeneratedSection />
                         </Box>
                     </Box>

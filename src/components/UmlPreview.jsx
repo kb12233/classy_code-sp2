@@ -50,7 +50,7 @@ const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
       console.error("Error generating PlantUML diagram", error);
       setUmlImage("");
     } finally {
-      setTimeout(() => setLoading(false), 2000);
+      setTimeout(() => setLoading(false), 1000);
     }
   };
 
