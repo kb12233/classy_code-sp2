@@ -31,6 +31,7 @@ export default function Homepage() {
     const appBarRef = useRef(null);
 
     const darkbgColor = "#1E1E1E";
+    const commentColor = "#6C6C6C";
 
     useEffect(() => {
         const loadHistoryData = async () => {
@@ -212,6 +213,12 @@ export default function Homepage() {
                             flexShrink: 0,
                         }}
                     >
+                        <Box sx={{ width: "85%",  color: commentColor, fontFamily: 'JetBrains Mono, monospace', marginTop: 3, fontSize: '0.9rem',}}> 
+                            <p>// AI-generated PlantUML representation of the image.</p>
+                            <p>// You may edit it if you want to make some quick changes.</p>
+                            <p>// For more info on how to write using the custom syntax,</p>
+                            <p>// click here.</p>
+                        </Box>
                         <UMLPreview />
                     </Box>
                     
@@ -233,7 +240,7 @@ export default function Homepage() {
                             paddingTop: "2rem",
                         }}
                     >
-                        <Box sx={{ width: "85%", flexGrow: 1 ,marginTop: 5}}>
+                        <Box sx={{ width: "85%", marginTop: 5, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <CodeGeneratedSection />
                         </Box>
                     </Box>
