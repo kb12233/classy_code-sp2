@@ -8,6 +8,8 @@ import { plantUmlCodeAtom, generatedCodeAtom,
 import UploadImageSection from "./UploadImageSection";
 import UMLPreview from "./UmlPreview";
 import CodeGeneratedSection from "./CodeGeneratedSection";
+import SelectLanguage from "./SelectLanguage";
+import GenerateCode from "./GenerateButton";
 import MenuAppBar from "./AppBar";
 import { useState, useEffect, useRef, Fragment } from "react";
 import { account } from "../appwrite/config";   
@@ -219,7 +221,7 @@ export default function Homepage() {
                             <p>// For more info on how to write using the custom syntax,</p>
                             <p>// click here.</p>
                         </Box>
-                        <UMLPreview />
+                        <UMLPreview isCodeGeneratedVisible={isCodeGeneratedRendered}/>
                     </Box>
                     
                 )}
@@ -240,6 +242,27 @@ export default function Homepage() {
                             paddingTop: "2rem",
                         }}
                     >
+                        {selectedHistory ? (
+                            <></>
+                            ) : (
+                            <Box sx={{
+                                width: "100%",
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                marginBottom: '1rem'
+                            }}>
+                                <Box sx={{
+                            width: "85%",
+                            display: 'flex',
+                            justifyContent: 'center', 
+                            alignItems: 'center', 
+                        }}>
+                            <SelectLanguage />
+                            <GenerateCode />
+                        </Box>
+                            </Box>
+                            )}
                         <Box sx={{ width: "85%", marginTop: 5, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <CodeGeneratedSection />
                         </Box>
