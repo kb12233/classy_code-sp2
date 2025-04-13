@@ -16,7 +16,6 @@ import { fetchHistory, deleteHistoryItem } from '../appwrite/HistoryService';
 import { account } from '../appwrite/config';
 import { SlOptionsVertical } from "react-icons/sl";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import LoadingOverlay from './LoadingOverlay';
 
 const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref) {
     const white = '#ffffff';
@@ -139,7 +138,7 @@ const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref)
             <Divider sx={{ bgcolor: white }} />
 
             {historyLoading ? (
-                <LoadingOverlay message='Loading history...' />
+                <></>
             ) : (
                 <List>
                     {historyData.map((item) => (

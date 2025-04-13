@@ -12,7 +12,7 @@ import HistoryDetails from "./HistoryDetails";
 import IconButton from '@mui/material/IconButton';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
-const UMLPreviewDisplay = () => {
+const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
   const [plantUMLCode, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
   const [umlImage, setUmlImage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,7 +20,7 @@ const UMLPreviewDisplay = () => {
   const [selectedHistory] = useAtom(selectedHistoryAtom);
 
   const grayish = "#303030";
-  const greencolor = "#B6D9D7";
+  const whitish = "#ffffff";
   const markdownSkeletonArray = [
     { height: 30, width: 550 },
     { height: 30, width: 450 },
@@ -73,7 +73,7 @@ const UMLPreviewDisplay = () => {
         {/* Markdown Editor Section */}
         <div className="rounded-lg shadow-lg overflow-hidden flex flex-col" style={{ backgroundColor: grayish, flex: 1, maxHeight: '70vh' }}>
           <div className="w-full flex justify-end items-center p-2"> {/* Align items vertically */}
-            <IconButton aria-label="restart" onClick={handleRestart} size="small" sx={{ color: greencolor }} className="mr-2"> {/* Add margin-right */}
+            <IconButton aria-label="restart" onClick={handleRestart} size="small" sx={{ color: whitish }} className="mr-2"> {/* Add margin-right */}
               <RestartAltIcon />
             </IconButton>
 
@@ -140,7 +140,7 @@ const UMLPreviewDisplay = () => {
             <div className="flex items-center justify-center w-full h-full">
               <p
                 className="text-gray-500"
-                style={{ color: greencolor, fontFamily: 'JetBrains Mono, monospace' }}
+                style={{ color: whitish, fontFamily: 'JetBrains Mono, monospace' }}
               >
                 {plantUMLCode ? 'Generating UML diagram...' : 'Enter PlantUML code to preview.'}
               </p>
@@ -151,19 +151,15 @@ const UMLPreviewDisplay = () => {
 
       {/* History Details and Generate/Select Language Section */}
       <div className="flex flex-col gap-4">
-        {selectedHistory ? (
-          <HistoryDetails />
-        ) : (
-          <Box sx={{
-            width: "100%",
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginBottom: '1rem'
-          }}>
+        {selectedHistory && (
+        <HistoryDetails />
+        )}
+        {/* Conditionally render SelectLanguage and GenerateCode */}
+        {!selectedHistory && !isCodeGeneratedVisible && (
+        <div className="flex flex-row gap-4 justify-center">
             <SelectLanguage />
             <GenerateCode />
-          </Box>
+        </div>
         )}
       </div>
     </div>
