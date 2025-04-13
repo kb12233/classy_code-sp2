@@ -74,12 +74,32 @@ export const AuthProvider = ({ children }) => {
         }
         setLoading(false);
     };
+
+    const requestPasswordReset = async (email) => {
+        try {
+            await account.createRecovery(email, `${window.location.origin}/reset-password`);
+            // The link sent to the user will be: ourwebsite.com/reset-password#token=THE_RESET_TOKEN
+            return true; 
+        } catch (error) {
+            let errorMessage = "Failed to send password reset email.";
+            console.error("Password reset request error:", error);
+            if (error.code === 404) {
+                errorMessage = "There is no user with this email address.";
+            } else if (error.code === 400) {
+                errorMessage = "Invalid email format.";
+            }
+            throw new Error(errorMessage);
+        }
+    };
+
+
     
     const contextData = {
         user,
         loginUser,
         logoutUser,
         registerUser,
+        requestPasswordReset
     }
 
     return(

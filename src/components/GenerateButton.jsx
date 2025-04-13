@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 export default function GenerateCode() {
   const [plantUMLCode] = useAtom(plantUmlCodeAtom);
   const [language] = useAtom(selectedLanguageAtom);
-  const [generatedCode, setGeneratedCode] = useAtom(generatedCodeAtom);
+  const [, setGeneratedCode] = useAtom(generatedCodeAtom);
   const [, setIsLoading] = useAtom(loadingOperationAtom);
   const [image] = useAtom(uploadedImageAtom);
   const [fileName] = useAtom(uploadedFileNameAtom);
@@ -44,23 +44,26 @@ export default function GenerateCode() {
       const code = transpiler.transpile(plantUMLCode, language);
       console.log("Generated code:", code);
       setGeneratedCode(`\`\`\`${language}\n${code}\n\`\`\``); // Wrap in a code block
+      const finalCode = `\`\`\`${language}\n${code}\n\`\`\``;
+
+      console.log("Generated code: ", code);
+      console.log("User ID: ", userID);
+      console.log("Plant UML code: ", plantUMLCode);
+
+      if (code && userID && plantUMLCode) {
+        if (typeof fileName !== 'string' || !fileName) {
+            console.error('Filename is invalid', fileName);
+            return;
+        }
+        console.log("Image atom value before saveHistory:", image); 
+        saveHistory(userID, image, finalCode, language, plantUMLCode, fileName);
+      }   
     } catch (error) {
       console.error("Error converting PlantUML to code:", error);
     } finally {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (generatedCode && userID && plantUMLCode) {
-        if (typeof fileName !== 'string' || !fileName) {
-            console.error('Filename is invalid', fileName);
-            return;
-        }
-        console.log("Image atom value before saveHistory:", image); 
-        saveHistory(userID, image, generatedCode, language, plantUMLCode, fileName);
-    }
-}, [generatedCode, userID, image, fileName, plantUMLCode, language]);
 
 return (
   <Button

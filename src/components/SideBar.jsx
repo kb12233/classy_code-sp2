@@ -15,8 +15,7 @@ import { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { fetchHistory, deleteHistoryItem } from '../appwrite/HistoryService';
 import { account } from '../appwrite/config';
 import { SlOptionsVertical } from "react-icons/sl";
-import DeleteIcon from '@mui/icons-material/Delete';
-import LoadingOverlay from './LoadingOverlay';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref) {
     const white = '#ffffff';
@@ -139,7 +138,7 @@ const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref)
             <Divider sx={{ bgcolor: white }} />
 
             {historyLoading ? (
-                <LoadingOverlay message='Loading history...' />
+                <></>
             ) : (
                 <List>
                     {historyData.map((item) => (
@@ -205,7 +204,7 @@ const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref)
                 }}
             >
                 <MenuItem onClick={handleDeleteClick} sx={{ color: red }}>
-                    <DeleteIcon sx={{ mr: 1, color: red}} /> Delete
+                    <DeleteOutlineIcon sx={{ mr: 1, color: red}} /> Delete
                 </MenuItem>
             </Menu>
         </Drawer>
