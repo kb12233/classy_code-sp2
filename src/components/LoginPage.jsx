@@ -40,7 +40,7 @@ export default function LoginPage() {
     setForgotPasswordSuccess("");
 
     if (!email) {
-      alert("Please enter your email first.");
+      setError("Please enter your email first.");
       return;
     }
 
