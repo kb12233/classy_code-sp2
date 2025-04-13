@@ -15,7 +15,7 @@ import { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { fetchHistory, deleteHistoryItem } from '../appwrite/HistoryService';
 import { account } from '../appwrite/config';
 import { SlOptionsVertical } from "react-icons/sl";
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import LoadingOverlay from './LoadingOverlay';
 
 const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref) {
@@ -205,7 +205,7 @@ const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref)
                 }}
             >
                 <MenuItem onClick={handleDeleteClick} sx={{ color: red }}>
-                    <DeleteIcon sx={{ mr: 1, color: red}} /> Delete
+                    <DeleteOutlineIcon sx={{ mr: 1, color: red}} /> Delete
                 </MenuItem>
             </Menu>
         </Drawer>

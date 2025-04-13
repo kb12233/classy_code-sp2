@@ -120,10 +120,30 @@ export default function Homepage() {
         }
     };
 
+    const resetAllStates = () => {
+        setSelectedModel('');
+        setUploadedImage(null);
+        setPlantUMLCode('');
+        setGeneratedCode('');
+        setHistory(null); 
+        setIsUmlPreviewRendered(false);
+        setIsCodeGeneratedRendered(false);
+        setIsScrollable(false);
+
+        const uploadSection = document.getElementById('upload-image-section');
+        if (uploadSection) {
+            uploadSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        if (appBarRef.current) {
+            appBarRef.current.setActiveIcon('upload');
+        }
+        console.log('All states reset on sign out');
+    };
+
     return (
         <Fragment>
             <CssBaseline />
-            <MenuAppBar ref={appBarRef} onRestart={handleRestart} />
+            <MenuAppBar ref={appBarRef} onRestart={handleRestart} onSignOut={resetAllStates}/>
             <Box
                 sx={{
                     display: "flex",
