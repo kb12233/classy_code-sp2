@@ -59,11 +59,13 @@ export const readableModelNameAtom = atom((get) => {
 });
 
 export const historyAtom = atom([]);
- export const selectedHistoryAtom = atom(null);
- export const uploadedFileNameAtom = atom("");
+export const selectedHistoryAtom = atom(null);
+export const uploadedFileNameAtom = atom("");
  
- export const historyDataAtom = atom([]);
- export const historyLoadingAtom = atom(false);
- export const selectedHistoryItemAtom = atom(null);
+export const historyDataAtom = atom([]);
+export const historyLoadingAtom = atom(false);
+export const selectedHistoryItemAtom = atom(null);
 
- export const imageUploadLoadingAtom = atom(false);
+export const imageUploadLoadingAtom = atom(false);
+
+export const fileObjectAtom = atom(null); 

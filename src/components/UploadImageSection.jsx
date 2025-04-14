@@ -6,8 +6,7 @@ import {
     uploadedImageAtom, processingErrorAtom,
     readableModelNameAtom, imageUploadLoadingAtom,
     generatedCodeAtom, uploadedFileNameAtom,
-    selectedHistoryAtom,
-} from "../atoms";
+    selectedHistoryAtom, fileObjectAtom} from "../atoms";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -192,6 +191,7 @@ export default function UploadImageSection() {
     const errorColor = "#ff6b6b";
     const [translateX, setTranslateX] = useState(0);
     const [translateY, setTranslateY] = useState(0);
+    const [fileObject, setFileObject] = useAtom(fileObjectAtom); 
 
     useEffect(() => {
         getUserName().then(name => setUserName(name));
@@ -205,6 +205,11 @@ export default function UploadImageSection() {
         }
     }, [scale]);
 
+    useEffect(() => {
+        console.log("Image URL:", image);
+    }, [image]);
+
+    
     useEffect(() => {
       let loadingTimer;
       if (selectedHistory?.photoURL) {
@@ -235,7 +240,9 @@ export default function UploadImageSection() {
     const handleImageUpload = async (event) => {
         const file = event.target.files[0];
         if (file) {
+            console.log("File selected:", file);
             setImage(URL.createObjectURL(file));
+            console.log("Image URL:", image);
             setFileName(file.name);
             setScale(1);
             setTranslateX(0);
@@ -244,6 +251,7 @@ export default function UploadImageSection() {
             setProcessingError("");
             setPlantUMLCode("");
             setGeneratedCode("");
+            setFileObject(file);
 
             const formData = new FormData();
             formData.append("image", file);

@@ -1,9 +1,12 @@
+// UMLPreviewDisplay.jsx
 import { useState, useEffect } from "react";
 import MDEditor, { commands } from "@uiw/react-md-editor";
 import plantumlEncoder from "plantuml-encoder";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { useAtom } from "jotai";
-import { plantUmlCodeAtom, selectedHistoryAtom } from "../atoms";
+import { plantUmlCodeAtom, selectedHistoryAtom, selectedModelAtom,
+  uploadedImageAtom, processingErrorAtom, imageUploadLoadingAtom,
+  generatedCodeAtom, fileObjectAtom} from "../atoms";
 import SelectLanguage from "./SelectLanguage";
 import GenerateCode from "./GenerateButton";
 import Skeleton from '@mui/material/Skeleton';
@@ -11,6 +14,11 @@ import Box from '@mui/material/Box';
 import HistoryDetails from "./HistoryDetails";
 import IconButton from '@mui/material/IconButton';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import ZoomInIcon from '@mui/icons-material/ZoomIn'; // Import ZoomInIcon
+import ZoomOutIcon from '@mui/icons-material/ZoomOut'; // Import ZoomOutIcon
+import { styled } from '@mui/material/styles'; // Import styled
+import Button from '@mui/material/Button'; // Import Button
+import Divider from '@mui/material/Divider'; // Import Divider
 
 const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
   const [plantUMLCode, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
@@ -18,6 +26,13 @@ const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedHistory] = useAtom(selectedHistoryAtom);
+
+  const [image] = useAtom(uploadedImageAtom);
+  const [, setIsProcessing] = useAtom(imageUploadLoadingAtom);
+  const [, setProcessingError] = useAtom(processingErrorAtom);
+  const [selectedModel] = useAtom(selectedModelAtom);
+  const [, setGeneratedCode] = useAtom(generatedCodeAtom);
+  const [fileObject] = useAtom(fileObjectAtom);
 
   const grayish = "#303030";
   const whitish = "#ffffff";
@@ -35,6 +50,34 @@ const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
     { height: 30, width: 400 },
     { height: 30, width: 470 },
   ];
+
+  const ZoomButtonContainer = styled(Box)(({ theme }) => ({
+    backgroundColor: "#212121",
+    borderRadius: 10,
+    display: 'flex',
+    alignItems: 'center',
+    overflow: 'hidden',
+    position: 'absolute', // Add position absolute
+    bottom: 20,           // Position at the bottom
+    right: 20,            // Position at the right
+  }));
+
+  const ZoomButtonBox = styled(Button)(({ theme }) => ({
+    color: '#eee',
+    borderColor: '#555',
+    minWidth: 50,
+    padding: theme.spacing(1),
+    borderRadius: 0,
+    '&:hover': {
+      borderColor: '#eee',
+    },
+  }));
+
+  const VerticalDivider = styled(Divider)(({ theme }) => ({
+    backgroundColor: '#555',
+    height: '24px',
+    width: '1px',
+  }));
 
   const generatePlantUML = (umlText) => {
     if (!umlText) {
@@ -54,8 +97,41 @@ const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
     }
   };
 
-  const handleRestart = () => {
-    generatePlantUML(plantUMLCode);
+  const handleRestart = async () => {
+    if (!fileObject) {
+      console.warn("No file object available to restart.");
+      return;
+    }
+
+    setIsProcessing(true);
+    setProcessingError("");
+    setPlantUMLCode("");
+    setGeneratedCode("");
+
+    const formData = new FormData();
+    formData.append("image", fileObject);
+    if (selectedModel) {
+      formData.append("model", selectedModel);
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      if (data.plantUML) {
+        setPlantUMLCode(data.plantUML);
+      } else {
+        console.error("Failed to regenerate PlantUML:", data.error);
+        setProcessingError(data.error || "Failed to process image");
+      }
+    } catch (error) {
+      console.error("Error during PlantUML regeneration:", error);
+      setProcessingError("Error regenerating PlantUML. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   useEffect(() => {
@@ -73,10 +149,13 @@ const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
         {/* Markdown Editor Section */}
         <div className="rounded-lg shadow-lg overflow-hidden flex flex-col" style={{ backgroundColor: grayish, flex: 1, maxHeight: '70vh' }}>
           <div className="w-full flex justify-end items-center p-2"> {/* Align items vertically */}
-            <IconButton aria-label="restart" onClick={handleRestart} size="small" sx={{ color: whitish }} className="mr-2"> {/* Add margin-right */}
-              <RestartAltIcon />
-            </IconButton>
-
+          
+          {!selectedHistory && (
+              <IconButton aria-label="restart" onClick={handleRestart} size="small" sx={{ color: whitish }} className="mr-2">
+                <RestartAltIcon />
+              </IconButton>
+            )}
+            
           </div>
           {loading && !isEditing && plantUMLCode ? (
             <Box className="flex flex-col space-y-3 flex-grow" sx={{ width: '100%', padding: '3%' }}>
@@ -113,7 +192,7 @@ const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
         {/* UML Preview Section */}
         <div
           className="rounded-lg shadow-lg overflow-hidden flex flex-col items-center justify-center"
-          style={{ backgroundColor: grayish, flex: 1, maxHeight: '70vh' }}
+          style={{ backgroundColor: grayish, flex: 1, maxHeight: '70vh', position: 'relative' }} // Add position relative here
         >
           {loading && !isEditing ? (
             <Box className="flex flex-col space-y-3 flex-grow flex items-center justify-center" sx={{ marginTop: '3%' }}>
@@ -128,13 +207,26 @@ const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
               pinch={{ step: 0.2 }}
               doubleClick={{ step: 1 }}
             >
-              <TransformComponent>
-                <img
-                  src={umlImage}
-                  alt="PlantUML Diagram"
-                  className="w-full h-full object-contain"
-                />
-              </TransformComponent>
+              {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
+                <>
+                  <TransformComponent>
+                    <img
+                      src={umlImage}
+                      alt="PlantUML Diagram"
+                      className="w-full h-full object-contain"
+                    />
+                  </TransformComponent>
+                  <ZoomButtonContainer>
+                    <ZoomButtonBox onClick={() => zoomIn()} size="large">
+                      <ZoomInIcon sx={{ fontSize: 30 }} />
+                    </ZoomButtonBox>
+                    <VerticalDivider orientation="vertical" />
+                    <ZoomButtonBox onClick={() => zoomOut()} size="large">
+                      <ZoomOutIcon sx={{ fontSize: 30 }} />
+                    </ZoomButtonBox>
+                  </ZoomButtonContainer>
+                </>
+              )}
             </TransformWrapper>
           ) : (
             <div className="flex items-center justify-center w-full h-full">
@@ -157,8 +249,8 @@ const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
         {/* Conditionally render SelectLanguage and GenerateCode */}
         {!selectedHistory && !isCodeGeneratedVisible && (
         <div className="flex flex-row gap-4 justify-center">
-            <SelectLanguage />
-            <GenerateCode />
+          <SelectLanguage />
+          <GenerateCode />
         </div>
         )}
       </div>
