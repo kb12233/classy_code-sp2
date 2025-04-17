@@ -19,7 +19,7 @@ import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
-import LLMService from "../services/llmservice";
+import LLMService from "../services/LLMService";
 
 const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
   const [plantUMLCode, setPlantUMLCode] = useAtom(plantUmlCodeAtom);

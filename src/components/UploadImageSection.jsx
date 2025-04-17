@@ -20,7 +20,7 @@ import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import { styled } from '@mui/material/styles';
 import { Divider, Skeleton } from '@mui/material'; 
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch"; 
-import LLMService from "../services/llmservice";
+import LLMService from "../services/LLMService";
 
 const darkbgColor = "#1E1E1E";
 const grayish = "#303030";
