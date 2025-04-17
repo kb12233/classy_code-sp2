@@ -40,13 +40,13 @@ class LLMService {
       }
 
       console.log("Processing image with model:", modelName);
-      console.log("API Endpoint:", `${this.baseUrl}/api/process-image`);
+      console.log("API Endpoint:", `${this.baseUrl}/api/process-image.js`);
 
       // Convert image to base64
       const base64 = await this.imageToBase64(file);
       
-      // Call our Vercel API endpoint
-      const response = await fetch(`${this.baseUrl}/api/process-image`, {
+      // Call our Vercel API endpoint with .js extension
+      const response = await fetch(`${this.baseUrl}/api/process-image.js`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

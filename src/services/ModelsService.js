@@ -20,9 +20,10 @@ class ModelsService {
   // Get all available models from the API
   async getAvailableModels() {
     try {
-      console.log("Fetching models from:", `${this.baseUrl}/api/models`);
+      // Add .js extension to the API endpoint
+      console.log("Fetching models from:", `${this.baseUrl}/api/models.js`);
       
-      const response = await fetch(`${this.baseUrl}/api/models`);
+      const response = await fetch(`${this.baseUrl}/api/models.js`);
       
       if (!response.ok) {
         const text = await response.text();
