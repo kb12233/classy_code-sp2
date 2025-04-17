@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 import LoadingOverlay from '../components/LoadingOverlay';
+import logoLight from '../assets/images/logo_light.png';
 
 const RegistrationPage = () => {
     const navigate = useNavigate();
@@ -40,7 +41,7 @@ const RegistrationPage = () => {
         <div className="flex h-screen w-screen" style={{ fontFamily: 'JetBrains Mono, monospace' }}>
             {/* Left Section */}
             <div className="flex flex-col items-center justify-center flex-2 bg-[#B4B4B4] p-10">
-                <img src="./assets/images/logo_light.png" alt="Logo" className="w-32 h-32" />
+                <img src={logoLight} alt="Logo" className="w-32 h-32" />
                 <h1 className="text-[#212121] text-2xl font-bold mt-20">Welcome Back!</h1>
                 <p className="text-[#212121] text-sm mt-4 text-center w-2/3">
                     Stay in touch! Sign in with your info.

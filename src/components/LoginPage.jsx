@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom'; 
 import { useAuth } from '../utils/AuthContext';
 import LoadingOverlay from '../components/LoadingOverlay';
+import logoDark from '../assets/images/logo_dark.png';
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -58,7 +59,7 @@ export default function LoginPage() {
     <div className="flex h-screen" style={{ fontFamily: 'JetBrains Mono, monospace' }}>
       {/* Left Panel */}
       <div className="flex flex-col justify-center items-center w-3/5 text-white p-10 bg-[#1E1E1E]">
-        <img src="./assets/images/logo_dark.png" alt="Logo" className="mb-16 w-32" />
+        <img src={logoDark} alt="Logo" className="mb-16 w-32" />
         <h1 className="text-2xl font-bold ">Sign in to ClassyCode</h1>
         {/* ERROR ALERT */}
         {error && (

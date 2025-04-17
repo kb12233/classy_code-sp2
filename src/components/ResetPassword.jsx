@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { account } from "../appwrite/config";
+import logoDark from '../assets/images/logo_dark.png';
 
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();
@@ -43,7 +44,7 @@ const ResetPassword = () => {
       className="min-h-screen bg-[#1E1E1E] text-white flex flex-col items-center justify-center"
       style={{ fontFamily: "Jetbrains Mono" }}
     >
-      <img src="./assets/images/logo_dark.png" alt="Logo" className="mb-16 w-32" />
+      <img src={logoDark} alt="Logo" className="mb-16 w-32" />
       <div className="flex flex-col gap-4 max-w-sm w-full p-6 rounded-md shadow-md bg-[#2A2A2A]">
         <h2 className="text-xl font-semibold">Reset Your Password</h2>
 
