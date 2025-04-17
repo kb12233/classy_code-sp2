@@ -8,6 +8,8 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  // Make sure base path is correctly set for production
+  base: './',
   // Ensure all environment variables are properly exposed to the frontend
   define: {
     // This makes process.env available in the frontend for libraries that expect it
@@ -22,12 +24,6 @@ export default defineConfig({
       'plantuml-transpiler',
       'file-saver'
     ]
-  },
-  // Ensure AI provider libraries are properly bundled
-  resolve: {
-    alias: {
-      // Add any aliases if needed for compatibility
-    }
   },
   // Allow your app to make cross-origin requests to AI services
   server: {
