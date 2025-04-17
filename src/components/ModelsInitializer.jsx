@@ -6,6 +6,7 @@ import {
   modelsErrorAtom, 
   selectedModelAtom 
 } from '../atoms';
+import ModelsService from '../services/ModelsService';
 
 // This component doesn't render anything, it just initializes models data
 export default function ModelsInitializer() {
@@ -19,13 +20,9 @@ export default function ModelsInitializer() {
     const fetchModels = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:5000/models');
         
-        if (!response.ok) {
-          throw new Error(`Failed to fetch models: ${response.status}`);
-        }
-        
-        const data = await response.json();
+        // Use the ModelsService instead of making an API call
+        const data = await ModelsService.getAvailableModelsWithValidCredentials();
         
         if (data.models && data.models.length > 0) {
           setModels(data.models);
@@ -35,10 +32,10 @@ export default function ModelsInitializer() {
             setSelectedModel(data.models[0].id);
           }
         } else {
-          setError('No models available');
+          setError('No models available. Please check your API keys in environment variables.');
         }
       } catch (err) {
-        console.error('Error fetching models:', err);
+        console.error('Error getting models:', err);
         setError(err.message);
       } finally {
         setLoading(false);
