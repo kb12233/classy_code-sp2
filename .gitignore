@@ -45,3 +45,4 @@ backend/output/diagram.swift
 backend/output/diagram.ts
 backend/diagram.puml
 uploads/*
+.vercel
