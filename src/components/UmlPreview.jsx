@@ -14,11 +14,12 @@ import Box from '@mui/material/Box';
 import HistoryDetails from "./HistoryDetails";
 import IconButton from '@mui/material/IconButton';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import ZoomInIcon from '@mui/icons-material/ZoomIn'; // Import ZoomInIcon
-import ZoomOutIcon from '@mui/icons-material/ZoomOut'; // Import ZoomOutIcon
-import { styled } from '@mui/material/styles'; // Import styled
-import Button from '@mui/material/Button'; // Import Button
-import Divider from '@mui/material/Divider'; // Import Divider
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import ZoomOutIcon from '@mui/icons-material/ZoomOut';
+import { styled } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import LLMService from "../services/llmservice";
 
 const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
   const [plantUMLCode, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
@@ -57,9 +58,9 @@ const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
     display: 'flex',
     alignItems: 'center',
     overflow: 'hidden',
-    position: 'absolute', // Add position absolute
-    bottom: 20,           // Position at the bottom
-    right: 20,            // Position at the right
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
   }));
 
   const ZoomButtonBox = styled(Button)(({ theme }) => ({
@@ -108,23 +109,19 @@ const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
     setPlantUMLCode("");
     setGeneratedCode("");
 
-    const formData = new FormData();
-    formData.append("image", fileObject);
-    if (selectedModel) {
-      formData.append("model", selectedModel);
-    }
-
     try {
-      const response = await fetch("http://localhost:5000/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await response.json();
-      if (data.plantUML) {
-        setPlantUMLCode(data.plantUML);
+      // Use LLMService directly instead of calling the backend
+      if (!selectedModel) {
+        throw new Error("Please select a model first");
+      }
+      
+      const result = await LLMService.processImage(fileObject, selectedModel);
+      
+      if (result.plantUML) {
+        setPlantUMLCode(result.plantUML);
       } else {
-        console.error("Failed to regenerate PlantUML:", data.error);
-        setProcessingError(data.error || "Failed to process image");
+        console.error("Failed to regenerate PlantUML:", result.error);
+        setProcessingError(result.error || "Failed to process image");
       }
     } catch (error) {
       console.error("Error during PlantUML regeneration:", error);
@@ -192,7 +189,7 @@ const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
         {/* UML Preview Section */}
         <div
           className="rounded-lg shadow-lg overflow-hidden flex flex-col items-center justify-center"
-          style={{ backgroundColor: grayish, flex: 1, maxHeight: '70vh', position: 'relative' }} // Add position relative here
+          style={{ backgroundColor: grayish, flex: 1, maxHeight: '70vh', position: 'relative' }}
         >
           {loading && !isEditing ? (
             <Box className="flex flex-col space-y-3 flex-grow flex items-center justify-center" sx={{ marginTop: '3%' }}>

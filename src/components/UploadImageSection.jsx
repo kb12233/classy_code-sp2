@@ -1,4 +1,3 @@
-//UploadImageSection
 import { useState, useEffect, useRef } from "react";
 import { useAtom } from "jotai";
 import {
@@ -6,13 +5,14 @@ import {
     uploadedImageAtom, processingErrorAtom,
     readableModelNameAtom, imageUploadLoadingAtom,
     generatedCodeAtom, uploadedFileNameAtom,
-    selectedHistoryAtom, fileObjectAtom} from "../atoms";
+    selectedHistoryAtom, fileObjectAtom
+} from "../atoms";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import "@fontsource/jetbrains-mono";
 import "@fontsource/inter"; 
-import LoadingOverlay from '../components/LoadingOverlay';
+import LoadingOverlay from './LoadingOverlay';
 import logoDark from '../assets/images/logo_dark.png';
 import { account } from "../appwrite/config";
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
@@ -20,6 +20,7 @@ import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import { styled } from '@mui/material/styles';
 import { Divider, Skeleton } from '@mui/material'; 
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch"; 
+import LLMService from "../services/llmservice";
 
 const darkbgColor = "#1E1E1E";
 const grayish = "#303030";
@@ -253,29 +254,23 @@ export default function UploadImageSection() {
             setGeneratedCode("");
             setFileObject(file);
 
-            const formData = new FormData();
-            formData.append("image", file);
-
-            if (selectedModel) {
-                formData.append("model", selectedModel);
-            }
-
             try {
-                const response = await fetch("http://localhost:5000/upload", {
-                    method: "POST",
-                    body: formData,
-                });
-
-                const data = await response.json();
-                if (data.plantUML) {
-                    setPlantUMLCode(data.plantUML);
+                // Use LLMService instead of calling the backend
+                if (!selectedModel) {
+                    throw new Error("Please select a model first");
+                }
+                
+                const result = await LLMService.processImage(file, selectedModel);
+                
+                if (result.plantUML) {
+                    setPlantUMLCode(result.plantUML);
                 } else {
-                    console.error("Failed to generate PlantUML:", data.error);
-                    setProcessingError(data.error || "Failed to process image");
+                    console.error("Failed to generate PlantUML:", result.error);
+                    setProcessingError(result.error || "Failed to process image");
                 }
             } catch (error) {
                 console.error("Error uploading image:", error);
-                setProcessingError("Error uploading image. Please try again.");
+                setProcessingError("Error processing image. Please try again.");
             } finally {
                 setIsProcessing(false);
             }
