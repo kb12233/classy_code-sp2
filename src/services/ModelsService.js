@@ -2,36 +2,43 @@
 // This service provides the available models for AI processing via Vercel API
 
 class ModelsService {
-    constructor() {
-      // Base URL for API calls - will be automatically determined based on environment
-      this.baseUrl = this.getBaseUrl();
+  constructor() {
+    // Base URL for API calls - will be automatically determined based on environment
+    this.baseUrl = this.getBaseUrl();
+  }
+
+  // Get the base URL for API calls
+  getBaseUrl() {
+    // In production, use the current origin
+    if (typeof window !== 'undefined') {
+      return window.location.origin;
     }
-  
-    // Get the base URL for API calls
-    getBaseUrl() {
-      // In production, the API endpoints are relative to the current domain
-      // In development, we need to specify localhost with the correct port
-      if (import.meta.env.DEV) {
-        return 'http://localhost:3000'; // Default Vercel dev server port
+    // Fallback for development or SSR
+    return import.meta.env.DEV ? 'http://localhost:3000' : '';
+  }
+
+  // Get all available models from the API
+  async getAvailableModels() {
+    try {
+      console.log("Fetching models from:", `${this.baseUrl}/api/models`);
+      
+      const response = await fetch(`${this.baseUrl}/api/models`);
+      
+      if (!response.ok) {
+        const text = await response.text();
+        console.error(`Failed to fetch models: ${response.status}. Response:`, text);
+        throw new Error(`Failed to fetch models: ${response.status}`);
       }
-      return ''; // Empty string means relative to current domain
-    }
-  
-    // Get all available models from the API
-    async getAvailableModels() {
-      try {
-        const response = await fetch(`${this.baseUrl}/api/models`);
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch models: ${response.status}`);
-        }
-        
-        return await response.json();
-      } catch (error) {
-        console.error('Error fetching models:', error);
-        return { models: [] };
-      }
+      
+      const data = await response.json();
+      console.log("Models fetched successfully:", data);
+      return data;
+    } catch (error) {
+      console.error('Error fetching models:', error);
+      // Return a default structure with an empty array to prevent further errors
+      return { models: [] };
     }
   }
-  
-  export default new ModelsService();
+}
+
+export default new ModelsService();
