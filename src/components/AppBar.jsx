@@ -46,6 +46,8 @@ const MenuAppBar = forwardRef((props, ref) => {
     const greencolor = '#B6D9D7';
     const white = '#ffffff';
     const white10 = '#B4B4B4';
+    const darkbgColor = "#1E1E1E";
+
 
     const isMobile = useMediaQuery('(max-width: 600px)');
 
@@ -152,7 +154,7 @@ return (
                                             }
                                         }}
                                         sx={{
-                                            '.MuiOutlinedInput-notchedOutline': { borderColor: white },
+                                            '.MuiOutlinedInput-notchedOutline': { borderColor: darkbgColor },
                                             '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: white10 },
                                             '.MuiSvgIcon-root': { color: white10, fontSize: 20 },
                                             color: 'white',

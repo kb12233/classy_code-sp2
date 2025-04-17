@@ -7,6 +7,7 @@ export default function SelectLanguage() {
   const greencolor = "#B6D9D7";
   const grayish = "#1E1E1E";
   const blackish = "#121212";
+  const grayOutline = "#454545"
 
   const handleChange = (event) => {
     setLanguage(event.target.value);
@@ -41,7 +42,7 @@ export default function SelectLanguage() {
         sx={{
           bgcolor: grayish,
           color: "white",
-          ".MuiOutlinedInput-notchedOutline": { borderColor: greencolor },
+          ".MuiOutlinedInput-notchedOutline": { borderColor: grayOutline },
           "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: greencolor },
           ".MuiSvgIcon-root": { color: "white" },
           fontFamily: "JetBrains Mono",
