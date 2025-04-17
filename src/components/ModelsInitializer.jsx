@@ -22,7 +22,7 @@ export default function ModelsInitializer() {
         setLoading(true);
         
         // Use the ModelsService instead of making an API call
-        const data = await ModelsService.getAvailableModelsWithValidCredentials();
+        const data = await ModelsService.getAvailableModels();
         
         if (data.models && data.models.length > 0) {
           setModels(data.models);
