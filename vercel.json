@@ -26,15 +26,5 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ],
-  "env": {
-    "GEMINI_API_KEY": "${GEMINI_API_KEY}",
-    "GROQ_API_KEY": "${GROQ_API_KEY}",
-    "GITHUB_TOKEN": "${GITHUB_TOKEN}",
-    "VITE_ENDPOINT": "${VITE_ENDPOINT}",
-    "VITE_PROJECT_ID": "${VITE_PROJECT_ID}",
-    "VITE_DATABASE_ID": "${VITE_DATABASE_ID}",
-    "VITE_HISTORY_COLLECTION_ID": "${VITE_HISTORY_COLLECTION_ID}",
-    "VITE_IMAGES_BUCKET_ID": "${VITE_IMAGES_BUCKET_ID}"
-  }
+  ]
 }
