@@ -32,8 +32,8 @@ export default function handler(req, res) {
     { id: "gemini-1.5-pro", name: "Gemini 1.5 Pro", provider: "Google", available: hasGeminiKey },
     { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash", provider: "Google", available: hasGeminiKey },
     { id: "gemini-2.0-flash", name: "Gemini 2.0 Flash", provider: "Google", available: hasGeminiKey },
-    { id: "llama-3.2-11b-vision-preview", name: "Llama 3.2 11B Vision", provider: "Groq", available: hasGroqKey },
-    { id: "llama-3.2-90b-vision-preview", name: "Llama 3.2 90B Vision", provider: "Groq", available: hasGroqKey },
+    { id: "meta-llama/llama-4-scout-17b-16e-instruct", name: "Llama 4 Scout", provider: "Groq", available: hasGroqKey },
+    { id: "meta-llama/llama-4-maverick-17b-128e-instruct", name: "Llama 4 Maverick", provider: "Groq", available: hasGroqKey },
     { id: "gpt-4o", name: "GPT-4o", provider: "GitHub", available: hasOpenAIKey }
   ];
 

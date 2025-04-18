@@ -24,7 +24,7 @@ const initClient = (provider) => {
 const getProviderForModel = (modelName) => {
   if (modelName.startsWith('gemini')) {
     return 'google';
-  } else if (modelName.startsWith('llama')) {
+  } else if (modelName.startsWith('meta-llama')) {
     return 'groq';
   } else if (modelName === 'gpt-4o') {
     return 'openai';
