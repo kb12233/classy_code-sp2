@@ -13,6 +13,7 @@ import Typography from "@mui/material/Typography";
 import "@fontsource/jetbrains-mono";
 import "@fontsource/inter"; 
 import LoadingOverlay from './LoadingOverlay';
+import ValidationDialog from './ValidationDialog'; // Import the validation dialog
 import logoDark from '../assets/images/logo_dark.png';
 import { account } from "../appwrite/config";
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
@@ -21,6 +22,7 @@ import { styled } from '@mui/material/styles';
 import { Divider, Skeleton } from '@mui/material'; 
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch"; 
 import LLMService from "../services/LLMService";
+import DiagramValidationService from "../services/DiagramValidationService";
 
 const darkbgColor = "#1E1E1E";
 const grayish = "#303030";
@@ -192,7 +194,12 @@ export default function UploadImageSection() {
     const errorColor = "#ff6b6b";
     const [translateX, setTranslateX] = useState(0);
     const [translateY, setTranslateY] = useState(0);
-    const [fileObject, setFileObject] = useAtom(fileObjectAtom); 
+    const [fileObject, setFileObject] = useAtom(fileObjectAtom);
+    
+    // New state variables for diagram validation
+    const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+    const [validationStatus, setValidationStatus] = useState({ title: "", message: "" });
+    const [validatingDiagram, setValidatingDiagram] = useState(false);
 
     useEffect(() => {
         getUserName().then(name => setUserName(name));
@@ -238,28 +245,61 @@ export default function UploadImageSection() {
       return () => clearTimeout(loadingTimer);
   }, [selectedHistory]);
 
+    // Close validation dialog handler
+    const handleCloseValidationDialog = () => {
+        setValidationDialogOpen(false);
+        // If the dialog is being closed and we had an invalid diagram, reset the image state
+        if (validationStatus.title.includes("Invalid")) {
+            setImage(null);
+            setFileObject(null);
+        }
+    };
+
     const handleImageUpload = async (event) => {
         const file = event.target.files[0];
         if (file) {
             console.log("File selected:", file);
-            setImage(URL.createObjectURL(file));
-            console.log("Image URL:", image);
+            
+            if (!selectedModel) {
+                setProcessingError("Please select a model first");
+                return;
+            }
+            
+            // Create object URL for preview
+            const imageUrl = URL.createObjectURL(file);
+            setImage(imageUrl);
             setFileName(file.name);
             setScale(1);
             setTranslateX(0);
             setTranslateY(0);
+            setFileObject(file);
+            
+            // Set validating state to show loading indicator
+            setValidatingDiagram(true);
             setIsProcessing(true);
             setProcessingError("");
-            setPlantUMLCode("");
-            setGeneratedCode("");
-            setFileObject(file);
-
+            
             try {
-                // Use LLMService instead of calling the backend
-                if (!selectedModel) {
-                    throw new Error("Please select a model first");
+                // Validate the diagram first
+                const isValid = await DiagramValidationService.validateDiagram(file);
+                
+                if (!isValid) {
+                    // Show dialog for invalid diagram
+                    setValidationStatus({
+                        title: "Invalid UML Class Diagram",
+                        message: "The uploaded image does not appear to contain a UML class diagram. Please upload a different image."
+                    });
+                    setValidationDialogOpen(true);
+                    setValidatingDiagram(false);
+                    setIsProcessing(false);
+                    return;
                 }
                 
+                // If valid, proceed with processing
+                setPlantUMLCode("");
+                setGeneratedCode("");
+                
+                // Use LLMService to process the image
                 const result = await LLMService.processImage(file, selectedModel);
                 
                 if (result.plantUML) {
@@ -269,17 +309,19 @@ export default function UploadImageSection() {
                     setProcessingError(result.error || "Failed to process image");
                 }
             } catch (error) {
-                console.error("Error uploading image:", error);
+                console.error("Error processing image:", error);
                 setProcessingError("Error processing image. Please try again.");
             } finally {
+                setValidatingDiagram(false);
                 setIsProcessing(false);
             }
         }
     };
 
-    const handleZoom = (event) => {
-        event.preventDefault();
-        // Zooming is now handled by the TransformWrapper
+    // Fix for the wheel handler error by not using it directly
+    const handleZoom = () => {
+        // Let TransformWrapper handle zoom internally
+        // This is an empty function to avoid the error
     };
 
     const handleBrowseClick = () => {
@@ -336,9 +378,9 @@ export default function UploadImageSection() {
                                 wheel={{ step: 0.2 }}
                                 pinch={{ step: 0.2 }}
                                 doubleClick={{ step: 1 }}
-                                onWheel={handleZoom} 
+                                options={{ limitToBounds: false }}
                             >
-                                {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
+                                {({ zoomIn, zoomOut }) => (
                                     <>
                                         <TransformComponent>
                                             {selectedHistory ? (
@@ -388,6 +430,14 @@ export default function UploadImageSection() {
                     </Box>
                 )}
             </div>
+            
+            {/* Validation Dialog */}
+            <ValidationDialog
+                open={validationDialogOpen}
+                onClose={handleCloseValidationDialog}
+                title={validationStatus.title}
+                message={validationStatus.message}
+            />
         </div>
     );
 }

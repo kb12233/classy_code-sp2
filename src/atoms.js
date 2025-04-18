@@ -44,6 +44,15 @@ export const uploadedImageAtom = atom(null);
 // Processing error
 export const processingErrorAtom = atom('');
 
+// Validation state for diagram
+export const validatingDiagramAtom = atom(false);
+
+// Dialog visibility for validation feedback
+export const validationDialogOpenAtom = atom(false);
+
+// Validation status message
+export const validationStatusAtom = atom({ title: "", message: "" });
+
 // Convenience derived atom for readable model name
 export const readableModelNameAtom = atom((get) => {
   const modelId = get(selectedModelAtom);
@@ -53,11 +62,16 @@ export const readableModelNameAtom = atom((get) => {
     return modelId.replace('gemini-', 'Gemini ');
   } else if (modelId.startsWith('llama')) {
     return modelId.replace('llama-', 'Llama ').replace('-vision-preview', '');
+  } else if (modelId === 'gpt-4o') {
+    return 'GPT-4o';
+  } else if (modelId.includes('meta-llama')) {
+    return modelId.split('/')[1].replace('llama-', 'Llama ').replace('-instruct', '');
   }
   
   return modelId;
 });
 
+// History-related atoms
 export const historyAtom = atom([]);
 export const selectedHistoryAtom = atom(null);
 export const uploadedFileNameAtom = atom("");
@@ -68,4 +82,4 @@ export const selectedHistoryItemAtom = atom(null);
 
 export const imageUploadLoadingAtom = atom(false);
 
-export const fileObjectAtom = atom(null); 
+export const fileObjectAtom = atom(null);
