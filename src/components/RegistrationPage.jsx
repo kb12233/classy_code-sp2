@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 import LoadingOverlay from '../components/LoadingOverlay';
-import logoLight from '../assets/images/logo_light.png';
+import logoDark from '../assets/images/logo_dark.png';
 
 const RegistrationPage = () => {
     const navigate = useNavigate();
@@ -38,28 +38,13 @@ const RegistrationPage = () => {
     return (
         <>
         {loading && <LoadingOverlay message="Loading..." />}
-        <div className="flex h-screen w-screen" style={{ fontFamily: 'JetBrains Mono, monospace' }}>
-            {/* Left Section */}
-            <div className="flex flex-col items-center justify-center flex-2 bg-[#B4B4B4] p-10">
-                <img src={logoLight} alt="Logo" className="w-32 h-32" />
-                <h1 className="text-[#212121] text-2xl font-bold mt-20">Welcome Back!</h1>
-                <p className="text-[#212121] text-sm mt-4 text-center w-2/3">
-                    Stay in touch! Sign in with your info.
-                </p>
-                <button onClick={handleLogin} className="mt-6 px-6 py-2 border border-gray-900 
-                    text-[#212121] rounded-lg hover:bg-[#303030] hover:text-[#B4B4B4]">
-                    SIGN IN
-                </button>
-            </div>
-            {/* Right Section */}
-            <div className="flex flex-col items-center justify-center flex-3 bg-[#1E1E1E] text-white p-10">
-                <h2 className="text-3xl font-bold">Create Account</h2>
-
-                {error && (
-                    <div className="bg-[#1E1E1E] text-red-700 px-4 py-3 rounded relative mt-4 flex items-center justify-between" role="alert">
-                    <div className="pr-10">
-                      <span className="block sm:inline">{error}</span>
-                    </div>
+        <div className="flex flex-col items-center justify-center min-h-screen w-full bg-[#1E1E1E] text-white px-6" style={{ fontFamily: 'JetBrains Mono, monospace' }}>
+            <img src={logoDark} alt="Logo" className="w-24 h-24 mb-6" />
+            <h2 className="text-3xl font-bold mb-6">Create Account</h2>
+    
+            {error && (
+                <div className="bg-[#1E1E1E] text-red-700 px-4 py-3 rounded relative mb-4 w-full max-w-md text-center" role="alert">
+                    <span className="block sm:inline">{error}</span>
                     <button
                       onClick={() => setError("")}
                       className="absolute top-0 bottom-0 right-0 px-4 py-3"
@@ -70,49 +55,58 @@ const RegistrationPage = () => {
                       </svg>
                     </button>
                 </div>
-                )}
+            )}
 
-                {successMessage && (
-                    <div className="bg-[#1E1E1E] text-green-400 px-4 py-3 rounded relative mb-4 mt-4 flex items-center justify-center" role="alert">
-                        <span className="block sm:inline">{successMessage}</span>
-                    </div>
-                )}
+            {successMessage && (
+                <div className="bg-[#1E1E1E] text-green-400 px-4 py-3 rounded relative mb-4 w-full max-w-md text-center" role="alert">
+                    <span className="block sm:inline">{successMessage}</span>
+                </div>
+            )}
 
-                <div className="mt-5 w-1/2">
-                    <div className="mb-4">
-                        <label className="block text-sm mb-1">Name</label>
-                        <input
-                            type="text"
-                            className="w-full p-2 border border-[#303030] rounded bg-[#303030] text-white"
-                            placeholder="Enter your name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-sm mb-1">Email</label>
-                        <input
-                            type="email"
-                            className="w-full p-2 border border-[#303030] rounded bg-[#303030] text-white"
-                            placeholder="Enter your email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-sm mb-1">Password</label>
-                        <input
-                            type="password"
-                            className="w-full p-2 border border-[#303030] rounded bg-[#303030] text-white"
-                            placeholder="Enter your password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
-                    <button onClick={handleRegister} className="w-full mt-4 py-2 bg-[#212121] hover:bg-[#B4B4B4] 
-                        hover:text-[#303030] text-[#B4B4B4] rounded-lg transition border border-[#303030]">
-                        SIGN UP
-                    </button>
+            <div className="w-full max-w-sm">
+                <div className="mb-4">
+                    <label className="block text-sm mb-1 text-[#B4B4B4]">Name</label>
+                    <input
+                        type="text"
+                        className="w-full p-3 border border-[#303030] rounded bg-[#303030] text-white"
+                        placeholder="Enter your name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="block text-sm mb-1 text-[#B4B4B4]">Email</label>
+                    <input
+                        type="email"
+                        className="w-full p-3 border border-[#303030] rounded bg-[#303030] text-white"
+                        placeholder="Enter your email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                </div>
+                <div className="mb-6">
+                    <label className="block text-sm mb-1 text-[#B4B4B4]">Password</label>
+                    <input
+                        type="password"
+                        className="w-full p-3 border border-[#303030] rounded bg-[#303030] text-white"
+                        placeholder="Enter your password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                </div>
+                <button 
+                    onClick={handleRegister} 
+                    className="w-full p-3 bg-[#212121] hover:bg-[#B4B4B4] hover:text-[#303030] text-[#B4B4B4] rounded-lg transition border border-[#303030]">
+                    SIGN UP
+                </button>
+                <div className="mt-4 text-center text-sm text-[#B4B4B4]">
+                    Already have an account?{" "}
+                    <span 
+                        onClick={handleLogin} 
+                        className="text-white cursor-pointer hover:underline"
+                    >
+                        Sign in
+                    </span>
                 </div>
             </div>
         </div>
