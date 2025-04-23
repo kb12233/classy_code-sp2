@@ -1,4 +1,4 @@
-import  { useState, forwardRef, useImperativeHandle, useRef } from 'react';
+import  { useState, forwardRef, useImperativeHandle, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAtom } from 'jotai';
 import {
@@ -66,7 +66,7 @@ const MenuAppBar = forwardRef((props, ref) => {
           console.error("Logout failed:", error.message);
         }
         setSignOutLoading(false);
-      };    
+      };     
 
     const handleModelChange = (event) => {
         setSelectedModel(event.target.value);
@@ -127,6 +127,7 @@ return (
                         <MenuIcon />
                     </IconButton>
 
+                    {/* Conditionally render Model Select and Restart Icon */}
                     {!isMobile && (
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <FormControl sx={{ minWidth: 220, marginRight: 1 }} size="small">
@@ -213,6 +214,7 @@ return (
                     )}
                 </Box>
 
+                {/* Right Side: Section Icons + Account Menu */}
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <IconButton
                         color="inherit"

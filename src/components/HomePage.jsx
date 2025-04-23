@@ -12,8 +12,8 @@ import SelectLanguage from "./SelectLanguage";
 import GenerateCode from "./GenerateButton";
 import MenuAppBar from "./AppBar";
 import { useState, useEffect, useRef, Fragment } from "react";
-import { account } from "../appwrite/config";   
-
+import { account } from "../appwrite/config";  
+import { useMediaQuery } from '@mui/material'; // Import useMediaQuery
 
 export default function Homepage() {
     const [plantUMLCode] = useAtom(plantUmlCodeAtom);
@@ -34,6 +34,8 @@ export default function Homepage() {
 
     const darkbgColor = "#1E1E1E";
     const commentColor = "#6C6C6C";
+
+    const isMobile = useMediaQuery('(max-width: 600px)'); // Define isMobile
 
     useEffect(() => {
         const loadHistoryData = async () => {
@@ -99,7 +101,7 @@ export default function Homepage() {
         setUploadedImage(null);
         setPlantUMLCode('');
         setGeneratedCode('');
-        setIsUmlPreviewRendered(false);      
+        setIsUmlPreviewRendered(false);        
         setIsCodeGeneratedRendered(false);
         setIsScrollable(false);
 
@@ -127,7 +129,7 @@ export default function Homepage() {
         setUploadedImage(null);
         setPlantUMLCode('');
         setGeneratedCode('');
-        setHistory(null); 
+        setHistory(null);
         setIsUmlPreviewRendered(false);
         setIsCodeGeneratedRendered(false);
         setIsScrollable(false);
@@ -162,7 +164,7 @@ export default function Homepage() {
                     '&::-webkit-scrollbar-thumb': {
                         backgroundColor: '#333',
                         borderRadius: '5px',
-                    }
+                    },
                 }}
                 onScroll={(e) => {
                     const scrollTop = e.currentTarget.scrollTop;
@@ -195,7 +197,7 @@ export default function Homepage() {
                         flexShrink: 0,
                     }}
                 >
-                    <Box sx={{ width: "85%" }}>
+                    <Box sx={{ width: isMobile ? "95%" : "85%" }}> {/* Adjusted width */}
                         <UploadImageSection />
                     </Box>
                 </Box>
@@ -215,7 +217,7 @@ export default function Homepage() {
                             flexShrink: 0,
                         }}
                     >
-                        <Box sx={{ width: "85%",  color: commentColor, fontFamily: 'JetBrains Mono, monospace', marginTop: 3, fontSize: '0.9rem',}}> 
+                        <Box sx={{ width: isMobile ? "95%" : "85%", color: commentColor, fontFamily: 'JetBrains Mono, monospace', marginTop: 3, fontSize: '0.9rem' }}> {/* Adjusted width */}
                             <p>// AI-generated PlantUML representation of the image.</p>
                             <p>// You may edit it if you want to make some quick changes.</p>
                             <p>// For more info on how to write using the custom syntax,</p>
@@ -223,7 +225,6 @@ export default function Homepage() {
                         </Box>
                         <UMLPreview isCodeGeneratedVisible={isCodeGeneratedRendered}/>
                     </Box>
-                    
                 )}
 
                 {isCodeGeneratedRendered && (
@@ -244,7 +245,7 @@ export default function Homepage() {
                     >
                         {selectedHistory ? (
                             <></>
-                            ) : (
+                        ) : (
                             <Box sx={{
                                 width: "100%",
                                 display: 'flex',
@@ -253,17 +254,17 @@ export default function Homepage() {
                                 marginBottom: '1rem'
                             }}>
                                 <Box sx={{
-                            width: "85%",
-                            display: 'flex',
-                            justifyContent: 'center', 
-                            alignItems: 'center', 
-                        }}>
-                            <SelectLanguage />
-                            <GenerateCode />
-                        </Box>
+                                    width: isMobile ? "95%" : "85%", // Adjusted width
+                                    display: 'flex',
+                                    justifyContent: 'center', 
+                                    alignItems: 'center', 
+                                }}>
+                                    <SelectLanguage />
+                                    <GenerateCode />
+                                </Box>
                             </Box>
-                            )}
-                        <Box sx={{ width: "85%", marginTop: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        )}
+                        <Box sx={{ width: isMobile ? "95%" : "85%", marginTop: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}> {/* Adjusted width */}
                             <CodeGeneratedSection />
                         </Box>
                     </Box>
