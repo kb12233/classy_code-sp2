@@ -42,20 +42,14 @@ export default function GenerateCode() {
     try {
       const transpiler = new PlantUMLTranspiler();
       const code = transpiler.transpile(plantUMLCode, language);
-      console.log("Generated code:", code);
       setGeneratedCode(`\`\`\`${language}\n${code}\n\`\`\``); // Wrap in a code block
       const finalCode = `\`\`\`${language}\n${code}\n\`\`\``;
-
-      console.log("Generated code: ", code);
-      console.log("User ID: ", userID);
-      console.log("Plant UML code: ", plantUMLCode);
 
       if (code && userID && plantUMLCode) {
         if (typeof fileName !== 'string' || !fileName) {
             console.error('Filename is invalid', fileName);
             return;
         }
-        console.log("Image atom value before saveHistory:", image); 
         saveHistory(userID, image, finalCode, language, plantUMLCode, fileName);
       }   
     } catch (error) {
