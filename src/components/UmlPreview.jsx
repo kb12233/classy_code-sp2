@@ -142,7 +142,7 @@ const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
 
   return (
     <div className="flex flex-col gap-8" style={{ height: '80vh', width: '85%', marginTop: '1%' }}>
-      <div className="flex flex-row gap-8" style={{ height: '65vh' }}>
+      <div className="flex flex-col sm:flex-row gap-8" style={{ height: '65vh' }}>
         {/* Markdown Editor Section */}
         <div className="rounded-lg shadow-lg overflow-hidden flex flex-col" style={{ backgroundColor: grayish, flex: 1, maxHeight: '70vh' }}>
           <div className="w-full flex justify-end items-center p-2"> {/* Align items vertically */}
