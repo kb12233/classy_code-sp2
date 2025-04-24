@@ -152,7 +152,7 @@ export default function Homepage() {
                 sx={{
                     display: "flex",
                     flexDirection: "column",
-                    height: "calc(100vh - 64px)",
+                    height: "100vh",
                     overflowY: isScrollable ? "auto" : "hidden",
                     scrollSnapType: "y proximity",
                     '&::-webkit-scrollbar': {
@@ -188,7 +188,7 @@ export default function Homepage() {
                 <Box
                     id="upload-image-section"
                     sx={{
-                        height: "calc(100vh - 64px)",
+                        height: "100vh",
                         scrollSnapAlign: "start",
                         display: "flex",
                         justifyContent: "center",
@@ -207,7 +207,7 @@ export default function Homepage() {
                         id="uml-preview-section"
                         ref={umlSectionRef}
                         sx={{
-                            height: "calc(100vh - 64px)",
+                            height: "100vh",
                             scrollSnapAlign: "start",
                             display: "flex",
                             flexDirection: "column",
@@ -232,7 +232,7 @@ export default function Homepage() {
                         id="code-generated-section"
                         ref={codeSectionRef}
                         sx={{
-                            height: "calc(100vh - 64px)",
+                            height: "100vh",
                             scrollSnapAlign: "start",
                             display: "flex",
                             flexDirection: "column",
