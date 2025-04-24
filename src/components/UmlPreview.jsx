@@ -144,7 +144,7 @@ const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
     <div className="flex flex-col gap-8" style={{ height: '80vh', width: '85%', marginTop: '1%' }}>
       <div className="flex flex-col sm:flex-row gap-8" style={{ height: '65vh' }}>
         {/* Markdown Editor Section */}
-        <div className="rounded-lg shadow-lg overflow-hidden flex flex-col" style={{ backgroundColor: grayish, flex: 1, maxHeight: '70vh' }}>
+        <div className="rounded-lg shadow-lg overflow-hidden flex flex-col" style={{ backgroundColor: grayish, flex: 1, minHeight: "30vh", maxHeight: '70vh' }}>
           <div className="w-full flex justify-end items-center p-2"> {/* Align items vertically */}
           
           {!selectedHistory && (
@@ -189,7 +189,7 @@ const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
         {/* UML Preview Section */}
         <div
           className="rounded-lg shadow-lg overflow-hidden flex flex-col items-center justify-center"
-          style={{ backgroundColor: grayish, flex: 1, maxHeight: '70vh', position: 'relative' }}
+          style={{ backgroundColor: grayish, flex: 1,minHeight: '30vh', maxHeight: '70vh', position: 'relative' }}
         >
           {loading && !isEditing ? (
             <Box className="flex flex-col space-y-3 flex-grow flex items-center justify-center" sx={{ marginTop: '3%' }}>
