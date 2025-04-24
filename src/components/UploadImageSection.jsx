@@ -341,7 +341,7 @@ export default function UploadImageSection() {
                     </div>
                 ) : null}
                 {(!image && !selectedHistory) ? (
-                    <div style={styles.uploadBox}>
+                    <div style={{ ...styles.uploadBox, flexWrap: "wrap" }}>
                         <div style={styles.textContainer}>
                             <p style={styles.uploadText}>Upload an image of a UML class diagram and convert it to code</p>
                             <p style={styles.instructionText}>// Click the "Browse File" button to select an image</p>
