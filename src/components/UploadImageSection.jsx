@@ -215,7 +215,6 @@ export default function UploadImageSection() {
     }, [scale]);
 
     useEffect(() => {
-        console.log("Image URL:", image);
     }, [image]);
 
     
