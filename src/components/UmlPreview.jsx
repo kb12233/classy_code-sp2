@@ -141,7 +141,7 @@ const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
   }, [plantUMLCode]);
 
   return (
-    <div className="flex flex-col gap-8" style={{ height: '80vh', width: '85%', marginTop: '1%' }}>
+    <div className="flex flex-col gap-8" style={{ height: '120vh', width: '85%', marginTop: '1%' }}>
       <div className="flex flex-col sm:flex-row gap-8" style={{ height: '65vh' }}>
         {/* Markdown Editor Section */}
         <div className="rounded-lg shadow-lg overflow-hidden flex flex-col" style={{ backgroundColor: grayish, flex: 1, minHeight: "50vh", maxHeight: '70vh' }}>
