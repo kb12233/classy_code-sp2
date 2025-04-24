@@ -103,6 +103,7 @@ const styles = {
     },
     uploadBox: {
         display: 'flex',
+        flexWrap: 'wrap',
         alignItems: 'center',
         backgroundColor: darkbgColor,
         padding: '50px',
