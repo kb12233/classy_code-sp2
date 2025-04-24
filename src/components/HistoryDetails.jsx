@@ -54,7 +54,7 @@ const HistoryDetails = () => {
                 borderRadius: 2,
                 padding: 2,
                 display: 'flex',
-                flexDirection: 'column',
+                flexDirection: {sm: 'column', md: 'row'},
                 boxShadow: '0px 2px 6px rgba(0,0,0,0.4)',
                 justifyContent: 'space-between',
             }}
