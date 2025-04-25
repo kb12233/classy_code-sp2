@@ -78,6 +78,8 @@ const MenuAppBar = forwardRef((props, ref) => {
 
         if(isMobile) {
             setShowMobileModelSelector(false);
+            setSelectedModel(event.target.value);
+
         }
     };
 
@@ -264,15 +266,6 @@ return (
                                 <RestartAltIcon sx={{ color: 'inherit' }} /> 
                             </IconButton>
                         </>
-                        // <IconButton
-                        //     color="inherit"
-                        //     aria-label="choose a model"
-                        //     title="Model Selection"
-                        //     onClick={() => setShowMobileModelSelector(prev => !prev)}
-                        // >
-                        //     <ArrowDropDownIcon sx={{ color: 'inherit' }} /> 
-                        // </IconButton>
-                        
                     )}
                 </Box>
 
