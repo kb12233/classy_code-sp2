@@ -74,7 +74,7 @@ export default function CodeGeneratedSection() {
     };
 
     return (
-        <Box sx={{ width: isSmallScreen ? '85%' : '70%', marginTop:'35%' }}> {/* Responsive width */}
+        <Box sx={{ width: isSmallScreen ? '85%' : '70%', marginTop:{xs: '10%', md: '4%'} }}> {/* Responsive width */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: '1rem' }}>
                 <p style={{ color: commentColor, fontFamily: 'JetBrains Mono, monospace' }}>// Generated Code</p>
                 <Box sx={{ display: 'flex' }}>
@@ -83,7 +83,7 @@ export default function CodeGeneratedSection() {
                             onClick={handleSave}
                             aria-label="save"
                             size="small"
-                            sx={{ color: iconColor, '&:hover': { color: '#B6D9D7' } }}
+                            sx={{ color: iconColor, '&:hover': { color: '#B6D9D7'} }}
                         >
                             <SaveIcon />
                         </IconButton>
@@ -102,7 +102,7 @@ export default function CodeGeneratedSection() {
             </Box>
             <Box // Replaced Container with Box
                 sx={{
-                    height: "70vh",
+                    height: {xs: '70vh', md: '70vh'}, // Responsive height
                     bgcolor: '#303030',
                     borderRadius: '1vh',
                     display: 'flex',

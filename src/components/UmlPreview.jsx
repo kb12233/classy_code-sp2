@@ -20,8 +20,11 @@ import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import LLMService from "../services/LLMService";
+import { useMediaQuery, useTheme } from '@mui/material';
 
 const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [plantUMLCode, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
   const [umlImage, setUmlImage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -141,10 +144,10 @@ const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
   }, [plantUMLCode]);
 
   return (
-    <div className="flex flex-col gap-8" style={{ height: '120vh', width: '85%', marginTop: '1%', marginBottom: '1%' }}>
+    <div className="flex flex-col gap-4 mb-4" style={{width: '85%' }}>
       <div className="flex flex-col sm:flex-row gap-8" style={{ height: '65vh' }}>
         {/* Markdown Editor Section */}
-        <div className="rounded-lg shadow-lg overflow-hidden flex flex-col" style={{ backgroundColor: grayish, flex: 1, minHeight: "50vh", maxHeight: '70vh' }}>
+        <div className="rounded-lg shadow-lg overflow-hidden" style={{ backgroundColor: grayish, flex: 1, minHeight: "50vh" }}>
           <div className="w-full flex justify-end items-center p-2"> {/* Align items vertically */}
           
           {!selectedHistory && (
@@ -189,7 +192,7 @@ const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
         {/* UML Preview Section */}
         <div
           className="rounded-lg shadow-lg overflow-hidden flex flex-col items-center justify-center"
-          style={{ backgroundColor: grayish, flex: 1,minHeight: '50vh', maxHeight: '70vh', position: 'relative' }}
+          style={{ backgroundColor: grayish, flex: 1,minHeight: '30vh', maxHeight: '70vh', position: 'relative' }}
         >
           {loading && !isEditing ? (
             <Box className="flex flex-col space-y-3 flex-grow flex items-center justify-center" sx={{ marginTop: '3%' }}>
@@ -236,10 +239,11 @@ const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
             </div>
           )}
         </div>
+        
       </div>
 
       {/* History Details and Generate/Select Language Section */}
-      <div className="flex flex-col gap-4">
+      <div className={`flex flex-col gap-4 ${isSmallScreen ? 'mt-30' : ''}`}>
         {selectedHistory && (
         <HistoryDetails />
         )}

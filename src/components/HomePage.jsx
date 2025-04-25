@@ -152,7 +152,7 @@ export default function Homepage() {
                 sx={{
                     display: "flex",
                     flexDirection: "column",
-                    height: "100vh",
+                    //height: "100vh",
                     overflowY: isScrollable ? "auto" : "hidden",
                     scrollSnapType: "y proximity",
                     '&::-webkit-scrollbar': {
@@ -207,7 +207,7 @@ export default function Homepage() {
                         id="uml-preview-section"
                         ref={umlSectionRef}
                         sx={{
-                            height: "100vh",
+                            //height: "150vh",
                             scrollSnapAlign: "start",
                             display: "flex",
                             flexDirection: "column",
@@ -217,7 +217,13 @@ export default function Homepage() {
                             flexShrink: 0,
                         }}
                     >
-                        <Box sx={{ width: isMobile ? "95%" : "85%", color: commentColor, fontFamily: 'JetBrains Mono, monospace', marginTop: 3, fontSize: '0.9rem' }}> {/* Adjusted width */}
+                        <Box sx={{ 
+                            width: isMobile ? "95%" : "85%", 
+                            color: commentColor, 
+                            fontFamily: 'JetBrains Mono, monospace', 
+                            marginTop: {xs: '5%', md: '6%'}, 
+                            fontSize: {xs:'0.7rem' ,md: '0.9rem'} }
+                        }> {/* Adjusted width */}
                             <p>// AI-generated PlantUML representation of the image.</p>
                             <p>// You may edit it if you want to make some quick changes.</p>
                             <p>// For more info on how to write using the custom syntax,</p>
