@@ -11,16 +11,16 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import "@fontsource/jetbrains-mono";
-import "@fontsource/inter"; 
+import "@fontsource/inter";
 import LoadingOverlay from './LoadingOverlay';
 import ValidationDialog from './ValidationDialog'; // Import the validation dialog
 import logoDark from '../assets/images/logo_dark.png';
 import { account } from "../appwrite/config";
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
-import { styled } from '@mui/material/styles';
-import { Divider, Skeleton } from '@mui/material'; 
-import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch"; 
+import { styled, useTheme } from '@mui/material/styles';
+import { Divider, Skeleton, useMediaQuery } from '@mui/material';
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import LLMService from "../services/LLMService";
 import DiagramValidationService from "../services/DiagramValidationService";
 
@@ -34,13 +34,13 @@ const ZoomButtonContainer = styled(Box)(({ theme }) => ({
     borderRadius: 10,
     display: 'flex',
     alignItems: 'center',
-    overflow: 'hidden', 
+    overflow: 'hidden',
 }));
 
 const ZoomButtonBox = styled(Button)(({ theme }) => ({
     color: '#eee',
     borderColor: '#555',
-    minWidth: 50, 
+    minWidth: 50,
     padding: theme.spacing(1),
     borderRadius: 0,
     '&:hover': {
@@ -50,7 +50,7 @@ const ZoomButtonBox = styled(Button)(({ theme }) => ({
 
 const VerticalDivider = styled(Divider)(({ theme }) => ({
     backgroundColor: '#555',
-    height: '24px', 
+    height: '24px',
     width: '1px',
 }));
 
@@ -78,14 +78,14 @@ const styles = {
         alignItems: 'center',
         height: 'calc(100vh - 64px)',
         backgroundColor: darkbgColor,
-        fontFamily: 'Inter, sans-serif', 
+        fontFamily: 'Inter, sans-serif',
         color: '#eee',
     },
     content: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        width: '85%',
+        // width will be dynamically set based on screen size
     },
     helloContainer: {
         display: 'flex',
@@ -99,7 +99,7 @@ const styles = {
     helloText: {
         fontSize: '2.5em',
         margin: 0,
-        fontFamily:"JetBrains Mono, monospace",
+        fontFamily: "JetBrains Mono, monospace",
     },
     uploadBox: {
         display: 'flex',
@@ -117,14 +117,14 @@ const styles = {
     uploadText: {
         fontSize: '1em',
         margin: 0,
-        fontFamily: 'Inter, sans-serif', 
+        fontFamily: 'Inter, sans-serif',
         color: '#B4B4B4',
     },
     instructionText: {
         fontSize: '0.8em',
         color: '#6C6C6C',
         margin: '5px 0 0 0',
-        fontFamily: 'Inter, sans-serif' 
+        fontFamily: 'Inter, sans-serif'
     },
     browseButton: {
         backgroundColor: '#303030',
@@ -135,13 +135,13 @@ const styles = {
         cursor: 'pointer',
         fontSize: '1em',
         transition: 'background-color 0.3s ease',
-        fontFamily: 'Inter, sans-serif' 
+        fontFamily: 'Inter, sans-serif'
     },
     browseButtonHover: {
         backgroundColor: '#777',
     },
     imageContainer: {
-        width: "90%",
+        // width will be dynamically set based on screen size
         height: "70vh",
         display: "flex",
         flexDirection: "column",
@@ -151,7 +151,7 @@ const styles = {
         position: "relative",
         backgroundColor: grayish,
         borderRadius: "10px",
-        cursor: 'grab', 
+        cursor: 'grab',
     },
     imageDisplay: {
         maxWidth: "100%",
@@ -189,18 +189,21 @@ export default function UploadImageSection() {
     const [selectedHistory] = useAtom(selectedHistoryAtom);
     const fileInputRef = useRef(null);
     const [userName, setUserName] = useState("");
-    const [isLoadingImage, setIsLoadingImage] = useState(false); 
-    const [loadingHistoryImage, setLoadingHistoryImage] = useState(false); 
+    const [isLoadingImage, setIsLoadingImage] = useState(false);
+    const [loadingHistoryImage, setLoadingHistoryImage] = useState(false);
     const imageContainerRef = useRef(null);
     const errorColor = "#ff6b6b";
     const [translateX, setTranslateX] = useState(0);
     const [translateY, setTranslateY] = useState(0);
     const [fileObject, setFileObject] = useAtom(fileObjectAtom);
-    
+
     // New state variables for diagram validation
     const [validationDialogOpen, setValidationDialogOpen] = useState(false);
     const [validationStatus, setValidationStatus] = useState({ title: "", message: "" });
     const [validatingDiagram, setValidatingDiagram] = useState(false);
+
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
     useEffect(() => {
         getUserName().then(name => setUserName(name));
@@ -217,33 +220,33 @@ export default function UploadImageSection() {
     useEffect(() => {
     }, [image]);
 
-    
-    useEffect(() => {
-      let loadingTimer;
-      if (selectedHistory?.photoURL) {
-          setLoadingHistoryImage(true);
-          setIsLoadingImage(true);
-          const img = new Image();
-          img.onload = () => {
-              loadingTimer = setTimeout(() => {
-                  setLoadingHistoryImage(false);
-                  setIsLoadingImage(false);
-              }, 1000);
-          };
-          img.onerror = () => {
-              clearTimeout(loadingTimer); 
-              setLoadingHistoryImage(false);
-              setIsLoadingImage(false);
-          };
-          img.src = selectedHistory.photoURL;
-      } else {
-          clearTimeout(loadingTimer); 
-          setLoadingHistoryImage(false);
-          setIsLoadingImage(false);
-      }
 
-      return () => clearTimeout(loadingTimer);
-  }, [selectedHistory]);
+    useEffect(() => {
+        let loadingTimer;
+        if (selectedHistory?.photoURL) {
+            setLoadingHistoryImage(true);
+            setIsLoadingImage(true);
+            const img = new Image();
+            img.onload = () => {
+                loadingTimer = setTimeout(() => {
+                    setLoadingHistoryImage(false);
+                    setIsLoadingImage(false);
+                }, 1000);
+            };
+            img.onerror = () => {
+                clearTimeout(loadingTimer);
+                setLoadingHistoryImage(false);
+                setIsLoadingImage(false);
+            };
+            img.src = selectedHistory.photoURL;
+        } else {
+            clearTimeout(loadingTimer);
+            setLoadingHistoryImage(false);
+            setIsLoadingImage(false);
+        }
+
+        return () => clearTimeout(loadingTimer);
+    }, [selectedHistory]);
 
     // Close validation dialog handler
     const handleCloseValidationDialog = () => {
@@ -259,12 +262,12 @@ export default function UploadImageSection() {
         const file = event.target.files[0];
         if (file) {
             console.log("File selected:", file);
-            
+
             if (!selectedModel) {
                 setProcessingError("Please select a model first");
                 return;
             }
-            
+
             // Create object URL for preview
             const imageUrl = URL.createObjectURL(file);
             setImage(imageUrl);
@@ -273,16 +276,16 @@ export default function UploadImageSection() {
             setTranslateX(0);
             setTranslateY(0);
             setFileObject(file);
-            
+
             // Set validating state to show loading indicator
             setValidatingDiagram(true);
             setIsProcessing(true);
             setProcessingError("");
-            
+
             try {
                 // Validate the diagram first
                 const isValid = await DiagramValidationService.validateDiagram(file);
-                
+
                 if (!isValid) {
                     // Show dialog for invalid diagram
                     setValidationStatus({
@@ -294,14 +297,14 @@ export default function UploadImageSection() {
                     setIsProcessing(false);
                     return;
                 }
-                
+
                 // If valid, proceed with processing
                 setPlantUMLCode("");
                 setGeneratedCode("");
-                
+
                 // Use LLMService to process the image
                 const result = await LLMService.processImage(file, selectedModel);
-                
+
                 if (result.plantUML) {
                     setPlantUMLCode(result.plantUML);
                 } else {
@@ -332,7 +335,7 @@ export default function UploadImageSection() {
 
     return (
         <div style={styles.container}>
-            <div style={styles.content}>
+            <div style={{ ...styles.content, width: isSmallScreen ? '85%' : '70%' }}>
                 {(!image && !selectedHistory) ? (
                     <div style={styles.helloContainer}>
                         <img src={logoDark} alt="Logo" style={styles.logo} />
@@ -361,7 +364,7 @@ export default function UploadImageSection() {
                 {(image || selectedHistory) && (
                     <Box
                         ref={imageContainerRef}
-                        style={styles.imageContainer}
+                        style={{ ...styles.imageContainer, width: isSmallScreen ? '85%' : '70%' }}
                         sx={{
                             display: 'flex',
                             justifyContent: 'center',
@@ -369,7 +372,7 @@ export default function UploadImageSection() {
                         }}
                     >
                         {loadingHistoryImage ? (
-                            <Skeleton height="100%" width="70%" animation="wave" sx={{ borderRadius: '10px', color: grayish }} />
+                            <Skeleton height="100%" width="100%" animation="wave" sx={{ borderRadius: '10px', color: grayish }} />
                         ) : (
                             <TransformWrapper
                                 initialScale={1}
@@ -430,7 +433,7 @@ export default function UploadImageSection() {
                     </Box>
                 )}
             </div>
-            
+
             {/* Validation Dialog */}
             <ValidationDialog
                 open={validationDialogOpen}
