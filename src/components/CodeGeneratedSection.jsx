@@ -76,7 +76,7 @@ export default function CodeGeneratedSection() {
     return (
         <Box sx={{ 
             width: isSmallScreen ? '85%' : '70%', 
-            marginTop:{xs: '20%', md: '10%', lg: '5%'}, 
+            marginTop:{xs: '20%', md: '15%', lg: '3%'}, 
             marginBottom: {xs: '6%', md: '2%', lg: '2%'},
             height: '100vh',
             }}>
