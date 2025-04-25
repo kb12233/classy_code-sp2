@@ -238,7 +238,6 @@ export default function Homepage() {
                         id="code-generated-section"
                         ref={codeSectionRef}
                         sx={{
-                            height: "100vh",
                             scrollSnapAlign: "start",
                             display: "flex",
                             flexDirection: "column",
@@ -246,7 +245,6 @@ export default function Homepage() {
                             alignItems: "center",
                             backgroundColor: darkbgColor,
                             flexShrink: 0,
-                            paddingTop: "2rem",
                         }}
                     >
                         {selectedHistory ? (
@@ -263,7 +261,8 @@ export default function Homepage() {
                                     width: isMobile ? "95%" : "85%", // Adjusted width
                                     display: 'flex',
                                     justifyContent: 'center', 
-                                    alignItems: 'center', 
+                                    alignItems: 'center',
+                                    marginTop: '5rem', 
                                 }}>
                                     <SelectLanguage />
                                     <GenerateCode />
