@@ -103,6 +103,7 @@ const styles = {
     },
     uploadBox: {
         display: 'flex',
+        flexWrap: 'wrap',
         alignItems: 'center',
         backgroundColor: darkbgColor,
         padding: '50px',
@@ -140,7 +141,7 @@ const styles = {
         backgroundColor: '#777',
     },
     imageContainer: {
-        width: "80%",
+        width: "90%",
         height: "70vh",
         display: "flex",
         flexDirection: "column",
@@ -214,7 +215,6 @@ export default function UploadImageSection() {
     }, [scale]);
 
     useEffect(() => {
-        console.log("Image URL:", image);
     }, [image]);
 
     
@@ -340,7 +340,7 @@ export default function UploadImageSection() {
                     </div>
                 ) : null}
                 {(!image && !selectedHistory) ? (
-                    <div style={styles.uploadBox}>
+                    <div style={{ ...styles.uploadBox, flexWrap: "wrap" }}>
                         <div style={styles.textContainer}>
                             <p style={styles.uploadText}>Upload an image of a UML class diagram and convert it to code</p>
                             <p style={styles.instructionText}>// Click the "Browse File" button to select an image</p>
