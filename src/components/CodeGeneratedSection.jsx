@@ -78,7 +78,7 @@ export default function CodeGeneratedSection() {
             width: isSmallScreen ? '85%' : '70%', 
             marginTop:{xs: '20%', md: '15%', lg: '3%'}, 
             marginBottom: {xs: '6%', md: '2%', lg: '2%'},
-            height: '100vh',
+            // height: '100vh',
             }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: '1rem' }}>
                 <p style={{ color: commentColor, fontFamily: 'JetBrains Mono, monospace' }}>// Generated Code</p>
