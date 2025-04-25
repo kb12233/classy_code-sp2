@@ -80,6 +80,8 @@ const styles = {
         backgroundColor: darkbgColor,
         fontFamily: 'Inter, sans-serif',
         color: '#eee',
+        marginRight: '0',
+        marginLeft: '0',
     },
     content: {
         display: 'flex',
