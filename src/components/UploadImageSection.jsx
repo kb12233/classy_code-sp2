@@ -141,7 +141,7 @@ const styles = {
         backgroundColor: '#777',
     },
     imageContainer: {
-        width: "80%",
+        width: "85%",
         height: "70vh",
         display: "flex",
         flexDirection: "column",
