@@ -312,7 +312,7 @@ export default function UploadImageSection() {
         }
     };
 
-    // Fix for the wheel handler error by not using it directly
+
     const handleZoom = () => {
         // Let TransformWrapper handle zoom internally
         // This is an empty function to avoid the error
