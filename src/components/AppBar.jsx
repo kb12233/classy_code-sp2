@@ -24,7 +24,7 @@ import CodeOutlined from '@mui/icons-material/CodeOutlined';
 import { useAuth } from '../utils/AuthContext';
 import LoadingOverlay from './LoadingOverlay';
 import Sidebar from './SideBar';
-import RestartAltIcon from '@mui/icons-material/RestartAlt'; 
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
@@ -49,14 +49,11 @@ const MenuAppBar = forwardRef((props, ref) => {
     const white10 = '#B4B4B4';
     const darkbgColor = "#1E1E1E";
 
-
     const isMobile = useMediaQuery('(max-width: 600px)');
 
-    const [activeIcon, setActiveIconState] = useState('upload'); 
+    const [activeIcon, setActiveIconState] = useState('upload');
     const [showMobileModelSelector, setShowMobileModelSelector] = useState(false);
     const modelSelectRef = useRef(null);
-
-
 
     const handleMenu = (event) => setAnchorEl(event.currentTarget);
     const handleClose = () => setAnchorEl(null);
@@ -64,33 +61,27 @@ const MenuAppBar = forwardRef((props, ref) => {
     const handleSignOut = async () => {
         setSignOutLoading(true);
         try {
-          await logoutUser();
-          props.onSignOut(); 
-          navigate('/login');
+            await logoutUser();
+            props.onSignOut();
+            navigate('/login');
         } catch(error) {
-          console.error("Logout failed:", error.message);
+            console.error("Logout failed:", error.message);
         }
         setSignOutLoading(false);
-      };     
+    };
 
     const handleModelChange = (event) => {
         setSelectedModel(event.target.value);
-
-        if(isMobile) {
-            setShowMobileModelSelector(false);
-            setSelectedModel(event.target.value);
-
-        }
+        // The state will update regardless of screen size
     };
 
     const toggleDrawer = (open) => (event) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) return;
 
         if (open && sidebarRef.current) {
-            sidebarRef.current.loadHistory(); 
+            sidebarRef.current.loadHistory();
         }
 
-        // setDrawerOpen(open);
         setDrawerOpen((prev) => !prev);
     };
 
@@ -124,7 +115,7 @@ const MenuAppBar = forwardRef((props, ref) => {
     useImperativeHandle(ref, () => ({
         setActiveIcon: setActiveIcon,
         getIconIdFromSectionId: getIconIdFromSectionId,
-        activeIcon: activeIcon, 
+        activeIcon: activeIcon,
     }));
 
     useEffect(() => {
@@ -132,265 +123,191 @@ const MenuAppBar = forwardRef((props, ref) => {
             if (
                 modelSelectRef.current &&
                 !modelSelectRef.current.contains(event.target) &&
-                selectedModel // Close only if model is selected
+                showMobileModelSelector
             ) {
                 setShowMobileModelSelector(false);
             }
         };
-    
+
         document.addEventListener('mousedown', handleClickOutside);
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [selectedModel]);
-    
+    }, [showMobileModelSelector]);
 
-return (
-    <Box sx={{ flexGrow: 1 }}>
-        {signOutLoading && <LoadingOverlay message="Signing out..." />}
-        <AppBar position="fixed" sx={{ backgroundColor: '#1E1E1E', maxHeight: '10vh', width: '100vw' }}  elevation={0}>
-            <Toolbar sx={{ justifyContent: 'space-between', px: isMobile ? 1 : 3 }}>
-                {/* Left Side: Menu Icon + Model Select */}
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <IconButton size="large" edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)}>
-                        <MenuIcon />
-                    </IconButton>
-
-                    {/* Conditionally render Model Select and Restart Icon */}
-                    {!isMobile && (
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <FormControl sx={{ minWidth: 220, marginRight: 1 }} size="small">
-                                {loading ? (
-                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <LoadingOverlay message="Loading models..." />
-                                    </Box>
-                                ) : (
-                                    <Select
-                                        value={selectedModel || ''}
-                                        onChange={handleModelChange}
-                                        displayEmpty
-                                        renderValue={(selected) => {
-                                            if (!selected) return "Select Model";
-                                            const model = models.find(m => m.id === selected);
-                                            return model ? model.name : selected;
-                                        }}
-                                        MenuProps={{
-                                            PaperProps: {
-                                                sx: {
-                                                    bgcolor: '#121212',
-                                                    color: white10,
-                                                    maxHeight: 300
-                                                }
-                                            }
-                                        }}
-                                        sx={{
-                                            '.MuiOutlinedInput-notchedOutline': { borderColor: darkbgColor },
-                                            '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: white10 },
-                                            '.MuiSvgIcon-root': { color: white10, fontSize: 20 },
-                                            color: 'white',
-                                            fontFamily: 'JetBrains Mono',
-                                            fontSize: 16,
-                                        }}
-                                    >
-                                        {Object.entries(groupedModels).length > 0 ? (
-                                            Object.entries(groupedModels).map(([provider, providerModels]) => [
-                                                <MenuItem
-                                                    key={provider}
-                                                    disabled
-                                                    sx={{
-                                                        fontFamily: 'JetBrains Mono',
-                                                        opacity: 0.7,
-                                                        fontSize: '0.9rem',
-                                                        pointerEvents: 'none'
-                                                    }}
-                                                >
-                                                    {provider}
-                                                </MenuItem>,
-                                                ...providerModels.map(model => (
-                                                    <MenuItem
-                                                        key={model.id}
-                                                        value={model.id}
-                                                        sx={{
-                                                            fontFamily: 'JetBrains Mono',
-                                                            paddingLeft: 3
-                                                        }}
-                                                    >
-                                                        {model.name}
-                                                    </MenuItem>
-                                                ))
-                                            ]).flat()
-                                        ) : (
-                                            <MenuItem disabled>No models available</MenuItem>
-                                        )}
-                                    </Select>
-                                )}
-                            </FormControl>
-
-                            {/* Restart Icon */}
-                            <IconButton
-                                color="inherit"
-                                onClick={props.onRestart}
-                                aria-label="reset model selection"
-                                title="Restart"
-                                disabled={!image}
-                                sx={{
-                                    color: !image ? white : 'inherit', 
-                                }}
-                            >
-                                <RestartAltIcon sx={{ color: 'inherit' }} /> 
-                            </IconButton>
-                        </Box>
-                    )}
-
-                    {isMobile &&(
-                        <>
-                            <IconButton
-                                color="inherit"
-                                aria-label="choose a model"
-                                title="Model Selection"
-                                onClick={() => setShowMobileModelSelector(prev => !prev)}
-                            >
-                                <ArrowDropDownIcon sx={{ color: 'inherit' }} /> 
-                            </IconButton>
-
-                            <IconButton
-                                color="inherit"
-                                onClick={props.onRestart}
-                                aria-label="reset model selection"
-                                title="Restart"                 
-                                disabled={!image}
-                                    sx={{
-                                        color: !image ? white : 'inherit', 
-                                    }}
-                            >
-                                <RestartAltIcon sx={{ color: 'inherit' }} /> 
-                            </IconButton>
-                        </>
-                    )}
-                </Box>
-
-                {/* Right Side: Section Icons + Account Menu */}
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <IconButton
-                        color="inherit"
-                        onClick={() => handleIconClick('upload-image-section')}
-                        sx={{ color: activeIcon === 'upload' ? white : '#616161' }}
-                    >
-                        <AddPhotoAlternate />
-                    </IconButton>
-                    {(plantUMLCode || activeIcon === 'uml') && (
-                        <IconButton
-                            color="inherit"
-                            onClick={() => handleIconClick('uml-preview-section')}
-                            sx={{ color: activeIcon === 'uml' ? white : '#616161' }}
-                        >
-                            <BorderColorOutlinedIcon />
+    return (
+        <Box sx={{ flexGrow: 1 }}>
+            {signOutLoading && <LoadingOverlay message="Signing out..." />}
+            <AppBar position="fixed" sx={{ backgroundColor: '#1E1E1E', maxHeight: '10vh', width: '100vw' }}  elevation={0}>
+                <Toolbar sx={{ justifyContent: 'space-between', px: isMobile ? 1 : 3 }}>
+                    {/* Left Side: Menu Icon + Model Select */}
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <IconButton size="large" edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)}>
+                            <MenuIcon />
                         </IconButton>
-                    )}
-                    {(generatedCode || activeIcon === 'code') && (
-                        <IconButton
-                            color="inherit"
-                            onClick={() => handleIconClick('code-generated-section')}
-                            sx={{ color: activeIcon === 'code' ? white : '#616161' }}
-                        >
-                            <CodeOutlined />
-                        </IconButton>
-                    )}
-                    <IconButton size="large" color="inherit" onClick={handleMenu} sx={{ ml: 1 }}>
-                        <AccountCircle fontSize='large' />
-                    </IconButton>
-                    <Menu
-                        anchorEl={anchorEl}
-                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                        keepMounted
-                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        open={Boolean(anchorEl)}
-                        onClose={handleClose}
-                        sx={{ '.MuiPaper-root': { bgcolor: '#303134', color: greencolor } }}
-                    >
-                        
-                        <MenuItem onClick={handleSignOut} sx={{ fontFamily: 'JetBrains Mono', color: white }}>
-                            <LogoutIcon sx={{size: 40, mr: 1,}}/> Sign Out
-                        </MenuItem>
-                    </Menu>
-                </Box>
-            </Toolbar>
 
-            {isMobile && showMobileModelSelector && (
-                <Box ref={modelSelectRef} sx={{ px: 2, pb: 1, backgroundColor: darkbgColor }}>
-                    <FormControl fullWidth size="small">
-                        {loading ? (
-                            <LoadingOverlay message="Loading models..." />
-                        ) : (
-                            <Select
-                                value={selectedModel || ''}
-                                onChange={handleModelChange}
-                                displayEmpty
-                                renderValue={(selected) => {
-                                    if (!selected) return "Select Model";
-                                    const model = models.find(m => m.id === selected);
-                                    return model ? model.name : selected;
-                                }}
-                                MenuProps={{
-                                    PaperProps: {
-                                        sx: {
-                                            bgcolor: '#121212',
-                                            color: white10,
-                                            maxHeight: 300,
-                                        },
-                                    },
-                                }}
-                                sx={{
-                                    '.MuiOutlinedInput-notchedOutline': { borderColor: darkbgColor },
-                                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: white10 },
-                                    '.MuiSvgIcon-root': { color: white10, fontSize: 20 },
-                                    color: 'white',
-                                    fontFamily: 'JetBrains Mono',
-                                    fontSize: 16,
-                                }}
-                            >
-                                {Object.entries(groupedModels).length > 0 ? (
-                                    Object.entries(groupedModels).map(([provider, providerModels]) => [
-                                        <MenuItem
-                                            key={provider}
-                                            disabled
-                                            sx={{
-                                                fontFamily: 'JetBrains Mono',
-                                                opacity: 0.7,
-                                                fontSize: '0.9rem',
-                                                pointerEvents: 'none'
-                                            }}
+                        {/* Desktop Model Select */}
+                        {!isMobile && (
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <FormControl sx={{ minWidth: 220, marginRight: 1 }} size="small">
+                                    {loading ? (
+                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                            <LoadingOverlay message="Loading models..." />
+                                        </Box>
+                                    ) : (
+                                        <Select
+                                            value={selectedModel || ''}
+                                            onChange={handleModelChange}
+                                            displayEmpty
+                                            renderValue={(selected) => !selected ? "Select Model" : models.find(m => m.id === selected)?.name || selected}
+                                            MenuProps={{ PaperProps: { sx: { bgcolor: '#121212', color: white10, maxHeight: 300 } } }}
+                                            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: darkbgColor }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: white10 }, '.MuiSvgIcon-root': { color: white10, fontSize: 20 }, color: 'white', fontFamily: 'JetBrains Mono', fontSize: 16 }}
                                         >
-                                            {provider}
-                                        </MenuItem>,
-                                        ...providerModels.map(model => (
-                                            <MenuItem
-                                                key={model.id}
-                                                value={model.id}
-                                                sx={{
-                                                    fontFamily: 'JetBrains Mono',
-                                                    paddingLeft: 3
-                                                }}
-                                            >
-                                                {model.name}
-                                            </MenuItem>
-                                        ))
-                                    ]).flat()
-                                ) : (
-                                    <MenuItem disabled>No models available</MenuItem>
-                                )}
-                            </Select>
+                                            {Object.entries(groupedModels).length > 0 ? (
+                                                Object.entries(groupedModels).map(([provider, providerModels]) => [
+                                                    <MenuItem key={provider} disabled sx={{ fontFamily: 'JetBrains Mono', opacity: 0.7, fontSize: '0.9rem', pointerEvents: 'none' }}>{provider}</MenuItem>,
+                                                    ...providerModels.map(model => (
+                                                        <MenuItem key={model.id} value={model.id} sx={{ fontFamily: 'JetBrains Mono', paddingLeft: 3 }}>{model.name}</MenuItem>
+                                                    ))
+                                                ]).flat()
+                                            ) : (
+                                                <MenuItem disabled>No models available</MenuItem>
+                                            )}
+                                        </Select>
+                                    )}
+                                </FormControl>
+
+                                {/* Restart Icon (Desktop) */}
+                                <IconButton
+                                    color="inherit"
+                                    onClick={props.onRestart}
+                                    aria-label="reset model selection"
+                                    title="Restart"
+                                    disabled={!image}
+                                    sx={{ color: !image ? white : 'inherit' }}
+                                >
+                                    <RestartAltIcon sx={{ color: 'inherit' }} />
+                                </IconButton>
+                            </Box>
                         )}
-                    </FormControl>
-                </Box>
-                
-            )}
-        </AppBar>
-        {/* Sidebar Component */}
-        <Sidebar ref={sidebarRef} isDrawerOpen={isDrawerOpen} toggleDrawer={toggleDrawer} />
-    </Box>
-);
+
+                        {/* Mobile Model Selector Trigger */}
+                        {isMobile && (
+                            <>
+                                <IconButton
+                                    color="inherit"
+                                    aria-label="choose a model"
+                                    title="Model Selection"
+                                    onClick={() => setShowMobileModelSelector(prev => !prev)}
+                                >
+                                    <ArrowDropDownIcon sx={{ color: 'inherit' }} />
+                                </IconButton>
+
+                                {/* Restart Icon (Mobile) */}
+                                <IconButton
+                                    color="inherit"
+                                    onClick={props.onRestart}
+                                    aria-label="reset model selection"
+                                    title="Restart"
+                                    disabled={!image}
+                                    sx={{ color: !image ? white : 'inherit', ml: 1 }}
+                                >
+                                    <RestartAltIcon sx={{ color: 'inherit' }} />
+                                </IconButton>
+                            </>
+                        )}
+                    </Box>
+
+                    {/* Right Side: Section Icons + Account Menu */}
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <IconButton
+                            color="inherit"
+                            onClick={() => handleIconClick('upload-image-section')}
+                            sx={{ color: activeIcon === 'upload' ? white : '#616161' }}
+                        >
+                            <AddPhotoAlternate />
+                        </IconButton>
+                        {(plantUMLCode || activeIcon === 'uml') && (
+                            <IconButton
+                                color="inherit"
+                                onClick={() => handleIconClick('uml-preview-section')}
+                                sx={{ color: activeIcon === 'uml' ? white : '#616161' }}
+                            >
+                                <BorderColorOutlinedIcon />
+                            </IconButton>
+                        )}
+                        {(generatedCode || activeIcon === 'code') && (
+                            <IconButton
+                                color="inherit"
+                                onClick={() => handleIconClick('code-generated-section')}
+                                sx={{ color: activeIcon === 'code' ? white : '#616161' }}
+                            >
+                                <CodeOutlined />
+                            </IconButton>
+                        )}
+                        <IconButton size="large" color="inherit" onClick={handleMenu} sx={{ ml: 1 }}>
+                            <AccountCircle fontSize='large' />
+                        </IconButton>
+                        <Menu
+                            anchorEl={anchorEl}
+                            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                            keepMounted
+                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            open={Boolean(anchorEl)}
+                            onClose={handleClose}
+                            sx={{ '.MuiPaper-root': { bgcolor: '#303134', color: greencolor } }}
+                        >
+                            <MenuItem onClick={handleSignOut} sx={{ fontFamily: 'JetBrains Mono', color: white }}>
+                                <LogoutIcon sx={{size: 40, mr: 1,}}/> Sign Out
+                            </MenuItem>
+                        </Menu>
+                    </Box>
+                </Toolbar>
+
+                {/* Mobile Model Selector (Always Rendered, Visibility Controlled by CSS) */}
+                {isMobile && (
+                    <Box
+                        ref={modelSelectRef}
+                        sx={{
+                            px: 2,
+                            pb: 1,
+                            backgroundColor: darkbgColor,
+                            display: showMobileModelSelector ? 'block' : 'none', // Control visibility
+                        }}
+                    >
+                        <FormControl fullWidth size="small">
+                            {loading ? (
+                                <LoadingOverlay message="Loading models..." />
+                            ) : (
+                                <Select
+                                    value={selectedModel || ''}
+                                    onChange={handleModelChange}
+                                    displayEmpty
+                                    renderValue={(selected) => !selected ? "Select Model" : models.find(m => m.id === selected)?.name || selected}
+                                    MenuProps={{ PaperProps: { sx: { bgcolor: '#121212', color: white10, maxHeight: 300 } } }}
+                                    sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: darkbgColor }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: white10 }, '.MuiSvgIcon-root': { color: white10, fontSize: 20 }, color: 'white', fontFamily: 'JetBrains Mono', fontSize: 16 }}
+                                >
+                                    {Object.entries(groupedModels).length > 0 ? (
+                                        Object.entries(groupedModels).map(([provider, providerModels]) => [
+                                            <MenuItem key={provider} disabled sx={{ fontFamily: 'JetBrains Mono', opacity: 0.7, fontSize: '0.9rem', pointerEvents: 'none' }}>{provider}</MenuItem>,
+                                            ...providerModels.map(model => (
+                                                <MenuItem key={model.id} value={model.id} sx={{ fontFamily: 'JetBrains Mono', paddingLeft: 3 }}>{model.name}</MenuItem>
+                                            ))
+                                        ]).flat()
+                                    ) : (
+                                        <MenuItem disabled>No models available</MenuItem>
+                                    )}
+                                </Select>
+                            )}
+                        </FormControl>
+                    </Box>
+                )}
+            </AppBar>
+            {/* Sidebar Component */}
+            <Sidebar ref={sidebarRef} isDrawerOpen={isDrawerOpen} toggleDrawer={toggleDrawer} />
+        </Box>
+    );
 });
 
-MenuAppBar.displayName = 'MenuAppBar'; 
+MenuAppBar.displayName = 'MenuAppBar';
 export default MenuAppBar;
