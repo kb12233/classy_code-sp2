@@ -282,7 +282,7 @@ export default function Homepage() {
                                 marginBottom: '1rem'
                             }}>
                                 <Box sx={{
-                                    width: isMobile ? "95%" : "85%", 
+                                    width: isMobile ? "95%" : "100%", 
                                     display: 'flex',
                                     justifyContent: 'center', 
                                     alignItems: 'center',
