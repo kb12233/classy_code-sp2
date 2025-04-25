@@ -276,8 +276,7 @@ export default function Homepage() {
                             <Box sx={{
                                 width: "100%",
                                 display: 'flex',
-                                //justifyContent: 'center',
-                                justifyContent: 'flex-start',
+                                justifyContent: 'center',
                                 alignItems: 'center',
                                 marginBottom: '1rem'
                             }}>
