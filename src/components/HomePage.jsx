@@ -37,6 +37,16 @@ export default function Homepage() {
 
     const isMobile = useMediaQuery('(max-width: 600px)'); // Define isMobile
 
+    const linkStyle = {
+        color: commentColor,
+        textDecoration: 'none',
+        transition: 'color 0.3s ease, text-decoration 0.3s ease',
+    };
+    
+    const linkHoverStyle = {
+        color: 'white',
+    };
+
     useEffect(() => {
         const loadHistoryData = async () => {
             if (selectedHistory) {
@@ -227,7 +237,18 @@ export default function Homepage() {
                             <p>// AI-generated PlantUML representation of the image.</p>
                             <p>// You may edit it if you want to make some quick changes.</p>
                             <p>// For more info on how to write using the custom syntax,</p>
-                            <p>// click here.</p>
+                            <p>
+                                <a
+                                    href="https://github.com/kb12233/classy_code-sp2/blob/main/WritingPlantUML.md"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={linkStyle}
+                                    onMouseOver={(e) => Object.assign(e.target.style, linkHoverStyle)}
+                                    onMouseOut={(e) => Object.assign(e.target.style, linkStyle)}
+                                >
+                                    // click here
+                                </a>
+                            </p>
                         </Box>
                         <UMLPreview isCodeGeneratedVisible={isCodeGeneratedRendered}/>
                     </Box>
