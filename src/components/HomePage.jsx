@@ -298,7 +298,6 @@ export default function Homepage() {
                             marginTop: 1, 
                             display: 'flex', 
                             flexDirection: 'column', 
-                            justifyContent: 'center',
                             alignItems: 'center',
                             }}
                         > {/* Adjusted width */}
