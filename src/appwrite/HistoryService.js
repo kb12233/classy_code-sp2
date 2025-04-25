@@ -11,17 +11,14 @@ const uploadToStorage = async (file, bucketID, userID) => {
             console.error("Invalid file object detected:", file);
             throw new Error(`Invalid file type: ${file}`);
         }
-        console.log("Attempting to upload file:", file);
         const uploadedFile = await storage.createFile(bucketID, ID.unique(), file);
-        console.log("Appwrite createFile response:", uploadedFile);
         const imageUrl = await storage.getFileView(bucketID, uploadedFile.$id);
-        console.log("imageUrl before return:", imageUrl);
         return imageUrl; 
     } catch (error) {
         console.error("Error uploading file:", error);
         throw error;
     } finally {
-        console.log("uploadToStorage finally block executed");
+        console.log("Upload to storage completed.");
     }
 };
 
@@ -29,9 +26,7 @@ const convertBlobToFile = async (blobUrl, filename) => {
     try {
         const response = await fetch(blobUrl);
         const blob = await response.blob();
-        console.log("Fetched blob:", blob); 
         const file = new File([blob], filename, { type: blob.type });
-        console.log("Created file from blob:", file); 
         return file;
     } catch (error) {
         console.error("Error converting blob to file:", error);
@@ -57,7 +52,6 @@ export const saveHistory = async (userID, image, generatedCode, language, umlCod
         }
 
         const photoURL = await uploadToStorage(fileToUpload, IMAGES_BUCKET_ID, userID);
-        console.log("photoURL after uploadToStorage:", photoURL); 
         if(!photoURL) {
             console.error("Error uploading image");
             return;
@@ -113,16 +107,13 @@ export const deleteHistoryItem = async (documentId) => {
 
         if (fileId) {
             await storage.deleteFile(IMAGES_BUCKET_ID, fileId);
-            console.log(`File with ID ${fileId} deleted from storage.`);
         } else {
             console.warn("Could not extract fileId from photoURL:", photoURL);
         }
 
         await database.deleteDocument(DATABASE_ID, HISTORY_COLLECTION_ID, documentId);
-        console.log(`History item with ID ${documentId} deleted successfully.`);
     } catch (error) {
         console.error(`Error deleting history item with ID ${documentId}:`, error);
         throw error;
     }
 };
-

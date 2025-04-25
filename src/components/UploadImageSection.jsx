@@ -18,8 +18,8 @@ import logoDark from '../assets/images/logo_dark.png';
 import { account } from "../appwrite/config";
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
-import { styled, useTheme } from '@mui/material/styles'; // Import useTheme
-import { Divider, Skeleton, useMediaQuery } from '@mui/material'; // Import useMediaQuery
+import { styled, useTheme } from '@mui/material/styles';
+import { Divider, Skeleton, useMediaQuery } from '@mui/material';
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import LLMService from "../services/LLMService";
 import DiagramValidationService from "../services/DiagramValidationService";
@@ -72,20 +72,11 @@ async function getUserName() {
 }
 
 const styles = {
-    container: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: 'calc(100vh - 64px)',
-        backgroundColor: darkbgColor,
-        fontFamily: 'Inter, sans-serif',
-        color: '#eee',
-    },
     content: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        width: '85%',
+        // width will be dynamically set based on screen size
     },
     helloContainer: {
         display: 'flex',
@@ -103,18 +94,16 @@ const styles = {
     },
     uploadBox: {
         display: 'flex',
+        flexWrap: 'wrap',
         alignItems: 'center',
         backgroundColor: darkbgColor,
-        padding: '20px', // Reduced padding for better responsiveness
+        padding: '50px',
         borderRadius: '10px',
         border: '2px solid #555',
         marginBottom: '20px',
-        flexDirection: 'column', // Stack elements vertically on smaller screens
     },
     textContainer: {
-        marginRight: '0px', // Remove right margin on smaller screens
-        marginBottom: '10px', // Add bottom margin for spacing
-        textAlign: 'center', // Center text
+        marginRight: '20px',
     },
     uploadText: {
         fontSize: '1em',
@@ -137,15 +126,13 @@ const styles = {
         cursor: 'pointer',
         fontSize: '1em',
         transition: 'background-color 0.3s ease',
-        fontFamily: 'Inter, sans-serif',
-        marginTop: '10px', // Add top margin for spacing
+        fontFamily: 'Inter, sans-serif'
     },
     browseButtonHover: {
         backgroundColor: '#777',
     },
     imageContainer: {
-        width: "100%", // Take full width on smaller screens
-        maxWidth: "80%", // Limit width on larger screens
+        // width will be dynamically set based on screen size
         height: "70vh",
         display: "flex",
         flexDirection: "column",
@@ -187,7 +174,7 @@ export default function UploadImageSection() {
     const [processingError, setProcessingError] = useAtom(processingErrorAtom);
     const [selectedModel] = useAtom(selectedModelAtom);
     const [readableModelName] = useAtom(readableModelNameAtom);
-    const [, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
+    const [, setPlantUMLCode] = useAtom(plantUMLCodeAtom);
     const [, setGeneratedCode] = useAtom(generatedCodeAtom);
     const [, setFileName] = useAtom(uploadedFileNameAtom);
     const [selectedHistory] = useAtom(selectedHistoryAtom);
@@ -207,7 +194,7 @@ export default function UploadImageSection() {
     const [validatingDiagram, setValidatingDiagram] = useState(false);
 
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Adjust breakpoint as needed
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
     useEffect(() => {
         getUserName().then(name => setUserName(name));
@@ -222,7 +209,6 @@ export default function UploadImageSection() {
     }, [scale]);
 
     useEffect(() => {
-        console.log("Image URL:", image);
     }, [image]);
 
 
@@ -326,7 +312,7 @@ export default function UploadImageSection() {
         }
     };
 
-    // Fix for the wheel handler error by not using it directly
+
     const handleZoom = () => {
         // Let TransformWrapper handle zoom internally
         // This is an empty function to avoid the error
@@ -339,8 +325,16 @@ export default function UploadImageSection() {
     };
 
     return (
-        <div style={styles.container}>
-            <div style={styles.content}>
+        <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: 'calc(100vh - 64px)',
+            backgroundColor: darkbgColor,
+            fontFamily: 'Inter, sans-serif',
+            color: '#eee',
+        }}>
+            <div style={{ ...styles.content, width: isSmallScreen ? '85%' : '70%' }}>
                 {(!image && !selectedHistory) ? (
                     <div style={styles.helloContainer}>
                         <img src={logoDark} alt="Logo" style={styles.logo} />
@@ -348,7 +342,7 @@ export default function UploadImageSection() {
                     </div>
                 ) : null}
                 {(!image && !selectedHistory) ? (
-                    <div style={styles.uploadBox}>
+                    <div style={{ ...styles.uploadBox, flexWrap: "wrap" }}>
                         <div style={styles.textContainer}>
                             <p style={styles.uploadText}>Upload an image of a UML class diagram and convert it to code</p>
                             <p style={styles.instructionText}>// Click the "Browse File" button to select an image</p>
@@ -369,7 +363,7 @@ export default function UploadImageSection() {
                 {(image || selectedHistory) && (
                     <Box
                         ref={imageContainerRef}
-                        style={styles.imageContainer}
+                        style={{ ...styles.imageContainer, width: isSmallScreen ? '85%' : '70%' }}
                         sx={{
                             display: 'flex',
                             justifyContent: 'center',
@@ -377,7 +371,7 @@ export default function UploadImageSection() {
                         }}
                     >
                         {loadingHistoryImage ? (
-                            <Skeleton height="100%" width="70%" animation="wave" sx={{ borderRadius: '10px', color: grayish }} />
+                            <Skeleton height="100%" width="100%" animation="wave" sx={{ borderRadius: '10px', color: grayish }} />
                         ) : (
                             <TransformWrapper
                                 initialScale={1}
