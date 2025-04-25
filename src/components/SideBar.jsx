@@ -132,7 +132,7 @@ const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref)
                 <ListItem>
                     <ListItemText
                         primary="History"
-                        sx={{ color: white, fontWeight: 'bold' }}
+                        sx={{ color: white, fontWeight: 'bold', fontFamily: 'JetBrains Mono' }}
                     />
                 </ListItem>
             </List>
@@ -142,7 +142,7 @@ const Sidebar = forwardRef(function Sidebar({ isDrawerOpen, toggleDrawer }, ref)
                 {historyLoading ? (
                     // Render a list of skeleton items while loading
                     Array.from({ length: 5 }).map((_, index) => (
-                        <ListItem key={`skeleton-${index}`} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 1 }}>
+                        <ListItem key={`skeleton-${index}`} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 1 , fontFamily: 'JetBrains Mono'}}>
                             <Skeleton variant="text" width={150} height={20} sx={{ flexGrow: 1, bgcolor: grayish }} />
                         </ListItem>
                     ))

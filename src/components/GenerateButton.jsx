@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { Button , useTheme, useMediaQuery} from '@mui/material';
 import { useAtom } from 'jotai';
 import { 
   plantUmlCodeAtom, selectedLanguageAtom, 
@@ -18,6 +18,8 @@ export default function GenerateCode() {
   const [image] = useAtom(uploadedImageAtom);
   const [fileName] = useAtom(uploadedFileNameAtom);
   const [userID, setUserID] = useState(null);
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
 
   useEffect(() => {
@@ -67,12 +69,13 @@ return (
       color: 'black',
       fontFamily: 'JetBrains Mono',
       fontWeight: 'bold',
-      fontSize: 24,
+      fontSize: {xs: '1.5rem', md: '1.6rem'},
       paddingLeft: '2%',  
       paddingRight: '2%', 
       height: "auto",     
       minHeight: "auto",  
-      minWidth: 250,
+      width: isSmallScreen ? '100%' : "auto",
+      minWidth: isSmallScreen ? 'auto' : 250, // Modified minWidth
     }}
     onClick={handleGenerateClick}
   >

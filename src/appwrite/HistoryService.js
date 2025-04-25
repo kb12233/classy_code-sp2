@@ -117,4 +117,3 @@ export const deleteHistoryItem = async (documentId) => {
         throw error;
     }
 };
-
