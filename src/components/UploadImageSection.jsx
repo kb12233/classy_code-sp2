@@ -72,17 +72,6 @@ async function getUserName() {
 }
 
 const styles = {
-    container: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: 'calc(100vh - 64px)',
-        backgroundColor: darkbgColor,
-        fontFamily: 'Inter, sans-serif',
-        color: '#eee',
-        marginRight: '0',
-        marginLeft: '0',
-    },
     content: {
         display: 'flex',
         flexDirection: 'column',
@@ -185,7 +174,7 @@ export default function UploadImageSection() {
     const [processingError, setProcessingError] = useAtom(processingErrorAtom);
     const [selectedModel] = useAtom(selectedModelAtom);
     const [readableModelName] = useAtom(readableModelNameAtom);
-    const [, setPlantUMLCode] = useAtom(plantUmlCodeAtom);
+    const [, setPlantUMLCode] = useAtom(plantUMLCodeAtom);
     const [, setGeneratedCode] = useAtom(generatedCodeAtom);
     const [, setFileName] = useAtom(uploadedFileNameAtom);
     const [selectedHistory] = useAtom(selectedHistoryAtom);
@@ -336,7 +325,15 @@ export default function UploadImageSection() {
     };
 
     return (
-        <div style={styles.container}>
+        <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: 'calc(100vh - 64px)',
+            backgroundColor: darkbgColor,
+            fontFamily: 'Inter, sans-serif',
+            color: '#eee',
+        }}>
             <div style={{ ...styles.content, width: isSmallScreen ? '85%' : '70%' }}>
                 {(!image && !selectedHistory) ? (
                     <div style={styles.helloContainer}>
