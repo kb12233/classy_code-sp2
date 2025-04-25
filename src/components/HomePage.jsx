@@ -198,7 +198,7 @@ export default function Homepage() {
                 <Box
                     id="upload-image-section"
                     sx={{
-                        height: "100vh",
+                        minHeight: "100vh",
                         scrollSnapAlign: "start",
                         display: "flex",
                         justifyContent: "center",
@@ -217,7 +217,7 @@ export default function Homepage() {
                         id="uml-preview-section"
                         ref={umlSectionRef}
                         sx={{
-                            //height: "150vh",
+                            minHeight: "100vh",
                             scrollSnapAlign: "start",
                             display: "flex",
                             flexDirection: "column",
@@ -232,7 +232,8 @@ export default function Homepage() {
                             color: commentColor, 
                             fontFamily: 'JetBrains Mono, monospace', 
                             marginTop: {xs: '5%', md: '6%', lg:'5%'}, 
-                            fontSize: {xs:'0.7rem' ,md: '0.9rem'} }
+                            fontSize: {xs:'0.7rem' ,md: '0.9rem',    
+                            }}
                         }> {/* Adjusted width */}
                             <p>// AI-generated PlantUML representation of the image.</p>
                             <p>// You may edit it if you want to make some quick changes.</p>
@@ -259,10 +260,11 @@ export default function Homepage() {
                         id="code-generated-section"
                         ref={codeSectionRef}
                         sx={{
+                            minHeight: "100vh",
                             scrollSnapAlign: "start",
                             display: "flex",
                             flexDirection: "column",
-                            justifyContent: "flex-start",
+                            justifyContent: "center",
                             alignItems: "center",
                             backgroundColor: darkbgColor,
                             flexShrink: 0,
@@ -274,7 +276,8 @@ export default function Homepage() {
                             <Box sx={{
                                 width: "100%",
                                 display: 'flex',
-                                justifyContent: 'center',
+                                //justifyContent: 'center',
+                                justifyContent: 'flex-start',
                                 alignItems: 'center',
                                 marginBottom: '1rem'
                             }}>
@@ -290,7 +293,15 @@ export default function Homepage() {
                                 </Box>
                             </Box>
                         )}
-                        <Box sx={{ width: isMobile ? "95%" : "85%", marginTop: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}> {/* Adjusted width */}
+                        <Box sx={{ 
+                            width: isMobile ? "95%" : "85%", 
+                            marginTop: 1, 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            }}
+                        > {/* Adjusted width */}
                             <CodeGeneratedSection />
                         </Box>
                     </Box>

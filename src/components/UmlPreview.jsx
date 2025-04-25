@@ -144,7 +144,7 @@ const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
   }, [plantUMLCode]);
 
   return (
-    <div className="flex flex-col gap-4 mb-4" style={{width: '85%' }}>
+    <div className="flex flex-col gap-4 mb-4" style={{width: '85%'}}>
       <div className={`flex gap-8 ${isSmallScreen ? 'flex-col' : 'flex-row'}`} style={{ height: '65vh' }}>
         {/* Markdown Editor Section */}
         <div className="rounded-lg shadow-lg overflow-hidden" style={{ backgroundColor: grayish, flex: 1, minHeight: "50vh" }}>
@@ -243,7 +243,7 @@ const UMLPreviewDisplay = ({isCodeGeneratedVisible}) => {
       </div>
 
       {/* History Details and Generate/Select Language Section */}
-      <div className={`flex flex-col gap-4 ${isSmallScreen ? 'mt-[50%]' : ''}`}>
+      <div className={`flex flex-col gap-4 ${isSmallScreen ? 'mt-[55%]' : ''}`}>
         {selectedHistory && (
         <HistoryDetails />
         )}
