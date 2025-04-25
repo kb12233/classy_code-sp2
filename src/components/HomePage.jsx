@@ -260,7 +260,7 @@ export default function Homepage() {
                         id="code-generated-section"
                         ref={codeSectionRef}
                         sx={{
-                            minHeight: "64vh",
+                            minHeight: "100vh",
                             scrollSnapAlign: "start",
                             display: "flex",
                             flexDirection: "column",
