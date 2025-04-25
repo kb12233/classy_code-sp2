@@ -119,7 +119,7 @@ const MenuAppBar = forwardRef((props, ref) => {
 return (
     <Box sx={{ flexGrow: 1 }}>
         {signOutLoading && <LoadingOverlay message="Signing out..." />}
-        <AppBar position="fixed" sx={{ backgroundColor: '#1E1E1E', maxHeight: '10vh', width: '100vw' }}>
+        <AppBar position="fixed" sx={{ backgroundColor: '#1E1E1E', maxHeight: '10vh', width: '100vw' }}  elevation={0}>
             <Toolbar sx={{ justifyContent: 'space-between', px: isMobile ? 1 : 3 }}>
                 {/* Left Side: Menu Icon + Model Select */}
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
