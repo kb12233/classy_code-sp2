@@ -231,7 +231,7 @@ export default function Homepage() {
                             width: isMobile ? "95%" : "85%", 
                             color: commentColor, 
                             fontFamily: 'JetBrains Mono, monospace', 
-                            marginTop: {xs: '5%', md: '6%'}, 
+                            marginTop: {xs: '5%', md: '6%', lg:'5%'}, 
                             fontSize: {xs:'0.7rem' ,md: '0.9rem'} }
                         }> {/* Adjusted width */}
                             <p>// AI-generated PlantUML representation of the image.</p>
