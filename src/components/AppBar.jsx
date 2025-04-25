@@ -1,4 +1,4 @@
-import  { useState, forwardRef, useImperativeHandle, useRef } from 'react';
+import { useState, useEffect, forwardRef, useImperativeHandle, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAtom } from 'jotai';
 import {
@@ -26,6 +26,7 @@ import LoadingOverlay from './LoadingOverlay';
 import Sidebar from './SideBar';
 import RestartAltIcon from '@mui/icons-material/RestartAlt'; 
 import LogoutIcon from '@mui/icons-material/Logout';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 const MenuAppBar = forwardRef((props, ref) => {
     const sidebarRef = useRef(null);
@@ -52,6 +53,10 @@ const MenuAppBar = forwardRef((props, ref) => {
     const isMobile = useMediaQuery('(max-width: 600px)');
 
     const [activeIcon, setActiveIconState] = useState('upload'); 
+    const [showMobileModelSelector, setShowMobileModelSelector] = useState(false);
+    const modelSelectRef = useRef(null);
+
+
 
     const handleMenu = (event) => setAnchorEl(event.currentTarget);
     const handleClose = () => setAnchorEl(null);
@@ -70,6 +75,10 @@ const MenuAppBar = forwardRef((props, ref) => {
 
     const handleModelChange = (event) => {
         setSelectedModel(event.target.value);
+
+        if(isMobile) {
+            setShowMobileModelSelector(false);
+        }
     };
 
     const toggleDrawer = (open) => (event) => {
@@ -115,6 +124,24 @@ const MenuAppBar = forwardRef((props, ref) => {
         getIconIdFromSectionId: getIconIdFromSectionId,
         activeIcon: activeIcon, 
     }));
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (
+                modelSelectRef.current &&
+                !modelSelectRef.current.contains(event.target) &&
+                selectedModel // Close only if model is selected
+            ) {
+                setShowMobileModelSelector(false);
+            }
+        };
+    
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [selectedModel]);
+    
 
 return (
     <Box sx={{ flexGrow: 1 }}>
@@ -212,6 +239,41 @@ return (
                             </IconButton>
                         </Box>
                     )}
+
+                    {isMobile &&(
+                        <>
+                            <IconButton
+                                color="inherit"
+                                aria-label="choose a model"
+                                title="Model Selection"
+                                onClick={() => setShowMobileModelSelector(prev => !prev)}
+                            >
+                                <ArrowDropDownIcon sx={{ color: 'inherit' }} /> 
+                            </IconButton>
+
+                            <IconButton
+                                color="inherit"
+                                onClick={props.onRestart}
+                                aria-label="reset model selection"
+                                title="Restart"                 
+                                disabled={!image}
+                                    sx={{
+                                        color: !image ? white : 'inherit', 
+                                    }}
+                            >
+                                <RestartAltIcon sx={{ color: 'inherit' }} /> 
+                            </IconButton>
+                        </>
+                        // <IconButton
+                        //     color="inherit"
+                        //     aria-label="choose a model"
+                        //     title="Model Selection"
+                        //     onClick={() => setShowMobileModelSelector(prev => !prev)}
+                        // >
+                        //     <ArrowDropDownIcon sx={{ color: 'inherit' }} /> 
+                        // </IconButton>
+                        
+                    )}
                 </Box>
 
                 {/* Right Side: Section Icons + Account Menu */}
@@ -260,6 +322,76 @@ return (
                     </Menu>
                 </Box>
             </Toolbar>
+
+            {isMobile && showMobileModelSelector && (
+                <Box ref={modelSelectRef} sx={{ px: 2, pb: 1, backgroundColor: darkbgColor }}>
+                    <FormControl fullWidth size="small">
+                        {loading ? (
+                            <LoadingOverlay message="Loading models..." />
+                        ) : (
+                            <Select
+                                value={selectedModel || ''}
+                                onChange={handleModelChange}
+                                displayEmpty
+                                renderValue={(selected) => {
+                                    if (!selected) return "Select Model";
+                                    const model = models.find(m => m.id === selected);
+                                    return model ? model.name : selected;
+                                }}
+                                MenuProps={{
+                                    PaperProps: {
+                                        sx: {
+                                            bgcolor: '#121212',
+                                            color: white10,
+                                            maxHeight: 300,
+                                        },
+                                    },
+                                }}
+                                sx={{
+                                    '.MuiOutlinedInput-notchedOutline': { borderColor: darkbgColor },
+                                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: white10 },
+                                    '.MuiSvgIcon-root': { color: white10, fontSize: 20 },
+                                    color: 'white',
+                                    fontFamily: 'JetBrains Mono',
+                                    fontSize: 16,
+                                }}
+                            >
+                                {Object.entries(groupedModels).length > 0 ? (
+                                    Object.entries(groupedModels).map(([provider, providerModels]) => [
+                                        <MenuItem
+                                            key={provider}
+                                            disabled
+                                            sx={{
+                                                fontFamily: 'JetBrains Mono',
+                                                opacity: 0.7,
+                                                fontSize: '0.9rem',
+                                                pointerEvents: 'none'
+                                            }}
+                                        >
+                                            {provider}
+                                        </MenuItem>,
+                                        ...providerModels.map(model => (
+                                            <MenuItem
+                                                key={model.id}
+                                                value={model.id}
+                                                sx={{
+                                                    fontFamily: 'JetBrains Mono',
+                                                    paddingLeft: 3
+                                                }}
+                                            >
+                                                {model.name}
+                                            </MenuItem>
+                                        ))
+                                    ]).flat()
+                                ) : (
+                                    <MenuItem disabled>No models available</MenuItem>
+                                )}
+                            </Select>
+                        )}
+                    </FormControl>
+                </Box>
+                
+            )}
         </AppBar>
         {/* Sidebar Component */}
         <Sidebar ref={sidebarRef} isDrawerOpen={isDrawerOpen} toggleDrawer={toggleDrawer} />
