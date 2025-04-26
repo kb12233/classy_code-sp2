@@ -35,10 +35,10 @@ export default function Homepage() {
     const darkbgColor = "#1E1E1E";
     const commentColor = "#6C6C6C";
 
-    const isMobile = useMediaQuery('(max-width: 600px)'); // Define isMobile
+    const isMobile = useMediaQuery('(max-width: 600px)'); 
 
     const linkStyle = {
-        color: commentColor,
+        color: commentColor ? '#A9A9A9' : 'grey', 
         textDecoration: 'none',
         transition: 'color 0.3s ease, text-decoration 0.3s ease',
     };
@@ -239,6 +239,7 @@ export default function Homepage() {
                             <p>// You may edit it if you want to make some quick changes.</p>
                             <p>// For more info on how to write using the custom syntax,</p>
                             <p>
+                               
                                 <a
                                     href="https://github.com/kb12233/classy_code-sp2/blob/main/WritingPlantUML.md"
                                     target="_blank"
@@ -247,7 +248,7 @@ export default function Homepage() {
                                     onMouseOver={(e) => Object.assign(e.target.style, linkHoverStyle)}
                                     onMouseOut={(e) => Object.assign(e.target.style, linkStyle)}
                                 >
-                                    // click here
+                                    <span style={{color: commentColor}}>// </span>click here
                                 </a>
                             </p>
                         </Box>
