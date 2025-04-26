@@ -35,7 +35,17 @@ export default function Homepage() {
     const darkbgColor = "#1E1E1E";
     const commentColor = "#6C6C6C";
 
-    const isMobile = useMediaQuery('(max-width: 600px)'); // Define isMobile
+    const isMobile = useMediaQuery('(max-width: 600px)'); 
+
+    const linkStyle = {
+        color: commentColor ? '#A9A9A9' : 'grey', 
+        textDecoration: 'none',
+        transition: 'color 0.3s ease, text-decoration 0.3s ease',
+    };
+    
+    const linkHoverStyle = {
+        color: 'white',
+    };
 
     useEffect(() => {
         const loadHistoryData = async () => {
@@ -188,7 +198,7 @@ export default function Homepage() {
                 <Box
                     id="upload-image-section"
                     sx={{
-                        height: "100vh",
+                        minHeight: "100vh",
                         scrollSnapAlign: "start",
                         display: "flex",
                         justifyContent: "center",
@@ -207,7 +217,7 @@ export default function Homepage() {
                         id="uml-preview-section"
                         ref={umlSectionRef}
                         sx={{
-                            //height: "150vh",
+                            minHeight: "100vh",
                             scrollSnapAlign: "start",
                             display: "flex",
                             flexDirection: "column",
@@ -221,13 +231,26 @@ export default function Homepage() {
                             width: isMobile ? "95%" : "85%", 
                             color: commentColor, 
                             fontFamily: 'JetBrains Mono, monospace', 
-                            marginTop: {xs: '5%', md: '6%'}, 
-                            fontSize: {xs:'0.7rem' ,md: '0.9rem'} }
+                            marginTop: {xs: '5%', md: '6%', lg:'5%'}, 
+                            fontSize: {xs:'0.7rem' ,md: '0.9rem',    
+                            }}
                         }> {/* Adjusted width */}
                             <p>// AI-generated PlantUML representation of the image.</p>
                             <p>// You may edit it if you want to make some quick changes.</p>
                             <p>// For more info on how to write using the custom syntax,</p>
-                            <p>// click here.</p>
+                            <p>
+                               
+                                <a
+                                    href="https://github.com/kb12233/classy_code-sp2/blob/main/WritingPlantUML.md"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={linkStyle}
+                                    onMouseOver={(e) => Object.assign(e.target.style, linkHoverStyle)}
+                                    onMouseOut={(e) => Object.assign(e.target.style, linkStyle)}
+                                >
+                                    <span style={{color: commentColor}}>// </span>click here
+                                </a>
+                            </p>
                         </Box>
                         <UMLPreview isCodeGeneratedVisible={isCodeGeneratedRendered}/>
                     </Box>
@@ -238,10 +261,11 @@ export default function Homepage() {
                         id="code-generated-section"
                         ref={codeSectionRef}
                         sx={{
+                            minHeight: "100vh",
                             scrollSnapAlign: "start",
                             display: "flex",
                             flexDirection: "column",
-                            justifyContent: "flex-start",
+                            justifyContent: "center",
                             alignItems: "center",
                             backgroundColor: darkbgColor,
                             flexShrink: 0,
@@ -258,7 +282,7 @@ export default function Homepage() {
                                 marginBottom: '1rem'
                             }}>
                                 <Box sx={{
-                                    width: isMobile ? "95%" : "85%", // Adjusted width
+                                    width: isMobile ? "95%" : "100%", 
                                     display: 'flex',
                                     justifyContent: 'center', 
                                     alignItems: 'center',
@@ -269,7 +293,14 @@ export default function Homepage() {
                                 </Box>
                             </Box>
                         )}
-                        <Box sx={{ width: isMobile ? "95%" : "85%", marginTop: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}> {/* Adjusted width */}
+                        <Box sx={{ 
+                            width: isMobile ? "95%" : "85%", 
+                            marginTop: 1, 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            alignItems: 'center',
+                            }}
+                        > {/* Adjusted width */}
                             <CodeGeneratedSection />
                         </Box>
                     </Box>
