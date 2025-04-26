@@ -64,14 +64,12 @@ const HistoryDetails = () => {
                     backgroundColor: '#1e1e1e',
                     color: white10,
                     borderRadius: 2,
-                    paddingTop: 1,
-                    paddingLeft: 2,
-                    paddingRight: 2,
+                    padding: 2,
                     flexDirection: 'row',
                     flexWrap: 'wrap',
-                    boxShadow: '0px 2px 6px rgba(0,0,0,0.4)',
+                    boxShadow: '0px 2px 6px rgba(0.4,0,0,0.4)',
                     justifyContent: 'space-between',
-                    alignItems: 'start',
+                    alignItems: 'center',
                 }}
             >
                 <Typography sx={typographyStyle}>Filename: {selectedHistory?.fileName}</Typography>
