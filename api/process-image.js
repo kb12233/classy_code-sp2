@@ -133,8 +133,15 @@ export default async function handler(req, res) {
 
     const provider = getProviderForModel(modelName);
     
-    // The prompt for the model
-    const prompt = `
+    // The prompts for the model
+    const promptBasic = `Convert this UML class diagram to PlantUML notation.`;
+
+    const promptDetailed = `Given the hand-drawn UML class diagram provided, 
+    can you accurately convert it into PlantUML notation, ensuring fidelity to the original 
+    structure and relationships between classes? Please pay close attention to attributes, 
+    methods, and their respective visibilities.`;
+
+    const promptSpecific = `
       Given the image of a UML class diagram provided, faithfully translate it into PlantUML notation that is fully compatible with a standard PlantUML transpiler. Your translation should:
 
       1. Begin with @startuml and end with @enduml
@@ -166,6 +173,8 @@ export default async function handler(req, res) {
 
       Your response should be a clear, coherent, and accurate representation of the diagram that can be directly used with a PlantUML transpiler.
     `;
+
+    const prompt = promptBasic;
 
     let plantUML;
 
