@@ -134,12 +134,9 @@ export default async function handler(req, res) {
     const provider = getProviderForModel(modelName);
     
     // The prompts for the model
-    const promptBasic = `Convert this UML class diagram to PlantUML notation.`;
+    const promptBasic = `Convert this UML class diagram to PlantUML notation. Provide only the raw PlantUML notation (no markdown code blocks).`;
 
-    const promptDetailed = `Given the hand-drawn UML class diagram provided, 
-    can you accurately convert it into PlantUML notation, ensuring fidelity to the original 
-    structure and relationships between classes? Please pay close attention to attributes, 
-    methods, and their respective visibilities.`;
+    const promptDetailed = `Given the image of a UML class diagram provided, can you accurately convert it into PlantUML notation, ensuring fidelity to the original structure and relationships between classes? Please pay close attention to attributes, methods, and their respective visibilities. Provide only the raw PlantUML notation (no markdown code blocks).`;
 
     const promptSpecific = `
       Given the image of a UML class diagram provided, faithfully translate it into PlantUML notation that is fully compatible with a standard PlantUML transpiler. Your translation should:
