@@ -171,7 +171,7 @@ export default async function handler(req, res) {
       Your response should be a clear, coherent, and accurate representation of the diagram that can be directly used with a PlantUML transpiler.
     `;
 
-    const prompt = promptBasic;
+    const prompt = promptSpecific;
 
     let plantUML;
 
