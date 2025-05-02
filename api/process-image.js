@@ -69,7 +69,7 @@ async function processWithGroq(model, prompt, imageDataUrl) {
         ],
       },
     ],
-    max_tokens: 1024,
+    max_tokens: 1500,
   });
   
   return response.choices[0].message.content;
